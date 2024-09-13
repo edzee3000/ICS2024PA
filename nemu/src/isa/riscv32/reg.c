@@ -43,11 +43,15 @@ void isa_reg_display() {
   {
     const char *name_reg = reg_name(idx);
     uint32_t value_reg=gpr(idx);
-    uint32_t value_mem=vaddr_read(value_reg,4);//假设len表示的是写入或者读取字地址的长度，那么这里就应该是4
-    // printf("\t%s\t%#x\n" , name_reg, value_reg);
-    printf("\t%s\t%#x\t%#x\n" , name_reg, value_reg,value_mem);
+    // uint32_t value_mem=vaddr_read(value_reg,4);//假设len表示的是写入或者读取字地址的长度，那么这里就应该是4
+    printf("\t%s\t%#x\n" , name_reg, value_reg);
+    // printf("\t%s\t%#x\t%#x\n" , name_reg, value_reg,value_mem);
     //但是发现会报错，我在这里竟然访问不了vaddr_read这个函数，所以我在这里只能打印出寄存器的值，但是没有办法打印出寄存器值对应的内存值，伤心www……
   //-------------------疑问：为什么在这里调用不了vaddr.c当中的函数，但是可以在sdb.c当中调用vaddr.c中的函数？？？？------------------
+  //好的知道为什么了，原来不管是在哪里（sdb.c或者reg.c当中都是需要对vaddr_read函数进行声明的，声明之后才可以使用）
+  //但是在这里修改了之后使用vaddr_read函数仍然会报错，而且错误更加严重，直接导致nemu虚拟机崩溃，根据错误
+
+
   }
 }
 
