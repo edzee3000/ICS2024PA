@@ -18,12 +18,12 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 
-/* The assembly code of instructions executed is only output to the screen
+/* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
- * This is useful when you use the `si' command.
- * You can modify this value as you want.
+ * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
+ * You can modify this value as you want.你可以根据自己的需要修改这个值。
  */
-#define MAX_INST_TO_PRINT 10
+#define MAX_INST_TO_PRINT 10//最多打印的指令数目
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -40,6 +40,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
+
+//这个函数执行单个指令，并更新CPU状态。它还负责调用 trace_and_difftest 函数来记录执行的指令，以便进行跟踪和差异测试。
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
@@ -67,6 +69,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+//这个函数接受一个整数 n，表示要执行的指令数量。它循环调用 exec_once 函数来执行每一条指令。
 static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {

@@ -21,14 +21,14 @@ void engine_start();
 int is_exit_status_bad();
 
 int main(int argc, char *argv[]) {
-  /* Initialize the monitor. */
+  /* Initialize the monitor. 初始化监视器*/
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
   init_monitor(argc, argv);
 #endif
 
-  /* Start engine. */
+  /* Start engine.启动引擎获取用户命令 */
   engine_start();
 
   return is_exit_status_bad();

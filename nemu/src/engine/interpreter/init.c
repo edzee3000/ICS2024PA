@@ -21,7 +21,7 @@ void engine_start() {
 #ifdef CONFIG_TARGET_AM
   cpu_exec(-1);
 #else
-  /* Receive commands from user. */
+  /* Receive commands from user.从用户那里接受命令 */
   sdb_mainloop();
 #endif
 }

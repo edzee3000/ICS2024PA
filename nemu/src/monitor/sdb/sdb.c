@@ -18,6 +18,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+//由于需要将char*类型的字符串数组转化为int类型数字，因此需要调用atoi函数
+#include <stdlib.h>
+
 
 static int is_batch_mode = false;
 
@@ -43,7 +46,7 @@ static char* rl_gets() {
 }
 
 static int cmd_c(char *args) {
-  cpu_exec(-1);
+  cpu_exec(-1);//调用cpu_exec执行完成全部指令，注意在这里-1是unsigned int类型会变为2^32，表示继续往下执行到底（如果不出意外的话）
   return 0;
 }
 
@@ -53,6 +56,17 @@ static int cmd_q(char *args) {
 	nemu_state.state=NEMU_QUIT;
   return -1;
 }
+
+static int cmd_si(char *args)
+{
+  //注意在这里char *args表示传入进来的继续往下执行多少步，但是记住会有缺省值为1的情况即传入进来的args可能为NULL
+  if (args==NULL){args="1";}
+  int N=atoi(args);
+  cpu_exec(N);//调用cpu_exec函数继续执行N次
+  return 0;//表示成功返回
+}
+
+
 
 static int cmd_help(char *args);
 //这里是一个结构体数组，定义了三个结构体，结构体里面分别对应command的名称、描述、函数指针
@@ -66,7 +80,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  {"si","Step Into N times which you input, default 1",cmd_si},
+  //{"info","",cmd_info}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -128,7 +143,8 @@ void sdb_mainloop() {
     int i;
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0)//返回0表示两个命令相等
-      {
+      {//调用cmd_table[i].handler函数指针并且传入参数args,如果处理函数返回负值，表示有错误或需要终止循环，函数返回。
+      //比如输入了q，则调用cmd_q函数并且传入参数（这个参数可以为空、任何数都无所谓，反正用不上）
         if (cmd_table[i].handler(args) < 0) { return; }
         break;
       }
