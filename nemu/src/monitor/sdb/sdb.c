@@ -97,14 +97,16 @@ static int cmd_x(char *args)
       return -1;
     }
     printf("N的值为：%#x\n",atoi(N));
-    printf("EXPR的值为：%#x\n",atoi(EXPR));
+    uint32_t init_addr;
+    sscanf(EXPR, "%x", &init_addr);
+    printf("EXPR的值为：%#x\n",init_addr);
 //然后根据EXPR的表达式结果往后寻找内存中的表达式
 printf("\t虚拟内存地址\t虚拟内存地址对应的值\n");
 for(int i=0;i<atoi(N);i++)
 {
-  uint32_t v_addr = atoi(EXPR)+4*i;
-  uint32_t value = vaddr_read(v_addr,4);//往后读取4个字节
-  printf("\t%#x\t%#x\n",v_addr,value);
+  //uint32_t v_addr = atoi(EXPR)+4*i;
+  //uint32_t value = vaddr_read(v_addr,4);//往后读取4个字节
+  //printf("\t%#x\t%#x\n",v_addr,value);
 }
 return 0;
 
