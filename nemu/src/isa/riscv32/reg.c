@@ -30,7 +30,7 @@ const char *regs[] = {
 
 //在sdb.c当中调用了isa_reg_display函数接口，而具体函数实现在这里实现
 //在reg.h的头文件当中有出现过cpu.gpr[check_reg_idx(idx)]，应该是表明cpu.gpr是cpu的通用目的寄存器组（结合一下全称发现还真是）
-//接下来只需要
+//接下来只需要根据对应的名称打印出来并且找到对应的gpr的值打印出来即可
 //查看isa.h的头文件发现这里会根据CONFIG的不同而采取不一样的gpr和pc
 //由于本机采用的是riscv32位指令集体系架构，因此对应的是CONFIG_ISA_riscv
 //对应的gprs为 uint32_t gpr[32];
@@ -39,12 +39,13 @@ void isa_reg_display() {
   for(int idx=0;idx<num_regs;idx++)
   {
     const char *name_reg = reg_name(idx);
-    uint32_t value=gpr(idx);
-    //uint32_t addre=(gpr(idx));
-    //printf("%s\t%#X\t%#X\n" , name_reg,addre, value);
-    printf("%s\t%#X\n" , name_reg, value);
+    uint32_t value_reg=gpr(idx);
+    // uint32_t value_mem=vaddr_read(value_reg,4);//假设len表示的是写入或者读取字地址的长度，那么这里就应该是4
+    printf("\t%s\t%#x\n" , name_reg, value_reg);
+    // printf("\t%s\t%#x\t%#x\n" , name_reg, value_reg,value_mem);
+    //但是发现会报错，我在这里竟然访问不了vaddr_read这个函数，所以我在这里只能打印出寄存器的值，但是没有办法打印出寄存器值对应的内存值，伤心www……
+  //-------------------疑问：为什么在这里调用不了vaddr.c当中的函数，但是可以在sdb.c当中调用vaddr.c中的函数？？？？------------------
   }
-
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

@@ -22,6 +22,10 @@
 #include <stdlib.h>
 
 
+
+
+word_t vaddr_read(vaddr_t addr, int len);
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -72,7 +76,7 @@ static int cmd_si(char *args)
 static int cmd_info(char *args)
 {
   //
-  printf("成功进入info函数\n");
+  //printf("成功进入info函数\n");
   if (args==NULL && strcmp(args,"r")!=0 && strcmp(args,"w")!=0){return -1;}//考虑到用户可能故意刁难在info后面不写参数或者写了一大堆乱七八糟的参数，这里需要判断一下
   if (strcmp(args,"r")==0)
   {
@@ -82,7 +86,28 @@ static int cmd_info(char *args)
   return 0;
 }
 
+static int cmd_x(char *args)
+{//先判断输入进来的表达式是否合法
+  char *str_end = args + strlen(args);
+  char *N = strtok(args, " ");
+  if (N == NULL) { return -1; }
+  char *EXPR = N + strlen(N) + 1;
+    if (EXPR >= str_end) {
+      EXPR = NULL;
+      return -1;
+    }
+//然后根据EXPR的表达式结果往后寻找内存中的表达式
+printf("\t虚拟内存地址\t虚拟内存地址对应的值\n");
+for(int i=0;i<atoi(N);i++)
+{
+  uint32_t v_addr = atoi(EXPR)+4*i;
+  uint32_t value = vaddr_read(v_addr,4);//往后读取4个字节
+  printf("\t%#x\t%#x\n",v_addr,value);
+}
+return 0;
 
+
+}
 
 //#############################################################################################
 
@@ -99,7 +124,8 @@ static struct {
 
   /* TODO: Add more commands */
   {"si","Step Into N times which you input, default 1",cmd_si},
-  {"info","Print Information According to Your Input",cmd_info}
+  {"info","Print Information According to Your Input",cmd_info},
+  {"x","Solve the value of Expression, and print the following continuous N Bytes",cmd_x}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
