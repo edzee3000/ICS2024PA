@@ -16,6 +16,9 @@
 #include <isa.h>
 #include "local-include/reg.h"
 
+
+word_t vaddr_read(vaddr_t addr, int len);
+
 /*这行代码定义了一个字符串数组 regs，包含了寄存器的名称。
 * 数组中的每个元素都是一个指向 const char 的指针，指向一个字符串，
 * 这些字符串代表了RISC-V架构中的寄存器名。
@@ -40,9 +43,9 @@ void isa_reg_display() {
   {
     const char *name_reg = reg_name(idx);
     uint32_t value_reg=gpr(idx);
-    // uint32_t value_mem=vaddr_read(value_reg,4);//假设len表示的是写入或者读取字地址的长度，那么这里就应该是4
-    printf("\t%s\t%#x\n" , name_reg, value_reg);
-    // printf("\t%s\t%#x\t%#x\n" , name_reg, value_reg,value_mem);
+    uint32_t value_mem=vaddr_read(value_reg,4);//假设len表示的是写入或者读取字地址的长度，那么这里就应该是4
+    // printf("\t%s\t%#x\n" , name_reg, value_reg);
+    printf("\t%s\t%#x\t%#x\n" , name_reg, value_reg,value_mem);
     //但是发现会报错，我在这里竟然访问不了vaddr_read这个函数，所以我在这里只能打印出寄存器的值，但是没有办法打印出寄存器值对应的内存值，伤心www……
   //-------------------疑问：为什么在这里调用不了vaddr.c当中的函数，但是可以在sdb.c当中调用vaddr.c中的函数？？？？------------------
   }

@@ -22,9 +22,9 @@
 #include <stdlib.h>
 
 
+word_t vaddr_read(vaddr_t addr, int len);////////////////////////为什么在这里进行函数声明就可以了，而不用#include进vaddr.h的头文件呢？
 
 
-word_t vaddr_read(vaddr_t addr, int len);////////////////////////
 
 static int is_batch_mode = false;
 
@@ -61,7 +61,7 @@ static int cmd_q(char *args) {
   return -1;
 }
 
-//#############################Have Written Code Here##########################################
+//############################# Have Written Code Here ##########################################
 
 //经过测试，cmd_si单步打印函数没有问题！！！！！！
 static int cmd_si(char *args)
@@ -72,7 +72,7 @@ static int cmd_si(char *args)
   cpu_exec(N);//调用cpu_exec函数继续执行N次
   return 0;//表示成功返回
 }
-
+//<--------打印寄存器和监视器信息实现（注意这里打印监视器还没有实现！！！）-------------->
 static int cmd_info(char *args)
 {
   //
@@ -86,6 +86,7 @@ static int cmd_info(char *args)
   return 0;
 }
 
+//<--------扫描内存函数实现-------------->
 static int cmd_x(char *args)
 {//先判断输入进来的表达式是否合法
   char *str_end = args + strlen(args);
@@ -109,11 +110,14 @@ for(int i=0;i<atoi(N);i++)
   printf("\t%#x\t%#x\n",v_addr,value);
 }
 return 0;
-
-
-}
+}//经过测试扫描函数实现没有问题！！！
 
 //#############################################################################################
+
+
+
+
+
 
 static int cmd_help(char *args);
 //这里是一个结构体数组，定义了三个结构体，结构体里面分别对应command的名称、描述、函数指针
