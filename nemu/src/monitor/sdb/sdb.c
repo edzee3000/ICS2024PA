@@ -57,6 +57,9 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+//#############################Have Written Code Here##########################################
+
+//经过测试，cmd_si单步打印函数没有问题！！！！！！
 static int cmd_si(char *args)
 {
   //注意在这里char *args表示传入进来的继续往下执行多少步，但是记住会有缺省值为1的情况即传入进来的args可能为NULL
@@ -66,7 +69,21 @@ static int cmd_si(char *args)
   return 0;//表示成功返回
 }
 
+static int cmd_info(char *args)
+{
+  //
+  if (args==NULL||strcmp(args,"r")!=0||strcmp(args,"w")!=0){return -1;}//考虑到用户可能故意刁难在info后面不写参数或者写了一大堆乱七八糟的参数，这里需要判断一下
+  if (strcmp(args,"r")!=0)
+  {
+    //如果参数输入的是r的话打印寄存器信息
+    isa_reg_display();//调用nemu/src/isa/$ISA/reg.c中的接口void isa_reg_display(void)
+  }
+  return 0;
+}
 
+
+
+//#############################################################################################
 
 static int cmd_help(char *args);
 //这里是一个结构体数组，定义了三个结构体，结构体里面分别对应command的名称、描述、函数指针
@@ -81,7 +98,7 @@ static struct {
 
   /* TODO: Add more commands */
   {"si","Step Into N times which you input, default 1",cmd_si},
-  //{"info","",cmd_info}
+  {"info","Print Information According to Your Input",cmd_info}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -145,7 +162,7 @@ void sdb_mainloop() {
       if (strcmp(cmd, cmd_table[i].name) == 0)//返回0表示两个命令相等
       {//调用cmd_table[i].handler函数指针并且传入参数args,如果处理函数返回负值，表示有错误或需要终止循环，函数返回。
       //比如输入了q，则调用cmd_q函数并且传入参数（这个参数可以为空、任何数都无所谓，反正用不上）
-        if (cmd_table[i].handler(args) < 0) { return; }
+        if (cmd_table[i].handler(args) < 0) { return; }//注意在这里args是除了第一个参数，后面所有的字符串
         break;
       }
     }
