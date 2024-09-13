@@ -40,7 +40,7 @@ void isa_reg_display() {
   {
     const char *name_reg = reg_name(idx);
     uint32_t value=gpr(idx);
-    printf("%s\t%d\n",name_reg,value);
+    printf("%s\t%x\n",name_reg,value);
   }
 
 }
