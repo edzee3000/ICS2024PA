@@ -24,7 +24,7 @@
 
 
 
-word_t vaddr_read(vaddr_t addr, int len);
+word_t vaddr_read(vaddr_t addr, int len);////////////////////////
 
 static int is_batch_mode = false;
 
@@ -96,6 +96,8 @@ static int cmd_x(char *args)
       EXPR = NULL;
       return -1;
     }
+    printf("N的值为：%#x\n",atoi(N));
+    printf("EXPR的值为：%#x\n",atoi(EXPR));
 //然后根据EXPR的表达式结果往后寻找内存中的表达式
 printf("\t虚拟内存地址\t虚拟内存地址对应的值\n");
 for(int i=0;i<atoi(N);i++)
