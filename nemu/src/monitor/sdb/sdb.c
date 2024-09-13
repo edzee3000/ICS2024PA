@@ -55,11 +55,11 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
-
+//这里是一个结构体数组，定义了三个结构体，结构体里面分别对应command的名称、描述、函数指针
 static struct {
   const char *name;
   const char *description;
-  int (*handler) (char *);
+  int (*handler) (char *);//函数指针，它指向一个接受 char 指针参数并返回 int 值的函数。这个函数指针用于指向实际处理命令的函数
 } cmd_table [] = {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
@@ -72,12 +72,12 @@ static struct {
 #define NR_CMD ARRLEN(cmd_table)
 
 static int cmd_help(char *args) {
-  /* extract the first argument */
+  /* extract the first argument 提取第一个参数*/
   char *arg = strtok(NULL, " ");
   int i;
 
   if (arg == NULL) {
-    /* no argument given */
+    /* no argument given 如果什么参数都没有给*/
     for (i = 0; i < NR_CMD; i ++) {
       printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
     }
@@ -104,15 +104,15 @@ void sdb_mainloop() {
     return;
   }
 
-  for (char *str; (str = rl_gets()) != NULL; ) {
+  for (char *str; (str = rl_gets()) != NULL; ) {//调用rl_gets函数，读取一行的输入
     char *str_end = str + strlen(str);
 
-    /* extract the first token as the command */
+    /* extract the first token as the command 提取第一个token出来*/
     char *cmd = strtok(str, " ");
     if (cmd == NULL) { continue; }
 
-    /* treat the remaining string as the arguments,
-     * which may need further parsing
+    /* treat the remaining string as the arguments, 将剩下的字符串视为参数
+     * which may need further parsing 可能需要进一步的解析
      */
     char *args = cmd + strlen(cmd) + 1;
     if (args >= str_end) {
@@ -123,10 +123,12 @@ void sdb_mainloop() {
     extern void sdl_clear_event_queue();
     sdl_clear_event_queue();
 #endif
-
+    
+    //把所有command命令全部查找一遍，寻找是否有对应位置的命令 
     int i;
     for (i = 0; i < NR_CMD; i ++) {
-      if (strcmp(cmd, cmd_table[i].name) == 0) {
+      if (strcmp(cmd, cmd_table[i].name) == 0)//返回0表示两个命令相等
+      {
         if (cmd_table[i].handler(args) < 0) { return; }
         break;
       }
@@ -137,7 +139,7 @@ void sdb_mainloop() {
 }
 
 void init_sdb() {
-  /* Compile the regular expressions. */
+  /* Compile the regular expressions. 编译正则表达式*/
   init_regex();
 
   /* Initialize the watchpoint pool. */

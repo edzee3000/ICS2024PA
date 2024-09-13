@@ -92,7 +92,7 @@ void assert_fail_msg() {
   statistic();
 }
 
-/* Simulate how the CPU works. */
+/* Simulate how the CPU works.模拟CPU如何运行 */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
