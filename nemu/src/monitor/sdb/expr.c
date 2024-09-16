@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ=0,
   
   /* TODO: Add more token types添加更多的token种类 */
   DECIMAL_NUM
@@ -159,8 +159,8 @@ word_t expr(char *e, bool *success) {
   int i=0;
   for(i=0;i<nr_token;i++)
   {
-    if(tokens[i].type==DECIMAL_NUM){printf("toke类型为:%d ,token内容为：%d\n",tokens[i].type, atoi(tokens[i].str));}
-    else{printf("toke类型为:%c\n",(char)tokens[i].type);}
+    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+    else{printf("toke%d类型为:%c\n",i,(char)tokens[i].type);}
   }
 
   return 0;
