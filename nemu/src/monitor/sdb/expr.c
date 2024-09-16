@@ -110,6 +110,7 @@ static bool make_token(char *e) {
         case TK_NOTYPE:break;//TK_NOTYPE的情况可以直接丢弃掉
         case '+':
           tokens[nr_token].type='+';
+          // strcpy(tokens[nr_token].str,"\0");
           break;
         case '-':
           tokens[nr_token].type='-';
@@ -153,9 +154,14 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-  
+
   /* TODO: Insert codes to evaluate the expression. *///插入计算表达式的代码
-  
+  int i=0;
+  for(i=0;i<nr_token;i++)
+  {
+    if(tokens[i].type==DECIMAL_NUM){printf("toke类型为:%d ,token内容为：%d\n",tokens[i].type, atoi(tokens[i].str));}
+    else{printf("toke类型为:%c\n",(char)tokens[i].type);}
+  }
 
   return 0;
 }
