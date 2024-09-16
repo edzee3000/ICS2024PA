@@ -130,6 +130,7 @@ static bool make_token(char *e) {
         case DECIMAL_NUM:
           tokens[nr_token].type=DECIMAL_NUM;
           strncpy(tokens[nr_token].str,&e[position-substr_len],substr_len);
+          tokens[nr_token].str[substr_len] = '\0';
           //<----------------------这里需要小心万一str长度太大了可能会超出数组原本大小--------------------------->
           break;
         default: assert(0);
