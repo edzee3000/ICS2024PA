@@ -107,7 +107,7 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {//使用ascii码表进行比较
-        case TK_NOTYPE:break;//TK_NOTYPE的情况可以直接丢弃掉
+        case TK_NOTYPE:nr_token--;break;//TK_NOTYPE的情况可以直接丢弃掉
         case '+':
           tokens[nr_token].type='+';
           // strcpy(tokens[nr_token].str,"\0");
@@ -134,8 +134,7 @@ static bool make_token(char *e) {
           break;
         default: assert(0);
         }
-        if (rules[i].token_type!=TK_NOTYPE)
-          nr_token++;
+        nr_token++;
         break;
       }
     }
