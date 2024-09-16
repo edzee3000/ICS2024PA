@@ -153,9 +153,9 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
+  
   /* TODO: Insert codes to evaluate the expression. *///插入计算表达式的代码
-  TODO();
+  
 
   return 0;
 }

@@ -61,6 +61,7 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+
 //############################# Have Written Code Here ##########################################
 
 //经过测试，cmd_si单步打印函数没有问题！！！！！！
@@ -112,6 +113,15 @@ for(int i=0;i<atoi(N);i++)
 return 0;
 }//经过测试扫描函数实现没有问题！！！
 
+
+
+static int cmd_p(char *args) {
+  bool success=true;
+	word_t res = expr(args,&success);
+  if(!success){return -1;}
+  printf("%d\n",res);
+  return 0;
+}
 //#############################################################################################
 
 
@@ -133,7 +143,8 @@ static struct {
   /* TODO: Add more commands */
   {"si","Step Into N times which you input, default 1",cmd_si},
   {"info","Print Information According to Your Input",cmd_info},
-  {"x","Solve the value of Expression, and print the following continuous N Bytes",cmd_x}
+  {"x","Solve the value of Expression, and print the following continuous N Bytes",cmd_x},
+  {"p","Print the value of Expression",cmd_p}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
