@@ -175,7 +175,7 @@ static bool make_token(char *e) {
               u_int32_t value_reg=gpr(idx);//注意这里我存的内容不是名字而是寄存器对应的值
               sprintf(tokens[nr_token].str,"%x",value_reg);
               break;
-              }
+              } 
           }
           if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
           break;
