@@ -55,6 +55,7 @@ static struct rule {
   {"&&",AND},//与
   {"!",NOT},//非
   {"$$",REGISTER}//寄存器
+  //先不急着实现那么复杂的表达式，先把最基本的加减乘除的运算弄好再说
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -184,6 +185,9 @@ word_t expr(char *e, bool *success) {
   return res;
 }
 // p (1 2 3   +4)  for test
+
+
+
 
 
 //括号匹配函数

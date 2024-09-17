@@ -20,9 +20,9 @@
 #include <assert.h>
 #include <string.h>
 
-// this should be enough
+// this should be enough 这么大的一个缓冲区应当是足够了的
 static char buf[65536] = {};
-static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+static char code_buf[65536 + 128] = {}; // a little larger than `buf`比缓冲区要稍微大那么一丢丢
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
