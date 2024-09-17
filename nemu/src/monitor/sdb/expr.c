@@ -170,7 +170,7 @@ word_t expr(char *e, bool *success) {
   for(i=0;i<nr_token;i++)
   {
     if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
-    else{printf("toke%d类型为:%c\n",i,(char)tokens[i].type);}
+    else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
 
   return 0;
