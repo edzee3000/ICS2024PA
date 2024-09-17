@@ -171,7 +171,7 @@ static bool make_token(char *e) {
           break;
         case REGISTER:
           tokens[nr_token].type=REGISTER;
-          int num_regs=   32;//sizeof(regs) / sizeof(regs[0]);
+          int num_regs=   32;//sizeof(regs) / sizeof(regs[0]);//注意这里会报错错误使用sizeof，好像是因为regs是外部引用的，不知道它数组大小是多少
           char name[32];
           strncpy(name, &e[position-substr_len+1],substr_len-1);
           name[substr_len-1]='\0';
