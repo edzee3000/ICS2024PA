@@ -32,12 +32,13 @@ static char *code_format =
 "}";
 
 
-static int where=0;
+static char *buf_start = NULL;
+static char *buf_end = buf+(sizeof(buf)/sizeof(buf[0]));
 
-inline int choose(int n) {
-    return rand() % n;
-}
+static int choose(int n) ;
+void gen(char c) ;
 void gen_num();
+void gen_rand_op() ;
 
 static void gen_rand_expr() {
 
@@ -46,33 +47,48 @@ static void gen_rand_expr() {
     case 1: gen('('); gen_rand_expr(); gen(')'); break;
     default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
   }
-  buf[where] = '\0';
+  
 }
+
+
 
 // 用于生成随机数字的函数
 void gen_num() {
-    // 生成一个0-9之间的随机数字，例如：9，因为buf数组是char类型的
-    int random_num= rand() % 10;
-    //printf("%d", random_num); // 假设数字在 0-9 之间
-    buf[where]=(char)(random_num+'0');
-    where++;
+    int num = choose(100);//65596会数据溢出
+  if (buf_start < buf_end) {
+    int n_writes = snprintf(buf_start, buf_end-buf_start, "%d", num);
+    if (n_writes > 0) {
+      buf_start += n_writes;
+    }
+  }
 }
 // 用于生成括号的函数
 void gen(char c) {
     // 打印字符，这里简单地使用 putchar 函数
     //putchar(c);
-    buf[where]=c;
-    where++;
+  int n_writes = snprintf(buf_start, buf_end - buf_start, "%c", c);
+    if (buf_start < buf_end) { 
+      if (n_writes > 0) {
+        buf_start += n_writes;
+      }
+    }
 }
 // 用于生成随机操作符的函数
 void gen_rand_op() {
     // 随机选择一个操作符
-    char ops[] = {'+', '-', '*', '/'};
-    char op=ops[choose(sizeof(ops) / sizeof(ops[0]))];
-    //printf("%c", op);
-    buf[where]=op;
-    where++;
+  char ops[] = {'+', '-', '*', '/'};
+  char op = ops[choose(sizeof(ops))];
+  gen(op);
 }
+
+
+static int choose(int n) {
+    return rand() % n;
+}
+
+
+
+
 
 
 int main(int argc, char *argv[]) {
@@ -84,7 +100,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {//开始一个循环，循环次数由 loop 变量控制。
-    gen_rand_expr();
+    buf_start=buf; gen_rand_expr(); *buf_start = '\0';
 
     sprintf(code_buf, code_format, buf);//使用 sprintf 函数将生成的随机表达式格式化到一个缓冲区 code_buf 中。
 

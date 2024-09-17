@@ -21,14 +21,15 @@
 #include <regex.h>
 
 #include <stdlib.h>
-
+#include <stdio.h>
 
 enum {
   TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,
   ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
   /* TODO: Add more token types添加更多的token种类 */
   DECIMAL_NUM,HEX_NUM,REGISTER,
-  NOT,AND,OR
+  NOT,AND,OR,
+  DEREF,TK_NEG
 };
 
 static struct rule {
@@ -94,6 +95,9 @@ bool check_parentheses(int p ,int q);//函数声明
 int dominant_operator(int p , int q);
 int priority(int token_type);
 int eval(int p,int q);
+void judge_DEREF(int i);
+void judge_NEG(int i);
+
 
 static bool make_token(char *e) {
   //用position变量来指示当前处理到的位置, 并且按顺序尝试用不同的规则来匹配当前位置的字符串. 
@@ -176,6 +180,12 @@ word_t expr(char *e, bool *success) {
   int i=0;
   for(i=0;i<nr_token;i++)
   {
+  judge_DEREF(i);
+  judge_NEG(i);
+  }
+  for(i=0;i<nr_token;i++)//打印类型内容
+  {
+    
     if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
     else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
@@ -187,8 +197,25 @@ word_t expr(char *e, bool *success) {
 // p (1 2 3   +4)  for test
 
 
+void judge_DEREF(int i)
+{
+  if (tokens[i].type == '*' && 
+  (i == 0 || 
+  (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) ||
+   (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
+   tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR) ) 
+    tokens[i].type = DEREF;
+}
 
-
+void judge_NEG(int i)
+{
+  if(tokens[i].type=='-'&&
+  (i==0||
+  (tokens[i-1].type!=DECIMAL_NUM&&
+  tokens[i-1].type!=HEX_NUM)||
+   tokens[i-1].type==LEFT_PAR))
+        tokens[i].type = TK_NEG;
+}
 
 //括号匹配函数
 bool check_parentheses(int p ,int q){
@@ -236,8 +263,13 @@ int dominant_operator(int p , int q){
 //判断优先级数值函数
 int priority(int token_type)
 {
-  if (token_type==ADD||token_type==SUB)return 1;
-  if (token_type==DIV||token_type==MUL)return 2;
+  if (token_type==ADD||token_type==SUB)return 5;
+  if (token_type==DIV||token_type==MUL)return 6;
+  if (token_type==TK_EQ||token_type==NOT_EQ)return 4;
+  if (token_type==NOT)return 8;
+  if (token_type==AND)return 2;
+  if (token_type==OR)return 1;
+  if (token_type==REGISTER)return 10;
   return -1;
 }
 
@@ -252,7 +284,17 @@ int eval(int p,int q) {
      * For now this token should be a number.
      * Return the value of the number.
      */
-    return atoi(tokens[p].str);
+    switch (tokens[p].type){
+    case DECIMAL_NUM:
+      return atoi(tokens[p].str);break;
+    case HEX_NUM: 
+      int value;
+      sscanf(tokens[p].str,"%x",&value);
+      return value;
+      break;
+    default:assert(0);
+      break;
+    }
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
@@ -272,6 +314,11 @@ int eval(int p,int q) {
       case DIV:
       if (val2==0)assert(0); 
       return val1 / val2;
+      case TK_EQ:return (val1==val2);
+      case NOT_EQ:return (val1!=val2);
+      case AND:return (val1 && val2);
+      case OR:return (val1 || val2);
+      // case DEREF: vaddr_read();
       default: assert(0);
     }
   }
