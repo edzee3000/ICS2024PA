@@ -119,7 +119,7 @@ static int cmd_p(char *args) {
   bool success=true;
 	word_t res = expr(args,&success);
   if(!success){return -1;}
-  printf("表达式求值结果为：%d\n",res);
+  printf("表达式求值结果为：%u\n",res);
   return 0;
 }
 //#############################################################################################
