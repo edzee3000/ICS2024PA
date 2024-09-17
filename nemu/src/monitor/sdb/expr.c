@@ -97,7 +97,7 @@ typedef struct token {
   //需要注意的是, str成员的长度是有限的, 当你发现缓冲区将要溢出的时候, 要进行相应的处理(思考一下, 你会如何进行处理?), 否则将会造成难以理解的bug.
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};//tokens数组用于按顺序存放已经被识别出的token信息
+static Token tokens[128] __attribute__((used)) = {};//tokens数组用于按顺序存放已经被识别出的token信息//我偷偷把32改成128应该不过分吧……
 static int nr_token __attribute__((used))  = 0;//nr_token指示已经被识别出的token数目
 
 
@@ -315,17 +315,17 @@ int eval(int p,int q) {
      */
     switch (tokens[p].type){
     case DECIMAL_NUM:
-      return atoi(tokens[p].str);break;
-    case HEX_NUM: 
       u_int32_t value;
+      sscanf(tokens[p].str,"%d",&value);
+      return value;break;
+    case HEX_NUM: 
       sscanf(tokens[p].str,"%x",&value);
       //printf("十六进制数为：%u\n",value);
-      return value;
-      break;
-    case REGISTER:
+      return value;break;
+    case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
       printf("十六进制数为：%u\n",value);
-      return value;
+      return value;break;
     default:assert(0);
       break;
     }
@@ -363,3 +363,4 @@ int eval(int p,int q) {
   assert(0);
 }
 
+//完了做了一半发现题目要求全都是进行无符号运算，啊啊啊啊啊啊啊啊得重新修改了
