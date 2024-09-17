@@ -269,7 +269,9 @@ int eval(int p,int q) {
       case ADD: return val1 + val2;
       case SUB: return val1 - val2;
       case MUL: return val1 * val2;
-      case DIV: return val1 / val2;
+      case DIV:
+      if (val2==0)assert(0); 
+      return val1 / val2;
       default: assert(0);
     }
   }
