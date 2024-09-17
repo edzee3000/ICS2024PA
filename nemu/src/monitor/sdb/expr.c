@@ -297,6 +297,7 @@ int eval(int p,int q) {
     case HEX_NUM: 
       int value;
       sscanf(tokens[p].str,"%x",&value);
+      printf("十六进制数为：%d",value);
       return value;
       break;
     default:assert(0);
