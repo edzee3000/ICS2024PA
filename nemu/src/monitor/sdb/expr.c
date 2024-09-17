@@ -50,8 +50,8 @@ static struct rule {
   {"\\*",MUL},//Multiply
   {"\\(",LEFT_PAR},//左括号
   {"\\)",RIGHT_PAR},//右括号
-  {"[0-9]+", DECIMAL_NUM}, //有关于输入一大堆十进制数字的字符串
   {"0[xX][0-9a-fA-F]+",HEX_NUM},//输入一个16进制数
+  {"[0-9]+", DECIMAL_NUM}, //有关于输入一大堆十进制数字的字符串
   {"\\|\\|",OR},//或
   {"&&",AND},//与
   {"!",NOT},//非
