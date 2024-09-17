@@ -166,12 +166,12 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. *///插入计算表达式的代码
-  int i=0;
-  for(i=0;i<nr_token;i++)
-  {
-    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
-    else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
-  }
+  // int i=0;
+  // for(i=0;i<nr_token;i++)
+  // {
+  //   if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+  //   else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
+  // }
   //开始计算表达式的值
   int res= eval(0,nr_token-1);
 
@@ -208,7 +208,7 @@ int dominant_operator(int p , int q){
               else if(tokens[i].type == RIGHT_PAR) left_n --;
               i++;
               if(left_n == 0)
-                  {i--;break;}
+                  {i--;break;}//注意由于上面i++了因此在这里需要对i进行--操作
           }  
           if(i > q)break;
       }      
@@ -219,8 +219,8 @@ int dominant_operator(int p , int q){
       }      
   }          
   // printf("%d\n",left_n);
-  printf("主操作符位置为：%d\n",dom);
-  printf("主操作符类型为：%d\n",tokens[dom].type);
+  // printf("主操作符位置为：%d\n",dom);
+  // printf("主操作符类型为：%d\n",tokens[dom].type);
   return dom;//注意返回的dom是位置   tokens[dom]才是主运算符对应的token
 }             
 //判断优先级数值函数
