@@ -205,7 +205,7 @@ word_t expr(char *e, bool *success) {
 
 void judge_DEREF(int i)
 {
-  if (tokens[i].type == '*' && 
+  if (tokens[i].type == MUL && 
   (i == 0 || 
   (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) ||
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
@@ -215,7 +215,7 @@ void judge_DEREF(int i)
 
 void judge_NEG(int i)
 {
-  if(tokens[i].type=='-'&&
+  if(tokens[i].type== SUB&&
   (i==0||
   (tokens[i-1].type!=DECIMAL_NUM&&
   tokens[i-1].type!=HEX_NUM)||
