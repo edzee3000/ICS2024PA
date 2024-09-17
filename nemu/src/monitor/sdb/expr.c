@@ -24,10 +24,11 @@
 
 
 enum {
-  TK_NOTYPE = 256, TK_EQ=0,
+  TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,
   ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
   /* TODO: Add more token types添加更多的token种类 */
-  DECIMAL_NUM
+  DECIMAL_NUM,HEX_NUM,REGISTER,
+  NOT,AND,OR
 };
 
 static struct rule {
@@ -43,12 +44,17 @@ static struct rule {
   {"\\+", ADD},         // plus
   {"\\-", SUB},         //subtract
   {"==", TK_EQ},        // equal
+  {"!=", NOT_EQ}, //NOT_EQUAL   
   {"\\/", DIV},         // divide
   {"\\*",MUL},//Multiply
-  {"\\(",LEFT_PAR},
-  {"\\)",RIGHT_PAR},
+  {"\\(",LEFT_PAR},//左括号
+  {"\\)",RIGHT_PAR},//右括号
   {"[0-9]+", DECIMAL_NUM}, //有关于输入一大堆十进制数字的字符串
-
+  {"0[xX][0-9a-fA-F]+",HEX_NUM},//输入一个16进制数
+  {"\\|\\|",OR},//或
+  {"&&",AND},//与
+  {"!",NOT},//非
+  {"$$",REGISTER}//寄存器
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -166,12 +172,12 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. *///插入计算表达式的代码
-  // int i=0;
-  // for(i=0;i<nr_token;i++)
-  // {
-  //   if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
-  //   else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
-  // }
+  int i=0;
+  for(i=0;i<nr_token;i++)
+  {
+    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+    else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
+  }
   //开始计算表达式的值
   int res= eval(0,nr_token-1);
 
