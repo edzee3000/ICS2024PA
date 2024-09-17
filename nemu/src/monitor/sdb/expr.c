@@ -97,7 +97,7 @@ int priority(int token_type);
 int eval(int p,int q);
 void judge_DEREF(int i);
 void judge_NEG(int i);
-
+word_t vaddr_read(vaddr_t addr, int len) ;
 
 static bool make_token(char *e) {
   //用position变量来指示当前处理到的位置, 并且按顺序尝试用不同的规则来匹配当前位置的字符串. 
@@ -153,6 +153,12 @@ static bool make_token(char *e) {
           tokens[nr_token].str[substr_len] = '\0';
           //<----------------------这里需要小心万一str长度太大了可能会超出数组原本大小--------------------------->
           break;
+        case HEX_NUM:
+          tokens[nr_token].type=HEX_NUM;
+          strncpy(tokens[nr_token].str,&e[position-substr_len],substr_len);
+          tokens[nr_token].str[substr_len] = '\0';
+          //<------------------注意这里是直接将16进制数以字符串形式输入进去，并没有进行相应的转换！！！---------------------->
+          break;
         default: assert(0);
         }
         nr_token++;
@@ -186,10 +192,10 @@ word_t expr(char *e, bool *success) {
   for(i=0;i<nr_token;i++)//打印类型内容
   {
     
-    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+    if(tokens[i].type==DECIMAL_NUM||tokens[i].type==HEX_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
     else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
-  //开始计算表达式的值
+  //准备工作做完之后开始计算表达式的值
   int res= eval(0,nr_token-1);
 
   return res;
@@ -270,6 +276,7 @@ int priority(int token_type)
   if (token_type==AND)return 2;
   if (token_type==OR)return 1;
   if (token_type==REGISTER)return 10;
+  if (token_type==TK_NEG)return 12;
   return -1;
 }
 
@@ -304,6 +311,10 @@ int eval(int p,int q) {
   }
   else {
     int op = dominant_operator(p,q);
+    if (tokens[op].type==TK_NEG){return -eval(op+1,q);}
+    else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
+  
+
     int val1 = eval(p, op - 1);
     int val2 = eval(op + 1, q);
 
