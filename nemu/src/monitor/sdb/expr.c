@@ -20,6 +20,9 @@
  */
 #include <regex.h>
 
+#include <stdlib.h>
+
+
 enum {
   TK_NOTYPE = 256, TK_EQ=0,
   ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
@@ -83,7 +86,7 @@ static int nr_token __attribute__((used))  = 0;//nr_token指示已经被识别�
 bool check_parentheses(int p ,int q);//函数声明
 int dominant_operator(int p , int q);
 int priority(int token_type);
-
+int eval(int p,int q);
 
 static bool make_token(char *e) {
   //用position变量来指示当前处理到的位置, 并且按顺序尝试用不同的规则来匹配当前位置的字符串. 
@@ -214,7 +217,7 @@ int dominant_operator(int p , int q){
       }      
   }          
   // printf("%d\n",left_n);
-  return dom;
+  return dom;//注意返回的dom是位置   tokens[dom]才是主运算符对应的token
 }             
 
 int priority(int token_type)
@@ -226,35 +229,37 @@ int priority(int token_type)
 
 
 
-// //计算p与q的值
-// int eval(p, q) {
-//   if (p > q) {
-//     /* Bad expression */
-//   }
-//   else if (p == q) {
-//     /* Single token.
-//      * For now this token should be a number.
-//      * Return the value of the number.
-//      */
+//计算p与q的值
+int eval(int p,int q) {
+  if (p > q) {
+    /* Bad expression */
+    assert(0);//表明这个表达式有问题
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+    return atoi(tokens[p].str);
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1);
+  }
+  else {
+    int op = dominant_operator(p,q);
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
 
-//   }
-//   else if (check_parentheses(p, q) == true) {
-//     /* The expression is surrounded by a matched pair of parentheses.
-//      * If that is the case, just throw away the parentheses.
-//      */
-//     return eval(p + 1, q - 1);
-//   }
-//   else {
-//     op = the position of 主运算符 in the token expression;
-//     val1 = eval(p, op - 1);
-//     val2 = eval(op + 1, q);
-
-//     switch (op_type) {
-//       case '+': return val1 + val2;
-//       case '-': /* ... */
-//       case '*': /* ... */
-//       case '/': /* ... */
-//       default: assert(0);
-//     }
-//   }
-// }
+    switch (tokens[op].type) {
+      case ADD: return val1 + val2;
+      case SUB: return val1 - val2;
+      case MUL: return val1 * val2;
+      case DIV: return val1 / val2;
+      default: assert(0);
+    }
+  }
+  assert(0);
+}
