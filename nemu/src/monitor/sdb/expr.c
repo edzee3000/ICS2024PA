@@ -175,14 +175,17 @@ static bool make_token(char *e) {
           char name[32];
           strncpy(name, &e[position-substr_len+1],substr_len-1);
           name[substr_len-1]='\0';
-          for(int idx=0;idx<num_regs;idx++){
+          int idx;
+          for(idx=0;idx<num_regs;idx++){
             if(strcmp(reg_name(idx),name)==0)
             {
               u_int32_t value_reg=gpr(idx);//注意这里我存的内容不是名字而是寄存器对应的值
               sprintf(tokens[nr_token].str,"%x",value_reg);
-              break;}
+              break;
+              }
           }
-          assert(0);
+          if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
+          break;
         default: assert(0);
         }
         nr_token++;
