@@ -172,8 +172,10 @@ word_t expr(char *e, bool *success) {
     if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
     else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
+  //开始计算表达式的值
+  int res= eval(0,nr_token-1);
 
-  return 0;
+  return res;
 }
 // p (1 2 3   +4)  for test
 
@@ -193,7 +195,7 @@ bool check_parentheses(int p ,int q){
 } 
 
 
-
+//寻找主操作符函数
 int dominant_operator(int p , int q){         
   int i ,dom = p, left_n = 0;
   int pr = -1 ;
@@ -219,7 +221,7 @@ int dominant_operator(int p , int q){
   // printf("%d\n",left_n);
   return dom;//注意返回的dom是位置   tokens[dom]才是主运算符对应的token
 }             
-
+//判断优先级数值函数
 int priority(int token_type)
 {
   if (token_type==ADD||token_type==SUB)return 1;
@@ -227,9 +229,7 @@ int priority(int token_type)
   return -1;
 }
 
-
-
-//计算p与q的值
+//计算从p开始到q之间表达式的值
 int eval(int p,int q) {
   if (p > q) {
     /* Bad expression */
