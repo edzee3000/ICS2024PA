@@ -139,24 +139,17 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
         case TK_NOTYPE:nr_token--;break;//TK_NOTYPE的情况可以直接丢弃掉
         case ADD:
-          tokens[nr_token].type=ADD;
-          // strcpy(tokens[nr_token].str,"\0");
-          break;
         case SUB:
-          tokens[nr_token].type=SUB;
-          break;
         case MUL:
-          tokens[nr_token].type=MUL;
-          break;
         case DIV:
-          tokens[nr_token].type=DIV;
-          break;
         case LEFT_PAR:
-          tokens[nr_token].type=LEFT_PAR;
-          break;
         case RIGHT_PAR:
-          tokens[nr_token].type=RIGHT_PAR;
-          break;
+        case TK_EQ:
+        case NOT_EQ:
+        case NOT:
+        case AND:
+        case OR: tokens[nr_token].type=rules[i].token_type;break;
+
         case DECIMAL_NUM:
           tokens[nr_token].type=DECIMAL_NUM;
           strncpy(tokens[nr_token].str,&e[position-substr_len],substr_len);
@@ -347,7 +340,7 @@ int eval(int p,int q) {
     int op = dominant_operator(p,q);
     if (tokens[op].type==TK_NEG){return -eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
-  
+    else if (tokens[op].type==NOT){return !eval(op+1,q);}
 
     int val1 = eval(p, op - 1);
     int val2 = eval(op + 1, q);
