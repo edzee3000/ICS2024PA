@@ -22,7 +22,7 @@
 
 enum {
   TK_NOTYPE = 256, TK_EQ=0,
-  
+  ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
   /* TODO: Add more token types添加更多的token种类 */
   DECIMAL_NUM
 };
@@ -37,13 +37,13 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces（一个或多个空格）
-  {"\\+", '+'},         // plus
-  {"\\-", '-'},         //subtract
+  {"\\+", ADD},         // plus
+  {"\\-", SUB},         //subtract
   {"==", TK_EQ},        // equal
-  {"\\/", '/'},         // divide
-  {"\\*",'*'},//Multiply
-  {"\\(",'('},
-  {"\\)",')'},
+  {"\\/", DIV},         // divide
+  {"\\*",MUL},//Multiply
+  {"\\(",LEFT_PAR},
+  {"\\)",RIGHT_PAR},
   {"[0-9]+", DECIMAL_NUM}, //有关于输入一大堆十进制数字的字符串
 
 };
@@ -79,6 +79,12 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};//tokens数组用于按顺序存放已经被识别出的token信息
 static int nr_token __attribute__((used))  = 0;//nr_token指示已经被识别出的token数目
 
+
+bool check_parentheses(int p ,int q);//函数声明
+
+
+
+
 static bool make_token(char *e) {
   //用position变量来指示当前处理到的位置, 并且按顺序尝试用不同的规则来匹配当前位置的字符串. 
   //当一条规则匹配成功, 并且匹配出的子串正好是position所在位置的时候, 我们就成功地识别出一个token, 
@@ -106,26 +112,26 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
-        switch (rules[i].token_type) {//使用ascii码表进行比较
+        switch (rules[i].token_type) {
         case TK_NOTYPE:nr_token--;break;//TK_NOTYPE的情况可以直接丢弃掉
-        case '+':
-          tokens[nr_token].type='+';
+        case ADD:
+          tokens[nr_token].type=ADD;
           // strcpy(tokens[nr_token].str,"\0");
           break;
-        case '-':
-          tokens[nr_token].type='-';
+        case SUB:
+          tokens[nr_token].type=SUB;
           break;
-        case '*':
-          tokens[nr_token].type='*';
+        case MUL:
+          tokens[nr_token].type=MUL;
           break;
-        case '/':
-          tokens[nr_token].type='/';
+        case DIV:
+          tokens[nr_token].type=DIV;
           break;
-        case '(':
-          tokens[nr_token].type='(';
+        case LEFT_PAR:
+          tokens[nr_token].type=LEFT_PAR;
           break;
-        case ')':
-          tokens[nr_token].type=')';
+        case RIGHT_PAR:
+          tokens[nr_token].type=RIGHT_PAR;
           break;
         case DECIMAL_NUM:
           tokens[nr_token].type=DECIMAL_NUM;
@@ -167,4 +173,18 @@ word_t expr(char *e, bool *success) {
   return 0;
 }
 // p (1 2 3   +4)  for test
- 
+
+
+//括号匹配函数
+bool check_parentheses(int p ,int q){
+   // printf("--------------\n");  
+    int i,tag = 0;
+    if(tokens[p].type != LEFT_PAR || tokens[q].type != RIGHT_PAR) return false; //首尾没有()则为false 
+    for(i = p ; i <= q ; i ++){    
+        if(tokens[i].type == LEFT_PAR) tag++;
+        else if(tokens[i].type == RIGHT_PAR) tag--;
+        if(tag == 0 && i < q) return false ;  //(3+4)*(5+3) 返回false
+    }                              
+    if( tag != 0 ) return false;   
+    return true;                   
+} 
