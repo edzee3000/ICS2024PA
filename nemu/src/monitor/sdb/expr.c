@@ -201,14 +201,14 @@ int dominant_operator(int p , int q){
   int pr = -1 ;
   for(i = p ; i <= q ; i++){
       if(tokens[i].type == LEFT_PAR){
-          left_n += 1;
+          left_n ++;
           i++;
           while(1){
-              if(tokens[i].type == LEFT_PAR) left_n += 1;
+              if(tokens[i].type == LEFT_PAR) left_n ++;
               else if(tokens[i].type == RIGHT_PAR) left_n --;
               i++;
               if(left_n == 0)
-                  break;
+                  {i--;break;}
           }  
           if(i > q)break;
       }      
@@ -219,7 +219,8 @@ int dominant_operator(int p , int q){
       }      
   }          
   // printf("%d\n",left_n);
-  printf("主操作符为：%d\n",tokens[dom].type);
+  printf("主操作符位置为：%d\n",dom);
+  printf("主操作符类型为：%d\n",tokens[dom].type);
   return dom;//注意返回的dom是位置   tokens[dom]才是主运算符对应的token
 }             
 //判断优先级数值函数
