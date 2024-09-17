@@ -215,7 +215,6 @@ word_t expr(char *e, bool *success) {
   }
   for(i=0;i<nr_token;i++)//打印类型内容
   {
-    
     if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
     else if(tokens[i].type==HEX_NUM){ u_int32_t value;
       sscanf(tokens[i].str,"%x",&value);
@@ -327,6 +326,10 @@ int eval(int p,int q) {
       //printf("十六进制数为：%u\n",value);
       return value;
       break;
+    case REGISTER:
+      sscanf(tokens[p].str,"%x",&value);
+      printf("十六进制数为：%u\n",value);
+      return value;
     default:assert(0);
       break;
     }
