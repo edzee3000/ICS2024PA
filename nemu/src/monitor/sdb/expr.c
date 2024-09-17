@@ -22,6 +22,16 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "../../isa/riscv32/local-include/reg.h"
+
+extern const char *regs[];
+// const char *regs[] = {
+//   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+//   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+//   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+//   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+// };
 
 enum {
   TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,
@@ -55,7 +65,7 @@ static struct rule {
   {"\\|\\|",OR},//或
   {"&&",AND},//与
   {"!",NOT},//非
-  {"\\$",REGISTER}//寄存器名字（呃呃做了一半发现其实并没有用到……）
+  {"\\$[\\$a-z0-9]+",REGISTER}//寄存器名字（呃呃做了一半发现其实并没有用到……结果做完了发现题目好像又需要这个……唉……）
   //先不急着实现那么复杂的表达式，先把最基本的加减乘除的运算弄好再说
 };
 
@@ -159,6 +169,20 @@ static bool make_token(char *e) {
           tokens[nr_token].str[substr_len] = '\0';
           //<------------------注意这里是直接将16进制数以字符串形式输入进去，并没有进行相应的转换！！！---------------------->
           break;
+        case REGISTER:
+          tokens[nr_token].type=REGISTER;
+          int num_regs=   32;//sizeof(regs) / sizeof(regs[0]);
+          char name[32];
+          strncpy(name, &e[position-substr_len+1],substr_len-1);
+          name[substr_len-1]='\0';
+          for(int idx=0;idx<num_regs;idx++){
+            if(strcmp(reg_name(idx),name)==0)
+            {
+              u_int32_t value_reg=gpr(idx);//注意这里我存的内容不是名字而是寄存器对应的值
+              sprintf(tokens[nr_token].str,"%x",value_reg);
+              break;}
+          }
+          assert(0);
         default: assert(0);
         }
         nr_token++;
