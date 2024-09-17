@@ -210,7 +210,7 @@ void judge_DEREF(int i)
 {
   if (tokens[i].type == MUL && 
   (i == 0 || 
-  (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) ||
+  (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) || tokens[i - 1].type ==TK_NEG ||
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
    tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR) ) 
     tokens[i].type = DEREF;
@@ -300,7 +300,7 @@ int eval(int p,int q) {
     case HEX_NUM: 
       u_int32_t value;
       sscanf(tokens[p].str,"%x",&value);
-      printf("十六进制数为：%u\n",value);
+      //printf("十六进制数为：%u\n",value);
       return value;
       break;
     default:assert(0);
