@@ -219,6 +219,7 @@ int dominant_operator(int p , int q){
       }      
   }          
   // printf("%d\n",left_n);
+  printf("主操作符为：%d\n",tokens[dom].type);
   return dom;//注意返回的dom是位置   tokens[dom]才是主运算符对应的token
 }             
 //判断优先级数值函数
