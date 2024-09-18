@@ -147,13 +147,13 @@ void wp_diff_test() {
 		flag=true;
       printf("序号为%d的监视点发生改变\n"
 	  	"表达式为：%s\n"
-        "原先值为：%u\n"
-        "现在值为：%u\n"
-        , temp->NO,temp->EXPR ,temp->Res, new_res);
+        "原先值为：%u\t%#x\n"
+        "现在值为：%u\t%#x\n"
+        , temp->NO,temp->EXPR ,temp->Res,temp->Res, new_res,new_res);
       temp->Res=new_res;
     }
     temp=temp->next;
   }
-  printf("在此处插入一个测试点\n");
+	//printf("在此处插入一个测试点\n");
   if(flag){nemu_state.state=NEMU_STOP;}//程序因为触发了监视点而暂停了下来
 }
