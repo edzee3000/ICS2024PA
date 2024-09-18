@@ -140,7 +140,7 @@ void wp_diff_test() {
   WP* temp = head;
   bool flag=false;//flag用于记录是否有改变有改变则为true
   while (temp!=NULL) {
-    bool success;
+    bool success=true;
     word_t new_res = expr(temp->EXPR, &success);
 	if(!success){printf("表达式有误");assert(0);}
     if (temp->Res!=new_res) {
