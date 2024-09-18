@@ -42,11 +42,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
 
-// #ifdef CONFIG_WATCHPOINT
-//   wp_diff_test();
-  IFDEF(CONFIG_WATCHPOINT, wp_diff_test()); //使用CONFIG_WATCHPOINT的宏把检查监视点的代码包起来
+#ifdef CONFIG_WATCHPOINT
+  wp_diff_test();
+  // IFDEF(CONFIG_WATCHPOINT, wp_diff_test()); //使用CONFIG_WATCHPOINT的宏把检查监视点的代码包起来
   //后在nemu/Kconfig中为监视点添加一个开关选项, 最后通过menuconfig打开这个选项, 从而激活监视点的功能
-// #endif
+#endif
   
 }
 
