@@ -320,7 +320,7 @@ u_int32_t eval(int p,int q) {
       return value;break;
     case HEX_NUM: 
       sscanf(tokens[p].str,"%x",&value);
-      //printf("十六进制数为：%u\n",value);
+      // printf("十六进制数为：%u\n",value);
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);

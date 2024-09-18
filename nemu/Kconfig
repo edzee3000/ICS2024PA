@@ -126,6 +126,11 @@ endmenu
 
 menu "Testing and Debugging"
 
+config CONFIG_WATCHPOINT
+  bool "Enable watchpoint support"
+  help
+    Enable support for watchpoints which can be used to monitor specific memory addresses or register values.
+
 
 config TRACE
   bool "Enable tracer"
@@ -213,13 +218,5 @@ endchoice
 config RT_CHECK
   bool "Enable runtime checking"
   default y
-
-
-
-
-config CONFIG_WATCHPOINT
-  bool "Enable watchpoint support"
-  help
-    Enable support for watchpoints which can be used to monitor specific memory addresses or register values.
 
 endmenu
