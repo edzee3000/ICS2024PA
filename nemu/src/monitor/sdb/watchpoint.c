@@ -154,6 +154,6 @@ void wp_diff_test() {
     }
     temp=temp->next;
   }
-  printf("在此处插入一个测试点");
+  printf("在此处插入一个测试点\n");
   if(flag){nemu_state.state=NEMU_STOP;}//程序因为触发了监视点而暂停了下来
 }

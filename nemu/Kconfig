@@ -124,12 +124,19 @@ config CC_ASAN
   default n
 endmenu
 
+
+
+
+
+
+
 menu "Testing and Debugging"
 
 
 
 config CONFIG_WATCHPOINT
   bool "Enable watchpoint support"
+  default y
   help
     Enable support for watchpoints which can be used to monitor specific memory addresses or register values.
 
