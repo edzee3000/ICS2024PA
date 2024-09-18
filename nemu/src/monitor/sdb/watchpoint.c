@@ -17,13 +17,14 @@
 
 #define NR_WP 32
 
+#include <string.h>
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-  uint32_t EXPR;
-  uint32_t Content;
+  char EXPR[128];
+  uint32_t Res;
 } WP;
 
 
@@ -48,9 +49,9 @@ void init_wp_pool() {
   head = NULL;//head用于组织使用中的监视点结构
   free_ = wp_pool;//free_用于组织空闲的监视点结构
 
-  WP* temp=new_wp();
-  free_wp(temp);
-  print_wp();
+  // WP* temp=new_wp();
+  // free_wp(temp);
+  // print_wp();
 }
 
 /* TODO: Implement the functionality of watchpoint */
@@ -72,7 +73,7 @@ static WP* new_wp(){
 		}
 		temp2->next = temp;
 	}
-	return temp;//最终返回temp指针监视点
+	return temp;//最终返回temp监视点指针
 }
 
 static void free_wp(WP *wp){
@@ -94,15 +95,22 @@ static void free_wp(WP *wp){
 	// wp->expr[0] = '\0';
 }
 
-// void set_watch_pointer(){}
+void set_watch_pointer(char *args,uint32_t res)
+{
+//传入表达式以及最终结果
+WP* Insert=new_wp();
+strncpy(Insert->EXPR,args,strlen(args));//复制表达式内容
+(Insert->EXPR)[strlen(args)]='\0';
+Insert->Res=res;
+}
 
 static void print_wp()
 {
   WP* temp=head;
-  if(temp==NULL){printf("目前没有设置监视点");return ;}
+  if(temp==NULL){printf("目前没有设置监视点\n");return ;}
   while(temp!=NULL)
   {
-    printf("NO.%d\t \n",temp->NO);
+    printf("NO.%d\t监视点的值为：%u\n",temp->NO,temp->Res);
     temp=temp->next;
   }
 }

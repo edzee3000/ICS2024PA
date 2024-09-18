@@ -130,12 +130,11 @@ static int cmd_w(char *args){
     return 0;
   }
   bool success;
-  expr(args, &success);
+  word_t res = expr(args, &success);
   if (!success) {
     puts("Invalid Expression 表达式错误");
   } else {
-    // set_watch_pointer(args, res);
-    
+    set_watch_pointer(args, res);
   }
   return 0;
 }
@@ -164,7 +163,7 @@ static struct {
   {"x","Solve the value of Expression, and print the following continuous N Bytes",cmd_x},
   {"p","Print the value of Expression",cmd_p},
   {"w","Set WatchPoint when EXPR's value changes the program halts",cmd_w},
-  //{"d","Delete the watchpointer of N",cmd_d}
+  {"d","Delete the watchpointer of N",cmd_d}
 
 };
 
