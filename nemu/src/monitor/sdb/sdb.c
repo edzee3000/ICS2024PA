@@ -138,10 +138,10 @@ static int cmd_w(char *args){
     printf("请重新输入表达式\n");
     return 0;
   }
-  bool success;
+  bool success=true;
   word_t res = expr(args, &success);
   if (!success) {
-    puts("Invalid Expression 表达式错误");
+    puts("Invalid Expression 表达式错误\n");
   } else {
     set_watch_pointer(args, res);//<----------------这里还没有写完------------------>
   }
