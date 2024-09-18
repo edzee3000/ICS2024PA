@@ -122,6 +122,24 @@ static int cmd_p(char *args) {
   printf("表达式求值结果为：%u\n",res);
   return 0;
 }
+
+
+static int cmd_w(char *args){
+  if (!args) {
+    printf("请重新输入表达式\n");
+    return 0;
+  }
+  bool success;
+  expr(args, &success);
+  if (!success) {
+    puts("Invalid Expression 表达式错误");
+  } else {
+    // set_watch_pointer(args, res);
+    
+  }
+  return 0;
+}
+
 //#############################################################################################
 
 
@@ -144,7 +162,10 @@ static struct {
   {"si","Step Into N times which you input, default 1",cmd_si},
   {"info","Print Information According to Your Input",cmd_info},
   {"x","Solve the value of Expression, and print the following continuous N Bytes",cmd_x},
-  {"p","Print the value of Expression",cmd_p}
+  {"p","Print the value of Expression",cmd_p},
+  {"w","Set WatchPoint when EXPR's value changes the program halts",cmd_w},
+  //{"d","Delete the watchpointer of N",cmd_d}
+
 };
 
 #define NR_CMD ARRLEN(cmd_table)

@@ -22,11 +22,21 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-
+  uint32_t EXPR;
+  uint32_t Content;
 } WP;
 
+
+static WP* new_wp();//其中new_wp()从free_链表中返回一个空闲的监视点结构, 
+//需要注意的是, 调用new_wp()时可能会出现没有空闲监视点结构的情况, 为了简单起见, 此时可以通过assert(0)马上终止程序
+static void free_wp(WP *wp);//free_wp()将wp归还到free_链表中
+static void print_wp();
+
+
+
+
 static WP wp_pool[NR_WP] = {};
-static WP *head = NULL, *free_ = NULL;
+static WP *head = NULL, *free_ = NULL;//其中head用于组织使用中的监视点结构, free_用于组织空闲的监视点结构, init_wp_pool()函数会对两个链表进行初始化.
 
 void init_wp_pool() {
   int i;
@@ -35,9 +45,64 @@ void init_wp_pool() {
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
 
-  head = NULL;
-  free_ = wp_pool;
+  head = NULL;//head用于组织使用中的监视点结构
+  free_ = wp_pool;//free_用于组织空闲的监视点结构
+
+  WP* temp=new_wp();
+  free_wp(temp);
+  print_wp();
 }
 
 /* TODO: Implement the functionality of watchpoint */
+//为了使用监视点池, 你需要编写以下两个函数(你可以根据你的需要修改函数的参数和返回值):
+static WP* new_wp(){
+  if(free_==NULL)assert(0);//表明调用new_wp()时可能会出现没有空闲监视点结构的情况
+	WP *temp;
+	temp = free_;//从空闲的监视点池当中返回头指针对应的节点给temp然后返回
+	free_ = free_->next;
+	temp->next = NULL;
+	if (head == NULL){
+		head = temp;
+	} 
+  else {
+		WP* temp2;
+		temp2 = head;//把temp指针传给wp_pool池当中，并且是链表的最末端
+		while (temp2->next != NULL){
+			temp2 = temp2->next;
+		}
+		temp2->next = temp;
+	}
+	return temp;//最终返回temp指针监视点
+}
 
+static void free_wp(WP *wp){
+	if (wp == NULL){
+		assert(0);//表明已经没有可以再free的了
+	}
+	if (wp == head){
+		head = head->next;
+	} else {
+		WP* temp = head;
+		while (temp != NULL && temp->next != wp){
+			temp = temp->next;
+		}//当temp->next是wp的时候将temp->next指向wp->next
+		temp->next = wp->next;
+	}
+	wp->next =free_;//将空闲的监视点加入到空闲的池子当中去，本质上空闲池和监视点池其实都是一个栈数据结构，只不过一个是以头进出，一个是以尾进出
+	free_ = wp;
+	// wp->result = 0;
+	// wp->expr[0] = '\0';
+}
+
+// void set_watch_pointer(){}
+
+static void print_wp()
+{
+  WP* temp=head;
+  if(temp==NULL){printf("目前没有设置监视点");return ;}
+  while(temp!=NULL)
+  {
+    printf("NO.%d\t \n",temp->NO);
+    temp=temp->next;
+  }
+}
