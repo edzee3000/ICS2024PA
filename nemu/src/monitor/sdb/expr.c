@@ -104,7 +104,7 @@ static int nr_token __attribute__((used))  = 0;//nr_token指示已经被识别�
 bool check_parentheses(int p ,int q);//函数声明
 int dominant_operator(int p , int q);
 int priority(int token_type);
-int eval(int p,int q);
+uint32_t eval(int p,int q);
 void judge_DEREF(int i);
 void judge_NEG(int i);
 word_t vaddr_read(vaddr_t addr, int len) ;
@@ -214,11 +214,11 @@ word_t expr(char *e, bool *success) {
     if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
     else if(tokens[i].type==HEX_NUM||tokens[i].type==REGISTER){ u_int32_t value;
       sscanf(tokens[i].str,"%x",&value);
-      printf("toke%d类型为:%d ,内容为：%u\n",i,tokens[i].type,value);}
+      printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
     else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
   //准备工作做完之后开始计算表达式的值
-  int res= eval(0,nr_token-1);
+  u_int32_t res= eval(0,nr_token-1);
 
   return res;
 }
@@ -303,7 +303,7 @@ int priority(int token_type)
 }
 
 //计算从p开始到q之间表达式的值
-int eval(int p,int q) {
+u_int32_t eval(int p,int q) {
   if (p > q) {
     /* Bad expression */
     assert(0);//表明这个表达式有问题
@@ -324,7 +324,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      printf("十六进制数为：%u\n",value);
+      printf("十六进制数为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
