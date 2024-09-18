@@ -62,7 +62,7 @@ static int cmd_q(char *args) {
 	//cpu_exec(NEMU_QUIT);
 	nemu_state.state=NEMU_QUIT;
   return -1;
-}
+} 
 
 
 //############################# Have Written Code Here ##########################################
