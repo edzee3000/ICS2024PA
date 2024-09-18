@@ -350,7 +350,7 @@ int eval(int p,int q) {
       case SUB: return val1 - val2;
       case MUL: return val1 * val2;
       case DIV:
-      if (val2==0)assert(0); 
+      if (val2==0){printf("发生表达式除以0的错误，程序退出");assert(0);} 
       return val1 / val2;
       case TK_EQ:return (val1==val2);
       case NOT_EQ:return (val1!=val2);

@@ -31,7 +31,10 @@ typedef struct watchpoint {
 static WP* new_wp();//其中new_wp()从free_链表中返回一个空闲的监视点结构, 
 //需要注意的是, 调用new_wp()时可能会出现没有空闲监视点结构的情况, 为了简单起见, 此时可以通过assert(0)马上终止程序
 static void free_wp(WP *wp);//free_wp()将wp归还到free_链表中
-static void print_wp();
+void print_wp();
+void set_watch_pointer(char *args,uint32_t res);
+void delete_N_wp(int N);
+void wp_diff_test();
 
 
 
@@ -41,7 +44,7 @@ static WP *head = NULL, *free_ = NULL;//其中head用于组织使用中的监视
 
 void init_wp_pool() {
   int i;
-  for (i = 0; i < NR_WP; i ++) {
+  for (i = 0; i < NR_WP; i ++) {//（默认监视点序号都是从开始计算的）
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
@@ -81,7 +84,7 @@ static void free_wp(WP *wp){
 		assert(0);//表明已经没有可以再free的了
 	}
 	if (wp == head){
-		head = head->next;
+		head = head->next;//即使free之后没有节点了head就为NULL了
 	} else {
 		WP* temp = head;
 		while (temp != NULL && temp->next != wp){
@@ -96,21 +99,60 @@ static void free_wp(WP *wp){
 }
 
 void set_watch_pointer(char *args,uint32_t res)
-{
-//传入表达式以及最终结果
+{//传入表达式以及最终结果
 WP* Insert=new_wp();
 strncpy(Insert->EXPR,args,strlen(args));//复制表达式内容
 (Insert->EXPR)[strlen(args)]='\0';
 Insert->Res=res;
 }
 
-static void print_wp()
+void print_wp()
 {
   WP* temp=head;
   if(temp==NULL){printf("目前没有设置监视点\n");return ;}
   while(temp!=NULL)
   {
-    printf("NO.%d\t监视点的值为：%u\n",temp->NO,temp->Res);
+    printf("NO.%d监视点的值为：%u\t表达式为：%s\n",temp->NO,temp->Res,temp->EXPR);
     temp=temp->next;
   }
+}
+//删除序号为N的监视点
+void delete_N_wp(int N)
+{
+//删除序号为N的监视点（默认监视点序号都是从开始计算的）
+WP* temp=head;
+while (temp!=NULL && temp->NO!=N)
+{
+	temp=temp->next;
+}
+if (temp==NULL)
+{printf("找不到序号为%d的监视点",N);return ; }
+free_wp(temp);
+return;
+}
+
+
+
+
+
+//检查监视点是否发生变化
+void wp_diff_test() {
+  WP* temp = head;
+  bool flag=false;//flag用于记录是否有改变有改变则为true
+  while (temp!=NULL) {
+    bool success;
+    word_t new_res = expr(temp->EXPR, &success);
+	if(!success){printf("表达式有误");assert(0);}
+    if (temp->Res!=new_res) {
+		flag=true;
+      printf("序号为%d的监视点发生改变\n"
+	  	"表达式为：%s\n"
+        "原先值为：%u\n"
+        "现在值为：%u\n"
+        , temp->NO,temp->EXPR ,temp->Res, new_res);
+      temp->Res=new_res;
+    }
+    temp=temp->next;
+  }
+  if(flag){nemu_state.state=NEMU_STOP;}//程序因为触发了监视点而暂停了下来
 }

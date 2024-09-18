@@ -30,6 +30,9 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void print_wp();
+void set_watch_pointer(char *args,uint32_t res);
+void delete_N_wp(int N);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -84,6 +87,12 @@ static int cmd_info(char *args)
     //如果参数输入的是r的话打印寄存器信息
     isa_reg_display();//调用nemu/src/isa/$ISA/reg.c中的接口void isa_reg_display(void)
   }
+  else if (strcmp(args,"w")==0)
+  {
+    //如果参数输入的是w的话打印监视点信息
+    print_wp();
+  }
+  else{assert(0);}//表示输入的info参数有问题
   return 0;
 }
 
@@ -114,7 +123,7 @@ return 0;
 }//经过测试扫描函数实现没有问题！！！
 
 
-
+//表达式求值
 static int cmd_p(char *args) {
   bool success=true;
 	word_t res = expr(args,&success);
@@ -123,7 +132,7 @@ static int cmd_p(char *args) {
   return 0;
 }
 
-
+//设置监视点，一旦表达式的值发生了改变马上暂停
 static int cmd_w(char *args){
   if (!args) {
     printf("请重新输入表达式\n");
@@ -134,9 +143,18 @@ static int cmd_w(char *args){
   if (!success) {
     puts("Invalid Expression 表达式错误");
   } else {
-    set_watch_pointer(args, res);
+    set_watch_pointer(args, res);//<----------------这里还没有写完------------------>
   }
   return 0;
+}
+
+//删除监视点
+static int cmd_d(char *args) 
+{//删除序号为N的监视点
+if (args==NULL){return 0;}//假设没有参数的话那就不删除直接返回
+  int N=atoi(args);
+  delete_N_wp(N);
+  return 0;//表示成功返回
 }
 
 //#############################################################################################
