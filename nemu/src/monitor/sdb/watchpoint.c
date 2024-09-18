@@ -112,7 +112,7 @@ void print_wp()
   if(temp==NULL){printf("目前没有设置监视点\n");return ;}
   while(temp!=NULL)
   {
-    printf("NO.%d监视点的值为：%u\t表达式为：%s\n",temp->NO,temp->Res,temp->EXPR);
+    printf("NO.%d监视点的值为：%#x\t表达式为：%s\n",temp->NO,temp->Res,temp->EXPR);
     temp=temp->next;
   }
 }
