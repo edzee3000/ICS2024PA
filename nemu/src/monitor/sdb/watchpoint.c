@@ -102,7 +102,7 @@ void set_watch_pointer(char *args,uint32_t res)
 {//传入表达式以及最终结果
 WP* Insert=new_wp();
 strcpy(Insert->EXPR,args);//复制表达式内容
-(Insert->EXPR)[strlen(args)]='\0';
+(Insert->EXPR)[128]='\0';
 Insert->Res=res;
 }
 

@@ -177,7 +177,8 @@ static bool make_token(char *e) {
               break;
               } 
           }
-          if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
+          // if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
+          if(idx==num_regs){printf("输入的寄存器名字有问题\n");return false;}
           break;
         default: assert(0);
         }
@@ -253,7 +254,7 @@ bool check_parentheses(int p ,int q){
     for(i = p ; i <= q ; i ++){    
         if(tokens[i].type == LEFT_PAR) tag++;
         else if(tokens[i].type == RIGHT_PAR) tag--;
-        if(tag <= 0 && i < q) return false ;  //(3+4)*(5+3) 返回false
+        if(tag == 0 && i < q) return false ;  //(3+4)*(5+3) 返回false
     }                              
     if( tag != 0 ) return false;   
     return true;                   
