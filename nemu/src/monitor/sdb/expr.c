@@ -351,7 +351,7 @@ int eval(int p,int q) {
   else {
     int op = dominant_operator(p,q);
     printf("op值为：%d\n",op);
-    if (tokens[op].type==TK_NEG){return (int)0-eval(op+1,q);}
+    if (tokens[op].type==TK_NEG){return -eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
 
