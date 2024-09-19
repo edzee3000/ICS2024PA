@@ -214,14 +214,14 @@ word_t expr(char *e, bool *success) {
 
 
 
-  // for(i=0;i<nr_token;i++)//打印类型内容//之后是需要注释掉的的
-  // {
-  //   if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
-  //   else if(tokens[i].type==HEX_NUM||tokens[i].type==REGISTER){ u_int32_t value;
-  //     sscanf(tokens[i].str,"%x",&value);
-  //     printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
-  //   else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
-  // }
+  for(i=0;i<nr_token;i++)//打印类型内容//之后是需要注释掉的的
+  {
+    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+    else if(tokens[i].type==HEX_NUM||tokens[i].type==REGISTER){ u_int32_t value;
+      sscanf(tokens[i].str,"%x",&value);
+      printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
+    else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
+  }
 
 
 
@@ -338,7 +338,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      // printf("十六进制数为：%#x\n",value);
+      printf("十六进制数为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
@@ -352,7 +352,7 @@ int eval(int p,int q) {
   }
   else {
     int op = dominant_operator(p,q);
-    // printf("op值为：%d\n",op);
+    printf("op值为：%d\n",op);
     if (tokens[op].type==TK_NEG){return 0-eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
