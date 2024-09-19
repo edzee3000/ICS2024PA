@@ -270,7 +270,7 @@ int dominant_operator(int p , int q){
   int i ,dom = p, left_n = 0;
   int pr = -1 ;
   for(i = p ; i <= q ; i++){
-      if(tokens[i].type == LEFT_PAR){
+      if(tokens[i].type == LEFT_PAR){//跳跃()括号
           left_n ++;
           i++;
           while(1){
@@ -283,8 +283,8 @@ int dominant_operator(int p , int q){
           if(i > q)break;
       }      
       else if(tokens[i].type == DECIMAL_NUM) continue;
-      else if(tokens[i].type ==pr&&pr ==TK_NEG){ continue;}//////////////////////////////////////////////////
-      else if(priority(tokens[i].type) >= pr){//主操作运算符也是要按照顺序来，比如说4*3/2
+      else if(priority(tokens[i].type) ==pr && tokens[i].type ==TK_NEG){ continue;}//////////////////////////////////////////////////
+      else if(priority(tokens[i].type) >= pr ){//主操作运算符也是要按照顺序来，比如说4*3/2
           pr = priority(tokens[i].type);
           dom = i;
       }      
