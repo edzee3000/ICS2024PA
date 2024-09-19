@@ -324,9 +324,9 @@ int eval(int p,int q) {
      * For now this token should be a number.
      * Return the value of the number.
      */
+    u_int32_t value;
     switch (tokens[p].type){
     case DECIMAL_NUM:
-      u_int32_t value;
       sscanf(tokens[p].str,"%d",&value);
       printf("十进制数为：%u\n",value);
       return value;break;
@@ -336,7 +336,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      // printf("十六进制数为：%#x\n",value);
+      printf("十六进制数为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
