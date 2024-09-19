@@ -287,7 +287,7 @@ int dominant_operator(int p , int q){
           if(i > q)break;
       }      
       else if(tokens[i].type == DECIMAL_NUM) continue;
-      else if(priority(tokens[i].type) > pr){
+      else if(priority(tokens[i].type) >= pr){
           pr = priority(tokens[i].type);
           dom = i;
       }      
