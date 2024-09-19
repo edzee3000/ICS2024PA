@@ -289,6 +289,7 @@ int dominant_operator(int p , int q){
       }      
       else if(tokens[i].type == DECIMAL_NUM||tokens[i].type == HEX_NUM||tokens[i].type == REGISTER) continue;
       else if(priority(tokens[i].type) ==pr && tokens[i].type ==TK_NEG){ continue;}//////////////////////////////////////////////////
+      else if(priority(tokens[i].type) ==pr && tokens[i].type ==NOT){ continue;}
       else if(priority(tokens[i].type) >= pr ){//主操作运算符也是要按照顺序来，比如说4*3/2
           pr = priority(tokens[i].type);
           dom = i;
