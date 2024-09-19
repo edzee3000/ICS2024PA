@@ -283,6 +283,7 @@ int dominant_operator(int p , int q){
           if(i > q)break;
       }      
       else if(tokens[i].type == DECIMAL_NUM) continue;
+      else if(tokens[i].type ==pr&&pr ==TK_NEG){ continue;}//////////////////////////////////////////////////
       else if(priority(tokens[i].type) >= pr){//主操作运算符也是要按照顺序来，比如说4*3/2
           pr = priority(tokens[i].type);
           dom = i;
