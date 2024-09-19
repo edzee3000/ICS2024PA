@@ -126,9 +126,9 @@ return 0;
 //表达式求值
 static int cmd_p(char *args) {
   bool success=true;
-	word_t res = expr(args,&success);
+	int res = expr(args,&success);
   if(!success){return -1;}
-  printf("表达式求值结果为：%u\n",res);
+  printf("表达式求值结果为：%d\n",res);
   return 0;
 }
 
