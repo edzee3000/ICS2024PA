@@ -245,7 +245,7 @@ void judge_NEG(int i)
   if(tokens[i].type== SUB&&
   (i==0||
   (tokens[i-1].type!=DECIMAL_NUM&&
-  tokens[i-1].type!=HEX_NUM)||
+  tokens[i-1].type!=HEX_NUM&&tokens[i-1].type!=REGISTER)   ||
    tokens[i-1].type==LEFT_PAR))
         tokens[i].type = TK_NEG;
 }
