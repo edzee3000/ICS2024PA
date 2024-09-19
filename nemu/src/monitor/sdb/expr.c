@@ -104,7 +104,7 @@ static int nr_token __attribute__((used))  = 0;//nr_token指示已经被识别�
 bool check_parentheses(int p ,int q);//函数声明
 int dominant_operator(int p , int q);
 int priority(int token_type);
-uint32_t eval(int p,int q);
+int eval(int p,int q);
 void judge_DEREF(int i);
 void judge_NEG(int i);
 word_t vaddr_read(vaddr_t addr, int len) ;
@@ -253,7 +253,7 @@ bool check_parentheses(int p ,int q){
     for(i = p ; i <= q ; i ++){    
         if(tokens[i].type == LEFT_PAR) tag++;
         else if(tokens[i].type == RIGHT_PAR) tag--;
-        if(tag == 0 && i < q) return false ;  //(3+4)*(5+3) 返回false
+        if(tag <= 0 && i < q) return false ;  //(3+4)*(5+3) 返回false
     }                              
     if( tag != 0 ) return false;   
     return true;                   
@@ -303,7 +303,7 @@ int priority(int token_type)
 }
 
 //计算从p开始到q之间表达式的值
-u_int32_t eval(int p,int q) {
+int eval(int p,int q) {
   if (p > q) {
     /* Bad expression */
     assert(0);//表明这个表达式有问题
@@ -338,7 +338,7 @@ u_int32_t eval(int p,int q) {
   }
   else {
     int op = dominant_operator(p,q);
-    if (tokens[op].type==TK_NEG){return -eval(op+1,q);}
+    if (tokens[op].type==TK_NEG){return (int)0-eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
 
