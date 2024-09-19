@@ -20,4 +20,9 @@ submit:
 	git gc
 	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://why.ink:8080/static/submit.sh)"
 
+count:
+	@echo "PA1和PA0相比修改的代码行数为："
+	@git diff --numstat pa0..pa1
+	@git diff --numstat pa0..pa1 | awk '{total += $$1 + $$2} END {print "Total lines added/removed: " total}'
+
 .PHONY: default submit
