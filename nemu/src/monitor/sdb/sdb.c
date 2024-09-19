@@ -103,14 +103,15 @@ static int cmd_x(char *args)
   char *N = strtok(args, " ");
   if (N == NULL) { return -1; }
   char *EXPR = N + strlen(N) + 1;
-    if (EXPR >= str_end) {
-      EXPR = NULL;
-      return -1;
-    }
-    printf("N的值为：%#x\n",atoi(N));
-    uint32_t init_addr;
-    sscanf(EXPR, "%x", &init_addr);
-    printf("EXPR的值为：%#x\n",init_addr);
+  if (EXPR >= str_end) {
+    EXPR = NULL;
+    return -1;
+  }
+  printf("N的值为：%#x\n",atoi(N));
+   bool success=true;
+  uint32_t init_addr=expr(EXPR,&success);
+  sscanf(EXPR, "%x", &init_addr);
+  printf("EXPR的值为：%#x\n",init_addr);
 //然后根据EXPR的表达式结果往后寻找内存中的表达式
 printf("\t虚拟内存地址\t虚拟内存地址对应的值\n");
 for(int i=0;i<atoi(N);i++)
