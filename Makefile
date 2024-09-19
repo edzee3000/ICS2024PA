@@ -18,7 +18,7 @@ _default:
 
 submit:
 	git gc
-	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://why.ink:8080/static/submit.sh)"
+	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://175.24.131.173:8080/static/submit.sh)"
 
 count:
 	@echo "PA1和PA0相比修改的代码行数为："
