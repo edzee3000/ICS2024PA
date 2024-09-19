@@ -208,8 +208,8 @@ word_t expr(char *e, bool *success) {
   int i=0;
   for(i=0;i<nr_token;i++)
   {
-  judge_DEREF(i);
-  judge_NEG(i);
+    judge_DEREF(i);
+    judge_NEG(i);
   }
 
 
@@ -222,10 +222,6 @@ word_t expr(char *e, bool *success) {
       printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
     else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
   }
-
-
-
-
   //准备工作做完之后开始计算表达式的值
   u_int32_t res= eval(0,nr_token-1);
 
@@ -287,7 +283,7 @@ int dominant_operator(int p , int q){
           if(i > q)break;
       }      
       else if(tokens[i].type == DECIMAL_NUM) continue;
-      else if(priority(tokens[i].type) >= pr){//主操作运算符也是要按照顺序来，比如说
+      else if(priority(tokens[i].type) >= pr){//主操作运算符也是要按照顺序来，比如说4*3/2
           pr = priority(tokens[i].type);
           dom = i;
       }      
@@ -351,7 +347,7 @@ int eval(int p,int q) {
   else {
     int op = dominant_operator(p,q);
     printf("op值为：%d\n",op);
-    if (tokens[op].type==TK_NEG){return -eval(op+1,q);}
+    if (tokens[op].type==TK_NEG){return 0-eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
 
