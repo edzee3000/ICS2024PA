@@ -116,12 +116,15 @@ static int cmd_x(char *args)
 printf("\t虚拟内存地址\t虚拟内存地址对应的值\n");
 for(int i=0;i<atoi(N);i++)
 {
+  // uint32_t v_addr = init_addr + 4*i;
+  // uint32_t value1 = vaddr_read(v_addr,1);//往后读取4个字节
+  // uint32_t value2 = vaddr_read(value1,1);
+  // uint32_t value3 = vaddr_read(value2,1);
+  // uint32_t value4 = vaddr_read(value3,1);
+  // printf("\t%#x\t%#x\t%#x\t%#x\t%#x\n",v_addr,value1,value2,value3,value4);
   uint32_t v_addr = init_addr + 4*i;
-  uint32_t value1 = vaddr_read(v_addr,1);//往后读取4个字节
-  uint32_t value2 = vaddr_read(value1,1);
-  uint32_t value3 = vaddr_read(value2,1);
-  uint32_t value4 = vaddr_read(value3,1);
-  printf("\t%#x\t%#x\t%#x\t%#x\t%#x\n",v_addr,value1,value2,value3,value4);
+  uint32_t value = vaddr_read(v_addr,4);//往后读取4个字节
+  printf("\t%#x\t%#x\n",v_addr,value);
 }
 return 0;
 }//经过测试扫描函数实现没有问题！！！
