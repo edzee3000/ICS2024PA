@@ -125,6 +125,7 @@ return 0;
 
 //表达式求值
 static int cmd_p(char *args) {
+  if(args==NULL){printf("未检测到表达式\n");assert(0);}
   bool success=true;
 	word_t res = expr(args,&success);
   if(!success){return -1;}
