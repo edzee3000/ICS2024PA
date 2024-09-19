@@ -302,14 +302,16 @@ int dominant_operator(int p , int q){
 //判断优先级数值函数
 int priority(int token_type)
 {
+  if (token_type==TK_NEG)return 1;
+  if (token_type==REGISTER)return 2;
+  if (token_type==NOT)return 3;
+  if (token_type==DIV||token_type==MUL)return 4;
   if (token_type==ADD||token_type==SUB)return 5;
-  if (token_type==DIV||token_type==MUL)return 6;
-  if (token_type==TK_EQ||token_type==NOT_EQ)return 4;
-  if (token_type==NOT)return 8;
-  if (token_type==AND)return 2;
-  if (token_type==OR)return 1;
-  if (token_type==REGISTER)return 10;
-  if (token_type==TK_NEG)return 12;
+  if (token_type==TK_EQ||token_type==NOT_EQ)return 6;
+  if (token_type==AND)return 7;
+  if (token_type==OR)return 8;
+  
+  
   return -1;
 }
 
