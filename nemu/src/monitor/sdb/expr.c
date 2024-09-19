@@ -302,7 +302,7 @@ int priority(int token_type)
 {
   if (token_type==TK_NEG)return 1;
   if (token_type==REGISTER)return 2;
-  if (token_type==NOT)return 3;
+  if (token_type==NOT||token_type==DEREF)return 3;
   if (token_type==DIV||token_type==MUL)return 4;
   if (token_type==ADD||token_type==SUB)return 5;
   if (token_type==TK_EQ||token_type==NOT_EQ)return 6;
@@ -336,7 +336,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      printf("十六进制数为：%#x\n",value);
+      // printf("十六进制数为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
