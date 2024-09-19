@@ -81,7 +81,7 @@ static int cmd_info(char *args)
 {
   //
   //printf("成功进入info函数\n");
-  if (args==NULL && strcmp(args,"r")!=0 && strcmp(args,"w")!=0){return -1;}//考虑到用户可能故意刁难在info后面不写参数或者写了一大堆乱七八糟的参数，这里需要判断一下
+  if (args==NULL || (strcmp(args,"r")!=0 && strcmp(args,"w")!=0)){return -1;}//考虑到用户可能故意刁难在info后面不写参数或者写了一大堆乱七八糟的参数，这里需要判断一下
   if (strcmp(args,"r")==0)
   {
     //如果参数输入的是r的话打印寄存器信息
