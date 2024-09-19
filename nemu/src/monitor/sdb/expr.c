@@ -178,8 +178,6 @@ static bool make_token(char *e) {
               } 
           }
 
-
-
           // if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
           if(idx==num_regs){printf("输入的寄存器名字有问题\n");return false;}
           break;
@@ -216,14 +214,14 @@ word_t expr(char *e, bool *success) {
 
 
 
-  for(i=0;i<nr_token;i++)//打印类型内容//之后是需要注释掉的的
-  {
-    if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
-    else if(tokens[i].type==HEX_NUM||tokens[i].type==REGISTER){ u_int32_t value;
-      sscanf(tokens[i].str,"%x",&value);
-      printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
-    else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
-  }
+  // for(i=0;i<nr_token;i++)//打印类型内容//之后是需要注释掉的的
+  // {
+  //   if(tokens[i].type==DECIMAL_NUM){printf("toke%d类型为:%d ,内容为：%d\n",i,tokens[i].type, atoi(tokens[i].str));}
+  //   else if(tokens[i].type==HEX_NUM||tokens[i].type==REGISTER){ u_int32_t value;
+  //     sscanf(tokens[i].str,"%x",&value);
+  //     printf("toke%d类型为:%d ,内容为：%#x\n",i,tokens[i].type,value);}
+  //   else{printf("toke%d类型为:%d\n",i,(char)tokens[i].type);}
+  // }
 
 
 
@@ -330,7 +328,7 @@ int eval(int p,int q) {
     case DECIMAL_NUM:
       u_int32_t value;
       sscanf(tokens[p].str,"%d",&value);
-      printf("十进制数为：%u\n",value);
+      // printf("十进制数为：%u\n",value);
       return value;break;
     case HEX_NUM: 
       sscanf(tokens[p].str,"%x",&value);
@@ -352,7 +350,7 @@ int eval(int p,int q) {
   }
   else {
     int op = dominant_operator(p,q);
-    printf("op值为：%d\n",op);
+    // printf("op值为：%d\n",op);
     if (tokens[op].type==TK_NEG){return (int)0-eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
