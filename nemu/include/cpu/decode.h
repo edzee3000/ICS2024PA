@@ -27,6 +27,9 @@ typedef struct Decode {
 } Decode;
 
 // --- pattern matching mechanism ---
+//pattern_decode()函数在nemu/include/cpu/decode.h中定义, 它用于将模式字符串转换成3个整型变量.
+//pattern_decode()函数将模式字符串中的0和1抽取到整型变量key中, mask表示key的掩码,
+//而shift则表示opcode距离最低位的比特数量, 用于帮助编译器进行优化. 
 __attribute__((always_inline))
 static inline void pattern_decode(const char *str, int len,
     uint64_t *key, uint64_t *mask, uint64_t *shift) {

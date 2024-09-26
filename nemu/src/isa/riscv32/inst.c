@@ -27,6 +27,9 @@ enum {
   TYPE_N, // none
 };
 
+//框架代码定义了src1R()和src2R()两个辅助宏, 用于寄存器的读取结果记录到相应的操作数变量中
+//框架代码还定义了immI等辅助宏, 用于从指令中抽取出立即数
+
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
@@ -35,8 +38,10 @@ enum {
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
+  //decode_operand中用到了宏BITS和SEXT, 它们均在nemu/include/macro.h中定义, 分别用于位抽取和符号扩展
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
+  //decode_operand会首先统一对目标操作数进行寄存器操作数的译码, 即调用*rd = BITS(i, 11, 7), 不同的指令类型可以视情况使用rd
   *rd     = BITS(i, 11, 7);
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
@@ -63,12 +68,12 @@ static int decode_exec(Decode *s) {
 //它用于定义一条模式匹配规则. 其格式如下:
 //INSTPAT(模式字符串, 指令名称, 指令类型, 指令执行操作);
   INSTPAT_START();
-  INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
+  INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);//例如对于auipc指令, 由于译码阶段已经把U型立即数记录到操作数imm中了, 我们只需要通过R(rd) = s->pc + imm将立即数与当前PC值相加并写入目标寄存器中, 这样就完成了指令的执行.
   INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu    , I, R(rd) = Mr(src1 + imm, 1));
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, src2));
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
-  INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
+  INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));//在模式匹配过程的最后有一条inv的规则, 表示"若前面所有的模式匹配规则都无法成功匹配, 则将该指令视为非法指令
   INSTPAT_END();
 /*
 ·模式字符串中只允许出现4种字符:
@@ -83,7 +88,7 @@ static int decode_exec(Decode *s) {
 
   R(0) = 0; // reset $zero to 0
 
-  return 0;
+  return 0;//指令执行的阶段结束之后, decode_exec()函数将会返回0, 并一路返回到exec_once()函数中. 不过目前代码并没有使用这个返回值, 因此可以忽略它.
 }
 
 int isa_exec_once(Decode *s) {
