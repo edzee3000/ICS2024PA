@@ -55,7 +55,13 @@ static int decode_exec(Decode *s) {
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
+//我们还是不知道操作对象(比如立即数是多少, 写入到哪个寄存器). 为了解决这个问题, 代码需要进行进一步的译码工作, 这是通过调用decode_operand()函数来完成的.
+//decode_operand()函数将会根据传入的指令类型type来进行操作数的译码, 译码结果将记录到函数参数rd, src1, src2和imm中, 它们分别代表目的操作数的寄存器号码, 两个源操作数和立即数
 
+
+//其中INSTPAT(意思是instruction pattern)是一个宏(在nemu/include/cpu/decode.h中定义), 
+//它用于定义一条模式匹配规则. 其格式如下:
+//INSTPAT(模式字符串, 指令名称, 指令类型, 指令执行操作);
   INSTPAT_START();
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
   INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu    , I, R(rd) = Mr(src1 + imm, 1));
@@ -64,6 +70,16 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
+/*
+·模式字符串中只允许出现4种字符:
+0表示相应的位只能匹配0
+1表示相应的位只能匹配1
+?表示相应的位可以匹配0或1
+空格是分隔符, 只用于提升模式字符串的可读性, 不参与匹配
+·指令名称在代码中仅当注释使用, 不参与宏展开;
+·指令类型用于后续译码过程; 
+·而指令执行操作则是通过C代码来模拟指令执行的真正行为.
+*/
 
   R(0) = 0; // reset $zero to 0
 

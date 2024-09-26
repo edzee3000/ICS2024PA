@@ -52,10 +52,17 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
 //这个函数执行单个指令，并更新CPU状态。它还负责调用 trace_and_difftest 函数来记录执行的指令，以便进行跟踪和差异测试。
+//exec_once()函数覆盖了指令周期的所有阶段: 取指, 译码, 执行, 更新PC
 static void exec_once(Decode *s, vaddr_t pc) {
+  //exec_once()会先把当前的PC保存到s的成员pc和snpc中, 
+  //其中s->pc就是当前指令的PC, 而s->snpc则是下一条指令的PC, 这里的snpc是"static next PC"的意思.
   s->pc = pc;
   s->snpc = pc;
+  //然后代码会调用isa_exec_once()函数(在nemu/src/isa/$ISA/inst.c中定义), 
+  //这是因为执行指令的具体过程是和ISA相关的, 在这里我们先不深究isa_exec_once()的细节. 
+  //但可以说明的是, 它会随着取指的过程修改s->snpc的值, 使得从isa_exec_once()返回后s->snpc正好为下一条指令的PC.
   isa_exec_once(s);
+  //接下来代码将会通过s->dnpc来更新PC, 这里的dnpc是"dynamic next PC"的意思. 关于snpc和dnpc的区别, 我们会在下文进行说明.
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -80,8 +87,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 }
 
 //这个函数接受一个整数 n，表示要执行的指令数量。它循环调用 exec_once 函数来执行每一条指令。
+//PA1中提到：代码将在一个for循环中不断调用exec_once()函数, 这个函数的功能就是我们在上一小节中介绍的内容: 让CPU执行当前PC指向的一条指令, 然后更新PC.
 static void execute(uint64_t n) {
-  Decode s;
+  Decode s;//Decode类型的结构体指针s，用于存放在执行一条指令过程中所需的信息，包括指令的PC与下一条指令的PC、与ISA相关的信息
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
