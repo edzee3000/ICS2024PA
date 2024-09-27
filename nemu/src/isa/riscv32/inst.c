@@ -32,7 +32,7 @@ enum {
 
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
-#define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
+#define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)   //将立即数符号扩展到 32 位
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
 #define immJ() do { *imm = (SEXT(BITS(i,31,31),1)<<19) | (SEXT(BITS(i,19,12),8)<<11) | (SEXT(BITS(i,20,20),1)<<10) | BITS(i,30,21);} while(0)
@@ -96,6 +96,14 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge   ,B,{s->dnpc=(s->pc)+imm;});
   INSTPAT("??????? ????? ????? 110 ????? 11000 11", bltu  ,B,{s->dnpc=(s->pc)+imm;});
   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu  ,B,{s->dnpc=(s->pc)+imm;});
+
+
+  //Loads类型指令
+  //LW 指令从内存中加载一个 32 位值到 rd. 
+  //LH 从内存中加载一个 16 位值，然后符号扩展到 32 位，然后存储在 rd 中。
+  //LHU 从内存中加载一个 16 位值，但随后零扩展到 32 位，然后存储在 rd 中。
+  //SW、SH 和 SB 指令将寄存器 rs2 的低位的 32 位、16 位和 8 位值存储到存储器中。
+  INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw   ,I,{R(rd)=Mr(src1+imm,4);});
 
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
