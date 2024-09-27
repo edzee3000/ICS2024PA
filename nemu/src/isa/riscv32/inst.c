@@ -36,6 +36,7 @@ enum {
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
 #define immJ() do { *imm = (SEXT(BITS(i,31,31),1)<<19) | (SEXT(BITS(i,19,12),8)<<11) | (SEXT(BITS(i,20,20),1)<<10) | BITS(i,30,21);} while(0)
+#define immB() do { *imm = (SEXT(BITS(i,31,31),1)<<11) | (SEXT(BITS(i,7,7),1)<<10) | (SEXT(BITS(i,30,25),6)<<4) | BITS(i,11,8);}while(0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -49,6 +50,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
     case TYPE_J:                   immJ(); break;//这里好像需要自己手动添加J型指令的宏命令
+    case TYPE_B: src1R(); src2R(); immB(); break;//这里需要自己手动添加B型指令的宏命令
   }
 }
 
@@ -85,6 +87,15 @@ static int decode_exec(Decode *s) {
   //假设立即数其实是21位的,即[20:0]，只不过始终保持最低位为0，所以在指令中仅仅体现[20:1]，这样一来，21位的立即数一定是2的倍数，将立即数乘以2之后，一定是4的倍数，这样就可以保证跳转后的PC一定是4的倍数。所以，对于一个label,假设当前指令为第0行，label为第几行，立即数[20:1]则为多少，这样，立即数最低位补0再乘以2，与当前PC相加，则为正确的跳转地址。
   //手册里面有提到过   jump and link （JAL） 指令使用 J 类型格式，其中 J-immediate 以 2 字节的倍数对有符号偏移量进行编码。偏移量是符号扩展的，并添加到跳转指令的地址中，以形成跳转目标地址。因此，跳跃可以针对 ±1 MiB 范围。JAL 存储跳转 （pc+4） 到寄存器 rd 后的指令地址。标准软件调用约定使用 x1 作为返回地址寄存器，使用 x5 作为备用链路寄存器
   INSTPAT("??????? ????? ????? ??? ????? 11001 11", ret    , N, s->dnpc=R(1));
+
+
+  //上面解决了dummy的测试用例接下来解决if-else的测试用例  完成branch的B型指令
+  INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq   ,B,{s->dnpc=(s->pc)+imm;});//beqz为等于零时分支 (Branch if Equal to Zero)可视为 beq rs1, x0, offset
+  INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne   ,B,{s->dnpc=(s->pc)+imm;});
+  INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt   ,B,{s->dnpc=(s->pc)+imm;});
+  INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge   ,B,{s->dnpc=(s->pc)+imm;});
+  INSTPAT("??????? ????? ????? 110 ????? 11000 11", bltu  ,B,{s->dnpc=(s->pc)+imm;});
+  INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu  ,B,{s->dnpc=(s->pc)+imm;});
 
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
