@@ -24,17 +24,18 @@
 
 enum {
   TYPE_I, TYPE_U, TYPE_S,
-  TYPE_N, // none
+  TYPE_N, TYPE_B, TYPE_J// none
 };
 
 //框架代码定义了src1R()和src2R()两个辅助宏, 用于寄存器的读取结果记录到相应的操作数变量中
-//框架代码还定义了immI等辅助宏, 用于从指令中抽取出立即数
+//框架代码还定义了immI等辅助宏, 用于从指令中抽取出立即数(对立即数进行赋值)
 
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
+#define immJ() do { *imm = (SEXT(BITS(i,31,31),1)<<19) | (SEXT(BITS(i,30,21),10)<<9) | (SEXT(BITS(i,20,20),1)<<8) | BITS(i,19,12);} while(0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -47,6 +48,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
+    case TYPE_J:                   immJ(); break;//这里好像需要自己手动添加J型指令的宏命令
   }
 }
 
@@ -71,7 +73,14 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);//例如对于auipc指令, 由于译码阶段已经把U型立即数记录到操作数imm中了, 我们只需要通过R(rd) = s->pc + imm将立即数与当前PC值相加并写入目标寄存器中, 这样就完成了指令的执行.
   INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu    , I, R(rd) = Mr(src1 + imm, 1));
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, src2));
-
+  
+  
+  INSTPAT("??????? ????? ????? ??? ????? 01101 11", lui    , U, R(rd)=(imm<<12));//########################################lui和li命令待定  这里好像那个有点问题
+  INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi   , I, R(rd) = R(src1) + imm);
+  //INSTPAT("??????? ????? ????? ??? ????? 00100 11",li,I,LI_Inst());
+  INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw     , S, Mw(src1 + imm, 4, src2));//将src2数据存储到src1+imm的位置上去，并且写入的字节数为4
+  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, {R(rd)=s->snpc; s->dnpc=(s->pc)+imm;});//注意在inst_fetch当中已经实现了pc+4的过程，pc没有发生改变，但是snpc和dnpc都已经变化了
+  
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));//在模式匹配过程的最后有一条inv的规则, 表示"若前面所有的模式匹配规则都无法成功匹配, 则将该指令视为非法指令
   INSTPAT_END();
@@ -95,3 +104,11 @@ int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
   return decode_exec(s);
 }
+
+
+
+
+// void LI_Inst()
+// {
+
+// }
