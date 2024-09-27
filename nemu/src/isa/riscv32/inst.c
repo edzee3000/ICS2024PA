@@ -65,7 +65,7 @@ static int decode_exec(Decode *s) {
 //我们还是不知道操作对象(比如立即数是多少, 写入到哪个寄存器). 为了解决这个问题, 代码需要进行进一步的译码工作, 这是通过调用decode_operand()函数来完成的.
 //decode_operand()函数将会根据传入的指令类型type来进行操作数的译码, 译码结果将记录到函数参数rd, src1, src2和imm中, 它们分别代表目的操作数的寄存器号码, 两个源操作数和立即数
 
-
+ 
 //其中INSTPAT(意思是instruction pattern)是一个宏(在nemu/include/cpu/decode.h中定义), 
 //它用于定义一条模式匹配规则. 其格式如下:
 //INSTPAT(模式字符串, 指令名称, 指令类型, 指令执行操作);
