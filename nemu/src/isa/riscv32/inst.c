@@ -24,7 +24,8 @@
 
 enum {
   TYPE_I, TYPE_U, TYPE_S,
-  TYPE_N, TYPE_B, TYPE_J// none
+  TYPE_N, // none
+  TYPE_B, TYPE_J,TYPE_R
 };
 
 //框架代码定义了src1R()和src2R()两个辅助宏, 用于寄存器的读取结果记录到相应的操作数变量中
@@ -51,6 +52,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_S: src1R(); src2R(); immS(); break;
     case TYPE_J:                   immJ(); break;//这里好像需要自己手动添加J型指令的宏命令
     case TYPE_B: src1R(); src2R(); immB(); break;//这里需要自己手动添加B型指令的宏命令
+    case TYPE_R: src1R(); src2R(); break;
   }
 }
 
@@ -66,7 +68,7 @@ static int decode_exec(Decode *s) {
 }
 //我们还是不知道操作对象(比如立即数是多少, 写入到哪个寄存器). 为了解决这个问题, 代码需要进行进一步的译码工作, 这是通过调用decode_operand()函数来完成的.
 //decode_operand()函数将会根据传入的指令类型type来进行操作数的译码, 译码结果将记录到函数参数rd, src1, src2和imm中, 它们分别代表目的操作数的寄存器号码, 两个源操作数和立即数
-
+ 
  
 //其中INSTPAT(意思是instruction pattern)是一个宏(在nemu/include/cpu/decode.h中定义), 
 //它用于定义一条模式匹配规则. 其格式如下:
@@ -98,12 +100,24 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu  ,B,{s->dnpc=(s->pc)+imm;});
 
 
-  //Loads类型指令
+  //Loads类型指令###########################################
   //LW 指令从内存中加载一个 32 位值到 rd. 
   //LH 从内存中加载一个 16 位值，然后符号扩展到 32 位，然后存储在 rd 中。
   //LHU 从内存中加载一个 16 位值，但随后零扩展到 32 位，然后存储在 rd 中。
   //SW、SH 和 SB 指令将寄存器 rs2 的低位的 32 位、16 位和 8 位值存储到存储器中。
   INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw   ,I,{R(rd)=Mr(src1+imm,4);});
+
+
+
+
+  //算术运算指令#######################################################
+  INSTPAT("0100000 ????? ????? 000 ????? 0110011", sub   ,R,{R(rd)=src1-src2;});
+
+
+
+
+
+
 
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
