@@ -31,7 +31,7 @@ char *strcpy(char *dst, const char *src) {
   //            for allocating a  destination  buffer  large  enough,  that  is,
   //            strlen(src)  + 1.  For the difference between the two functions,
   //            see RETURN VALUE.
-
+ 
 }
  
 char *strncpy(char *dst, const char *src, size_t n) {

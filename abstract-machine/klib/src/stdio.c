@@ -33,7 +33,7 @@ int sprintf(char *out, const char *fmt, ...) {
         while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';
         for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;} 
         break;
-      case 's':
+      case 's'://输入一个字符串
         const char *ch=va_arg(args,const char*);
         while(*ch!='\0'){out[j]=*ch;ch++;j++;}
         break;
