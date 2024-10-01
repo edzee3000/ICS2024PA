@@ -14,7 +14,37 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 }
 
 int sprintf(char *out, const char *fmt, ...) {
-  panic("Not implemented");
+  //panic("Not implemented");
+  va_list args;
+  va_start(args,fmt);
+  const char *p=fmt;
+  size_t i=0;
+  size_t j=0;
+  while(p[i]!='\0')
+  {
+    if(p[i]=='%')
+    {
+      i++;
+      switch (p[i])
+      {
+      case 'd': case 'i': case 'c'://输入一个整数
+        int num=va_arg(args,int);
+        while(num!=0){int t=num/10;num%=10;out[j]='0'+t ;j++;} 
+        break;
+      case 's':
+        const char *ch=va_arg(args,const char*);
+        while(*ch!='\0'){out[j]=*ch;ch++;j++;}
+        break;
+      default:
+        break;
+      }
+    }
+    else{out[j]=p[i];}
+    i++;
+    j++;
+  }
+  //在 stdio.h 中，sprintf 函数的返回值是成功写入缓冲区的字符数量。这个返回值不包括终止的空字符（\0）。如果发生输出错误，函数会返回一个负数。
+  return j;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
