@@ -44,6 +44,7 @@ int sprintf(char *out, const char *fmt, ...) {
     else{out[j]=p[i];j++;}
     i++;
   }
+  out[j]='\0';
   //在 stdio.h 中，sprintf 函数的返回值是成功写入缓冲区的字符数量。这个返回值不包括终止的空字符（\0）。如果发生输出错误，函数会返回一个负数。
   return j;
 }
