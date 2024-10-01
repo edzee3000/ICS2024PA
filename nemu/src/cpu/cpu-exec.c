@@ -65,7 +65,7 @@ IringNode* tail;
 void Update_Buf(word_t pc,uint32_t instr)
 {
   IringNode *new_node=(IringNode *)malloc(sizeof(IringNode));
-  new_node->pc=pc;new_node->instr=instr;new_node->next=NULL;
+  new_node->pc=pc;  new_node->instr=instr;   new_node->next=NULL;
   //针对是否到达16个节点的buf进行分类讨论
   if(num_node==0) { head=tail=new_node;num_node++;  return;}
   if(num_node<MAX_NUM_NODE)
@@ -79,7 +79,7 @@ void Update_Buf(word_t pc,uint32_t instr)
 //定义打印buf的函数
 void display_iringbuf()
 {
-  char buf[256]; // 256应该足够了吧……
+  char buf[1024]; // 1024应该足够了吧……
   char *p;
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   printf("最近执行的一些指令有：\n");
@@ -91,6 +91,7 @@ void display_iringbuf()
     disassemble(p, buf+sizeof(buf)-p,  temp->pc, (uint8_t *)&(temp->instr), 4);
     if(temp->next==NULL) printf(ANSI_FG_RED);
     puts(buf);
+    temp=temp->next;
   }
   puts(ANSI_NONE);
 }
