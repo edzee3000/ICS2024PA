@@ -29,7 +29,9 @@ int sprintf(char *out, const char *fmt, ...) {
       {
       case 'd': case 'i': case 'c'://输入一个整数
         int num=va_arg(args,int);
-        while(num!=0){int t=num/10;num%=10;out[j]='0'+t ;j++;} 
+        char tem[128];int k=0;
+        while(num!=0){int t=num%10;num/=10;tem[k]='0'+t;k++;}tem[k]='\0';
+        for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;} 
         break;
       case 's':
         const char *ch=va_arg(args,const char*);
