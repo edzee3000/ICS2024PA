@@ -82,7 +82,7 @@ void display_iringbuf()
   char buf[1024]; // 1024应该足够了吧……
   char *p;
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  printf("最近执行的一些指令有：\n");
+  printf("     最近执行的一些指令有：\n");
   IringNode *temp=head;
   while(temp!=NULL)
   {
