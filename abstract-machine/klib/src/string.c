@@ -6,7 +6,7 @@
 
 size_t strlen(const char *s) {
   size_t len=1;
-  while(*s!='\0')len++;
+  while(s[len-1]!='\0')len++;
   return len;
   //panic("Not implemented");
   //根据strlen1的manual显示：注意长度是需要算上'\0'的
