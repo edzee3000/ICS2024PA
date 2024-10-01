@@ -70,6 +70,7 @@ void Update_Buf(word_t pc,uint32_t instr)
   if(num_node==0) { head=tail=new_node;num_node++;  return;}
   if(num_node<MAX_NUM_NODE)
   { tail->next = new_node;
+    tail=tail->next;
     num_node++;return;}
   else{tail->next=new_node;
     new_node->next=NULL;tail=tail->next;
