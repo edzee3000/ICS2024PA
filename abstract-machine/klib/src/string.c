@@ -33,7 +33,7 @@ char *strcpy(char *dst, const char *src) {
   //            see RETURN VALUE.
 
 }
-
+ 
 char *strncpy(char *dst, const char *src, size_t n) {
   size_t i=0;
   size_t len_src=strlen(src);
@@ -55,9 +55,9 @@ int strcmp(const char *s1, const char *s2) {
   size_t len_s1=strlen(s1);//算上'\0'的长度
   size_t len_s2=strlen(s2);
   size_t i=0;
-  for(;i<len_s1-1 && i<len_s2-1;i++)
+  for(;i < len_s1-1 && i < len_s2-1;i++)
   {
-    if(s1[i]>s2[i])return 1;
+    if(s1[i]>s2[i]) return 1;
     else if (s1[i]<s2[i]) return -1;
     else continue;
   }
