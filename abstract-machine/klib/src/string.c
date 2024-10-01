@@ -59,7 +59,6 @@ int strcmp(const char *s1, const char *s2) {
   {
     if(s1[i]>s2[i]) return 1;
     else if (s1[i]<s2[i]) return -1;
-    else continue;
   }
   if(len_s1==len_s2) return 0;
   else if(i==len_s1-1) return -1;
