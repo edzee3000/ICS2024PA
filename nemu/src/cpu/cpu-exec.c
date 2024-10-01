@@ -156,7 +156,7 @@ static void execute(uint64_t n) {
   }
 
   //display_iringbuf的部分是不是可以放在这里？？？？？？？？？？？？？？？？？？
-  if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP)
+  if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_QUIT)
     display_iringbuf();
 
 }
