@@ -154,7 +154,7 @@ static int decode_exec(Decode *s) {
   //把寄存器x[rs1]右移shamt位，空出的位置填入0，结果写入x[rd]。对于RV32I，仅当shamt[5]=0时，指令才是有效的
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai  ,I,{R(rd)=((int)src1)>>(imm%32);});//立即数算术右移指令
 
-
+ 
 
 
 
