@@ -128,7 +128,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 101 ????? 01100 11", divu  ,R,{R(rd)=(uint32_t)src1/(uint32_t)src2;});
   INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem   ,R,{R(rd)=(int)src1%(int)src2;});
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu  ,R,{R(rd)=(uint32_t)src1%(uint32_t)src2;});
-  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh  ,R,{long long int src=src1;src<<=32; printf("src:%#llx\n",src); R(rd)=(int32_t)(((int64_t)src1*(int64_t)src2)>>32);});//############可能会出问题##############
+  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh  ,R,{long long int src3=src1;long long int src4=src2; printf("src:%#llx\n",src3*src4); R(rd)=(int32_t)(((int64_t)src1*(int64_t)src2)>>32);});//############可能会出问题##############
 
 
 
