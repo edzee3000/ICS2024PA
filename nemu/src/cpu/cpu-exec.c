@@ -24,7 +24,7 @@
  * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
  * You can modify this value as you want.你可以根据自己的需要修改这个值。
  */
-#define MAX_INST_TO_PRINT 10//最多打印的指令数目
+#define MAX_INST_TO_PRINT 1000//最多打印的指令数目
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
