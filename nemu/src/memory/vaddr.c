@@ -41,7 +41,7 @@ word_t vaddr_ifetch(vaddr_t addr, int len) {
 word_t vaddr_read(vaddr_t addr, int len) {
   word_t content = paddr_read(addr, len);
   ////###########在vaddr_read()和vaddr_write()中进行记录实现mtrace功能即可
-  //IFDEF(CONFIG_MTRACE, )
+  //IFDEF(CONFIG_MTRACE, trace_memory(addr,content));
   //#####################################
   return content;
 }
@@ -62,9 +62,9 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
 
 
 //下面都是MTRACE相关函数实现
-void trace_memory()
-{
-
-}
+// void trace_memory(vaddr_t addr,word_t content)
+// {
+//   // MTRACE_NODE 
+// }
 
 
