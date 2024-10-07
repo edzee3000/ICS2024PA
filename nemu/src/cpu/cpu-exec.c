@@ -45,12 +45,14 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 // #ifdef CONFIG_WATCHPOINT
   // wp_diff_test();  //***************************在pa2当中为了提高效率暂时先把watchpointer的功能给关闭掉********************************************
   // IFDEF(CONFIG_WATCHPOINT, wp_diff_test()); //使用CONFIG_WATCHPOINT的宏把检查监视点的代码包起来
-  //后在nemu/Kconfig中为监视点添加一个开关选项, 最后通过menuconfig打开这个选项, 从而激活监视点的功能
+  ////后在nemu/Kconfig中为监视点添加一个开关选项, 最后通过menuconfig打开这个选项, 从而激活监视点的功能
 // #endif
 //###############################################################################################################################
 }
 
 
+
+//#######################################################################
 //打算在这里去实现iringbuf指令环形缓冲区的功能  先定义一个iringbuf缓冲区节点
 #define MAX_NUM_NODE 16
 typedef struct IringNode{
@@ -95,8 +97,9 @@ void display_iringbuf()
   }
   puts(ANSI_NONE);
 }
-
+//##########################################################################
  
+
 
 
 
