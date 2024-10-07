@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 
+#include <memory/vaddr.h>//################这里因为需要使用到vaddr.c中的print_trace_memory函数打印内存访问的踪迹
 /* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
@@ -162,8 +163,10 @@ static void execute(uint64_t n) {
 
   //display_iringbuf的部分是不是可以放在这里？？？？？？？？？？？？？？？？？？
   if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_END)//#######注意这里需要修改，为了测试方便NEMU_END我也给它加进来了!!!!!!!!!!!!!!!!!!!!!!
-    display_iringbuf();
-
+  { 
+    display_iringbuf();//打印iringbuf内容
+    //IFDEF(CONFIG_MTRACE,print_trace_memory()); 
+  }
 }
 
 

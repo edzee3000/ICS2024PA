@@ -26,15 +26,37 @@ typedef struct MTRACE_NODE{
 }MTRACE_NODE;
 MTRACE_NODE *head_mtrace=NULL;
 MTRACE_NODE *tail_mtrace=NULL;
-void trace_memory(vaddr_t addr,word_t content);
+//##################################################################
+//下面都是MTRACE相关函数实现
+void trace_memory(vaddr_t addr,word_t content)
+{
+  MTRACE_NODE *node=(MTRACE_NODE *)malloc(sizeof(MTRACE_NODE));  node->addr=addr;  node->content=content; node->next=NULL;
+  if(head_mtrace==NULL) {head_mtrace=node;tail_mtrace=node;}
+  else{tail_mtrace->next=node; tail_mtrace=node; }
+}
+void print_trace_memory()
+{
+  MTRACE_NODE *node=head_mtrace;
+  printf("历史访存数据为：\n");
+  while(node!=NULL)
+  {
+    printf("\t0x%#x: 0x%#x \n",node->addr,node->content);
+    node=node->next;
+  }
+}
+
+
 #endif
 //##################################################################
 
-
+word_t vaddr_ifetch(vaddr_t addr, int len);
+word_t vaddr_read(vaddr_t addr, int len);
+void vaddr_write(vaddr_t addr, int len, word_t data);
 
 
 word_t vaddr_ifetch(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
+  //return paddr_read(addr, len);
+  return vaddr_read(addr, len);//在这里我进行了一些修改，这样的话可以将三个函数统一到vaddr_read中使用vaddr_read
 }
 
 
@@ -63,17 +85,4 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
 
 
 
-
-
-#ifdef CONFIG_MTRACE
-
-//下面都是MTRACE相关函数实现
-void trace_memory(vaddr_t addr,word_t content)
-{
-  MTRACE_NODE *node=(MTRACE_NODE *)malloc(sizeof(MTRACE_NODE));  node->addr=addr;  node->content=content; node->next=NULL;
-  if(head_mtrace==NULL) {head_mtrace=node;tail_mtrace=node;}
-  else{tail_mtrace->next=node; tail_mtrace=node; }
-}
-
-#endif
 
