@@ -129,7 +129,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem   ,R,{R(rd)=(int)src1%(int)src2;});
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu  ,R,{R(rd)=(uint32_t)src1%(uint32_t)src2;});
   INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh  ,R,{long long int src3=src1;src3<<=32;src3>>=32; long long int src4=src2; src4<<=32;src4>>=32;R(rd)=(int32_t)(src3*src4>>32);});//############可能会出问题##############
-
+ 
 
 
   //非与或位操作指令###################################################

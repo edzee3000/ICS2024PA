@@ -40,11 +40,15 @@ static void welcome() {
 #include <getopt.h>
 
 void sdb_set_batch_mode();
+void parse_elf(const char *elf_file);//注意这里的parse_elf函数仍然还没有实现！！！！！！！！！！！！！！！！！！
+
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
+static char *elf_file=NULL;//根据文档的提示，是需要为NEMU传入一个ELF文件的
+
 
 static long load_img() {
   if (img_file == NULL) {
@@ -76,21 +80,24 @@ static int parse_args(int argc, char *argv[]) {
     {"port"     , required_argument, NULL, 'p'},
     {"help"     , no_argument      , NULL, 'h'},
     {0          , 0                , NULL,  0 },
+    {"elf"      , required_argument, NULL, 'e'}//由于需要为NEMU传入一个ELF文件，需要在parse_args中添加代码
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:d:p:e:", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
       case 1: img_file = optarg; return 0;
+      case 'e': elf_file=optarg;break;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
+        printf("\t-e,--elf=FILE           input elf file to parse\n");
         printf("\n");
         exit(0);
     }
@@ -99,24 +106,25 @@ static int parse_args(int argc, char *argv[]) {
 }
 
 void init_monitor(int argc, char *argv[]) {
-  /* Perform some global initialization. */
+  /* Perform some global initialization. 执行一些全局初始化 */
 
-  /* Parse arguments. */
+  /* Parse arguments. 解析参数*/
   parse_args(argc, argv);
+  parse_elf(elf_file);//###############################解析elf文件#################################
 
-  /* Set random seed. */
+  /* Set random seed. 设置随机数种子*/
   init_rand();
 
-  /* Open the log file. */
+  /* Open the log file. 打开log日志文件*/
   init_log(log_file);
 
-  /* Initialize memory. */
+  /* Initialize memory. 初始化内润*/
   init_mem();
 
-  /* Initialize devices. */
+  /* Initialize devices. 初始化设备*/
   IFDEF(CONFIG_DEVICE, init_device());
 
-  /* Perform ISA dependent initialization. */
+  /* Perform ISA dependent initialization. 执行ISA相关依赖*/
   init_isa();
 
   /* Load the image to memory. This will overwrite the built-in image. */
@@ -151,3 +159,40 @@ void am_init_monitor() {
   welcome();
 }
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##########################因为不太会写.h头文件，因此将ftrace的.c实现卸载monitor.c当中#################################################
+
+
+
+
+
+
+
+
+
+
+
