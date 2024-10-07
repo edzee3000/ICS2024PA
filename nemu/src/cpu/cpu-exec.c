@@ -166,7 +166,7 @@ static void execute(uint64_t n) {
   if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_END)//#######注意这里需要修改，为了测试方便NEMU_END我也给它加进来了!!!!!!!!!!!!!!!!!!!!!!
   { 
     //display_iringbuf();//打印iringbuf内容
-    //IFDEF(CONFIG_MTRACE,print_trace_memory()); //打印mtrace内容
+    IFDEF(CONFIG_MTRACE,print_trace_memory()); //打印mtrace内容
   }
 }
 
