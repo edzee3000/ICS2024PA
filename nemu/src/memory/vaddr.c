@@ -20,12 +20,13 @@
 //#################定义一个MTRACE_NODE的作为记录MTRACE节点##############
 #ifdef CONFIG_MTRACE
 typedef struct MTRACE_NODE{
-  uint32_t addr;
-  uint32_t content;
+  vaddr_t addr;
+  word_t content;
   struct MTRACE_NODE *next;
 }MTRACE_NODE;
 MTRACE_NODE *head_mtrace=NULL;
-MTRACE_NODE *tail_mtrace;
+MTRACE_NODE *tail_mtrace=NULL;
+void trace_memory(vaddr_t addr,word_t content);
 #endif
 //##################################################################
 
@@ -41,7 +42,7 @@ word_t vaddr_ifetch(vaddr_t addr, int len) {
 word_t vaddr_read(vaddr_t addr, int len) {
   word_t content = paddr_read(addr, len);
   ////###########在vaddr_read()和vaddr_write()中进行记录实现mtrace功能即可
-  //IFDEF(CONFIG_MTRACE, trace_memory(addr,content));
+  IFDEF(CONFIG_MTRACE, trace_memory(addr,content));
   //#####################################
   return content;
 }
@@ -51,6 +52,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 void vaddr_write(vaddr_t addr, int len, word_t data) {
   //先在vaddr_write中写好相关内容，然后不妨写完之后再调用vaddr_read函数一次，这样就不用重复写代码了
   paddr_write(addr, len, data);
+  vaddr_read(addr,len);//直接调用vaddr_read函数，这样的话可以使用trace_memory
 }
 
 
@@ -61,10 +63,17 @@ void vaddr_write(vaddr_t addr, int len, word_t data) {
 
 
 
-//下面都是MTRACE相关函数实现
-// void trace_memory(vaddr_t addr,word_t content)
-// {
-//   // MTRACE_NODE 
-// }
 
+
+#ifdef CONFIG_MTRACE
+
+//下面都是MTRACE相关函数实现
+void trace_memory(vaddr_t addr,word_t content)
+{
+  MTRACE_NODE *node=(MTRACE_NODE *)malloc(sizeof(MTRACE_NODE));  node->addr=addr;  node->content=content; node->next=NULL;
+  if(head_mtrace==NULL) {head_mtrace=node;tail_mtrace=node;}
+  else{tail_mtrace->next=node; tail_mtrace=node; }
+}
+
+#endif
 
