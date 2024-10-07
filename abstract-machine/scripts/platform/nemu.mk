@@ -13,7 +13,7 @@ LDSCRIPTS += $(AM_HOME)/scripts/linker.ld
 LDFLAGS   += --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 LDFLAGS   += --gc-sections -e _start
 NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt 
-# NEMUFLAGS += -b #注意这里添加了-b作为批处理参数
+NEMUFLAGS += -b #注意这里添加了-b作为批处理参数
 # NEMUFLAGS += -e $(IMAGE).elf
 
 MAINARGS_MAX_LEN = 64
