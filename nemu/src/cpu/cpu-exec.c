@@ -54,7 +54,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
 
-//#######################################################################
+//##################################由于不太会写头文件因此在cpu-exec.c当中实现iringbuf#####################################
+//##################################打算在这里实现输出iringbuf的功能######################################################
 //打算在这里去实现iringbuf指令环形缓冲区的功能  先定义一个iringbuf缓冲区节点
 #define MAX_NUM_NODE 16
 typedef struct IringNode{
@@ -144,7 +145,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 #endif
-//##################################打算在这里实现输出iringbuf的功能######################################################
+
 }
 
 
@@ -166,7 +167,7 @@ static void execute(uint64_t n) {
   if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_END)//#######注意这里需要修改，为了测试方便NEMU_END我也给它加进来了!!!!!!!!!!!!!!!!!!!!!!
   { 
     //display_iringbuf();//打印iringbuf内容
-    IFDEF(CONFIG_MTRACE,print_trace_memory()); //打印mtrace内容
+    // IFDEF(CONFIG_MTRACE,print_trace_memory()); //打印mtrace内容
   }
 }
 

@@ -16,7 +16,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
-
+//#########################由于不是非常会写头文件，因而将mtrace功能实现在vadrr.c中#############################
 //#################定义一个MTRACE_NODE的作为记录MTRACE节点##############
 #ifdef CONFIG_MTRACE
 typedef struct MTRACE_NODE{
@@ -44,8 +44,6 @@ void print_trace_memory()
     node=node->next;
   }
 }
-
-
 #endif
 //##################################################################
 
