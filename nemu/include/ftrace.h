@@ -15,6 +15,7 @@ typedef struct {
 	Elf32_Xword size;
 } SymEntry;
 
+void trace_func_call(vaddr_t pc, vaddr_t target) ;
 
 
 #endif
