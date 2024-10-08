@@ -16,6 +16,8 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
+#include <ftrace.h>
+
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -43,11 +45,21 @@ void sdb_set_batch_mode();
 void parse_elf(const char *elf_file);//注意这里的parse_elf函数仍然还没有实现！！！！！！！！！！！！！！！！！！
 
 
+
+
+
+
+
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
 static char *elf_file=NULL;//根据文档的提示，是需要为NEMU传入一个ELF文件的
+
+
+
+
+
 
 
 static long load_img() {
@@ -110,7 +122,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse arguments. 解析参数*/
   parse_args(argc, argv);
-  parse_elf(elf_file);//###############################解析elf文件#################################
+  //parse_elf(elf_file);//###############################解析elf文件#################################
 
   /* Set random seed. 设置随机数种子*/
   init_rand();
