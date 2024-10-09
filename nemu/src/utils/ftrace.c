@@ -66,7 +66,7 @@ void parse_elf(const char *elf_file) {
       printf("在索引i为%d处找到符号表节\n", i);
       // 接下来处理符号表节
       size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
-      //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
+      fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
       
       // 读取字符串表
       fseek(file, shdr[i].sh_offset, SEEK_SET);
@@ -82,7 +82,10 @@ void parse_elf(const char *elf_file) {
       printf("节头大小为:%d\n",shdr[i].sh_size);
       printf("string_table为:");
       for(int l=0;l<shdr[i].sh_size;l++){printf("%c",string_table[l]);}
-      printf("string_table大小为:%ld\n",strlen(string_table));
+      printf("\nstring_table大小为:%ld\n",strlen(string_table));
+
+
+
       fseek(file, shdr[i].sh_offset, SEEK_SET);
       for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
         if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
@@ -93,6 +96,7 @@ void parse_elf(const char *elf_file) {
           //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
           
           printf("函数符号名称为: %s\n", &string_table[sym.st_name]);
+          for(int l=0;l<10;l++)printf("%c",string_table[sym.st_name+l]);
           strcpy(functions[num_functions].name, &string_table[sym.st_name]);
           functions[num_functions].addr = sym.st_value;
           functions[num_functions].size = sym.st_size;
