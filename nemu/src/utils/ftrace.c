@@ -39,7 +39,7 @@
 FunctionInfo functions[64];//假设最多只有64个函数
 uint32_t num_functions = 0;//记录一共有多少个函数
 Elf32_Sym sym;
-char *string_table = NULL;
+//char *string_table = NULL;
 
 //解析elf文件函数（默认这里是elf32位的）已经自己查过使用 riscv64-linux-gnu-readelf -h build/add-riscv32-nemu.elf 命令，结果的Magic魔数第五个数01表示是32位的
 void parse_elf(const char *elf_file) {
@@ -66,11 +66,10 @@ void parse_elf(const char *elf_file) {
         printf("在索引i为%d处找到符号表节\n", i);
         // 接下来处理符号表节
         size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
-        fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
-
+        //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
         // 读取字符串表
         fseek(file, shdr[i].sh_offset, SEEK_SET);
-        string_table = (char *)malloc(shdr[i].sh_size);
+        char* string_table = (char *)malloc(shdr[i].sh_size);
         if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
             perror("读取字符串表发生错误");
             free(string_table);
@@ -78,7 +77,7 @@ void parse_elf(const char *elf_file) {
             exit(EXIT_FAILURE);
         }
 
-
+        fseek(file, shdr[i].sh_offset, SEEK_SET);
         for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
           if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
           // 检查符号类型如果是函数类型的话
