@@ -66,12 +66,12 @@ void parse_elf(const char *elf_file) {
         Elf32_Sym sym;
 
         for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
-          if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("fread");fclose(file);exit(EXIT_FAILURE);}
+          if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
           // 检查符号类型如果是函数类型的话
           if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC) {
             char *name = (char*)malloc(shdr[i].sh_size+8);//防止'\0'不在name里面
             fseek(file, sym.st_name, SEEK_SET);
-            if(fread(name, sizeof(char), sym.st_name, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
+            if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
             printf("函数符号名称为: %s\n", name);
             strcpy(functions[num_functions].name, name);
             functions[num_functions].addr = sym.st_value;
