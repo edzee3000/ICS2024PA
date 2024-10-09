@@ -76,7 +76,8 @@ void parse_elf(const char *elf_file) {
           fclose(file);
           exit(EXIT_FAILURE);
       }
-
+      printf("偏移量为:%d\n",shdr[i].sh_offset);
+      printf("string_table为:%s\n",string_table);
       fseek(file, shdr[i].sh_offset, SEEK_SET);
       for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
         if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
@@ -93,7 +94,6 @@ void parse_elf(const char *elf_file) {
           num_functions++;//func函数个数加一
         }     
       }
-      printf("string_table为:%s\n",string_table);
       free(string_table);  
       break;
     }
