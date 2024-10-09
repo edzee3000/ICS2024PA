@@ -78,7 +78,7 @@ void parse_elf(const char *elf_file) {
           exit(EXIT_FAILURE);
       }
       
-      //printf("偏移量为:%d\n",shdr[i].sh_offset);
+      printf("偏移量为:%d\n",shdr[i].sh_offset);
       printf("节头大小为:%d\n",shdr[i].sh_size);
       printf("string_table为:");
       for(int l=0;l<shdr[i].sh_size;l++){printf("%c",string_table[l]);}
