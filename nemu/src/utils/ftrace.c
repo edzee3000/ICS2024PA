@@ -85,6 +85,7 @@ void parse_elf(const char *elf_file) {
           //char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
           //fseek(file, sym.st_name, SEEK_SET);
           //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
+          
           printf("函数符号名称为: %s\n", &string_table[sym.st_name]);
           strcpy(functions[num_functions].name, &string_table[sym.st_name]);
           functions[num_functions].addr = sym.st_value;
@@ -92,6 +93,7 @@ void parse_elf(const char *elf_file) {
           num_functions++;//func函数个数加一
         }     
       }
+      printf("string_table为:%s\n",string_table);
       free(string_table);  
       break;
     }
