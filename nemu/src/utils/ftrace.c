@@ -91,8 +91,8 @@ void parse_elf(const char *elf_file) {
             functions[num_functions].addr = sym.st_value;
             functions[num_functions].size = sym.st_size;
             num_functions++;//func函数个数加一
-            free(name);
-          }       
+          }     
+          free(string_table);  
         }
     break;
     }
