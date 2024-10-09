@@ -79,6 +79,7 @@ void parse_elf(const char *elf_file) {
       //printf("偏移量为:%d\n",shdr[i].sh_offset);
       printf("节头大小为:%d\n",shdr[i].sh_size);
       printf("string_table为:%s\n",string_table);
+      printf("string_table大小为:%ld\n",sizeof(string_table));
       fseek(file, shdr[i].sh_offset, SEEK_SET);
       for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
         if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
