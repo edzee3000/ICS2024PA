@@ -66,10 +66,10 @@ void parse_elf(const char *elf_file) {
       printf("在索引i为%d处找到符号表节\n", i);
       // 接下来处理符号表节
       size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
-      fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
+      //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
       
       // 读取字符串表
-      fseek(file, shdr[i].sh_offset, SEEK_SET);
+      fseek(file, shdr[i].sh_offset+1, SEEK_SET);
       char* string_table = (char *)malloc(shdr[i].sh_size);
       if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
           perror("读取字符串表发生错误");
