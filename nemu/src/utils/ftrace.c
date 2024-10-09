@@ -110,12 +110,6 @@ void parse_elf(const char *elf_file) {
     break;
   }
 
-
-
-
-
-
-
   // for (int i = 0; i < ehdr.e_shnum; i++) {if (fread(&shdr[i], sizeof(Elf32_Shdr), 1, file) != 1) {perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}}
   //  // 遍历节头表，找到符号表节
   // for (int i = 0; i < ehdr.e_shnum; i++) {
