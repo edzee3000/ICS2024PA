@@ -71,11 +71,8 @@ void parse_elf(const char *elf_file) {
       //fseek(file, shdr[i].sh_offset, SEEK_SET);
       fseek(file, shdr[i].sh_link * sizeof(Elf32_Shdr) + ehdr.e_shoff, SEEK_SET);
       
-      Elf32_Shdr string_shdr;
-      if(fread(&string_shdr, sizeof(Elf32_Shdr), 1, file)==1){;}
-      
       char* string_table = (char *)malloc(shdr[i].sh_size);
-      if (fread(string_table,string_shdr.sh_size, 1, file) != 1) {
+      if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
           perror("读取字符串表发生错误");
           free(string_table);
           fclose(file);
