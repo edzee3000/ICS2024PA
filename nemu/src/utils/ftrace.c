@@ -77,9 +77,8 @@ void parse_elf(const char *elf_file) {
             exit(EXIT_FAILURE);
         }
 
-        
+        fseek(file, shdr[i].sh_offset, SEEK_SET);
         for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
-          fseek(file, shdr[i].sh_offset, SEEK_SET);
           if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
           // 检查符号类型如果是函数类型的话
           if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC) {
