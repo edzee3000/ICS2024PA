@@ -38,7 +38,7 @@
 
 FunctionInfo functions[64];//假设最多只有64个函数
 uint32_t num_functions = 0;//记录一共有多少个函数
-Elf32_Sym sym;
+
 //char *string_table = NULL;
 
 //解析elf文件函数（默认这里是elf32位的）已经自己查过使用 riscv64-linux-gnu-readelf -h build/add-riscv32-nemu.elf 命令，结果的Magic魔数第五个数01表示是32位的
@@ -53,61 +53,108 @@ void parse_elf(const char *elf_file) {
   if(memcmp(ehdr.e_ident,ELFMAG,SELFMAG)==0){}//如果比较为0的话则表示确实是ELF文件
 
 
-
+  //这里debug卡了好久，最后决定自己再重构一下代码
 
   //定位到节头表
   fseek(file, ehdr.e_shoff, SEEK_SET);
   //读取节头表项
-  Elf32_Shdr *shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize*ehdr.e_shnum);
-  for (int i = 0; i < ehdr.e_shnum; i++) {if (fread(&shdr[i], sizeof(Elf32_Shdr), 1, file) != 1) {perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}}
-   // 遍历节头表，找到符号表节
-  for (int i = 0; i < ehdr.e_shnum; i++) {
-    if (shdr[i].sh_type == SHT_SYMTAB) {
-      printf("在索引i为%d处找到符号表节\n", i);
-      // 接下来处理符号表节
-      size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
-      //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
-      
-      // 读取字符串表
-      fseek(file, shdr[i].sh_offset-256, SEEK_SET);
-      char* string_table = (char *)malloc(shdr[i].sh_size);
-      if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
-          perror("读取字符串表发生错误");
-          free(string_table);
-          fclose(file);
-          exit(EXIT_FAILURE);
-      }
-      
-      printf("偏移量为:%d\n",shdr[i].sh_offset);
-      printf("节头大小为:%d\n",shdr[i].sh_size);
-      printf("string_table为:");
-      for(int l=0;l<shdr[i].sh_size;l++){printf("%c",string_table[l]);}
-      printf("\nstring_table大小为:%ld\n",strlen(string_table));
-
-
-
-      fseek(file, shdr[i].sh_offset, SEEK_SET);
-      for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
-        if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
-        // 检查符号类型如果是函数类型的话
-        if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC) {
-          //char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
-          //fseek(file, sym.st_name, SEEK_SET);
-          //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
-          
-          printf("函数符号名称为: %s\n", &string_table[sym.st_name]);
-          for(int l=0;l<10;l++)printf("%c",string_table[sym.st_name+l]);
-          strcpy(functions[num_functions].name, &string_table[sym.st_name]);
-          functions[num_functions].addr = sym.st_value;
-          functions[num_functions].size = sym.st_size;
-          num_functions++;//func函数个数加一
-        }     
-      }
-      free(string_table);  
-      break;
-    }
+  Elf32_Shdr *shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+  Elf32_Shdr *symtab_shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+  Elf32_Shdr *strtab_shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+  Elf32_Sym *sym=(Elf32_Sym *)malloc(ehdr.e_shentsize);//表示符号表条目的结构体
+  char *content_strtab=(char *)malloc(128);
+  //先获取strtab中的内容
+  for (int i = 0; i < ehdr.e_shnum; i++)
+  {
+    if (fread(shdr, sizeof(Elf32_Shdr), 1, file) != 1){perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
+    if (shdr->sh_type != SHT_STRTAB) continue;//遍历节头表，找到符号表节
+    printf("找到字符串表\n");
+    strtab_shdr=shdr;
+    shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+    //获取strtab中所有的字符串内容
+    fseek(file, shdr->sh_offset, SEEK_SET);
+    content_strtab=(char *)malloc(shdr->sh_size);
+    if (fread(shdr, shdr->sh_size, 1, file) != 1){perror("读取string table字符串出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
+    printf("string table内容为:%s\n",content_strtab);
+    break;
   }
-  free(shdr);
+  //然后再获取symtab中的内容
+  fseek(file, ehdr.e_shoff, SEEK_SET);//重新读取
+  for (int i = 0; i < ehdr.e_shnum; i++)
+  {
+    if (fread(shdr, sizeof(Elf32_Shdr), 1, file) != 1){perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
+    if (shdr->sh_type != SHT_SYMTAB) continue;//遍历节头表，找到符号表节
+    printf("在索引i为%d处找到符号表节\n", i);
+    symtab_shdr=shdr;
+    // shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+    // 接下来处理符号表节
+    fseek(file, symtab_shdr->sh_offset, SEEK_SET);
+    size_t num_symbols = symtab_shdr->sh_size / symtab_shdr->sh_entsize;// 计算符号表的条目数量
+    for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
+      if (fread(sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
+      // 检查符号类型如果是函数类型的话
+      if (ELF32_ST_TYPE(sym->st_info) == STT_FUNC)
+      {
+        strcpy(functions[num_functions].name, &content_strtab[sym->st_name]);
+        functions[num_functions].addr = sym->st_value;
+        functions[num_functions].size = sym->st_size;
+        num_functions++;//func函数个数加一
+      }
+    }
+
+
+    break;
+  }
+
+
+
+
+
+
+
+  // for (int i = 0; i < ehdr.e_shnum; i++) {if (fread(&shdr[i], sizeof(Elf32_Shdr), 1, file) != 1) {perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}}
+  //  // 遍历节头表，找到符号表节
+  // for (int i = 0; i < ehdr.e_shnum; i++) {
+  //   if (shdr[i].sh_type == SHT_SYMTAB) {
+  //     printf("在索引i为%d处找到符号表节\n", i);
+  //     // 接下来处理符号表节
+  //     size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
+  //     //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目   
+  //     // 读取字符串表
+  //     fseek(file, shdr[i].sh_offset-256, SEEK_SET);
+  //     char* string_table = (char *)malloc(shdr[i].sh_size);
+  //     if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
+  //         perror("读取字符串表发生错误");
+  //         free(string_table);
+  //         fclose(file);
+  //         exit(EXIT_FAILURE);
+  //     } 
+  //     printf("偏移量为:%d\n",shdr[i].sh_offset);
+  //     printf("节头大小为:%d\n",shdr[i].sh_size);
+  //     printf("string_table为:");
+  //     for(int l=0;l<shdr[i].sh_size;l++){printf("%c",string_table[l]);}
+  //     printf("\nstring_table大小为:%ld\n",strlen(string_table));
+  //     fseek(file, shdr[i].sh_offset, SEEK_SET);
+  //     for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
+  //       if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
+  //       // 检查符号类型如果是函数类型的话
+  //       if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC) {
+  //         //char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
+  //         //fseek(file, sym.st_name, SEEK_SET);
+  //         //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功      
+  //         printf("函数符号名称为: %s\n", &string_table[sym.st_name]);
+  //         for(int l=0;l<10;l++)printf("%c",string_table[sym.st_name+l]);
+  //         strcpy(functions[num_functions].name, &string_table[sym.st_name]);
+  //         functions[num_functions].addr = sym.st_value;
+  //         functions[num_functions].size = sym.st_size;
+  //         num_functions++;//func函数个数加一
+  //       }     
+  //     }
+  //     free(string_table);  
+  //     break;
+  //   }
+  // }
+  free(shdr);free(strtab_shdr);free(symtab_shdr);
   fclose(file);
 }
 
