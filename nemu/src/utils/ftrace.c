@@ -69,7 +69,7 @@ void parse_elf(const char *elf_file) {
       //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
       // 读取字符串表
       fseek(file, shdr[i].sh_offset, SEEK_SET);
-      char* string_table = malloc(shdr[i].sh_size);
+      char* string_table = (char *)malloc(shdr[i].sh_size);
       if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
           perror("读取字符串表发生错误");
           free(string_table);
@@ -85,9 +85,8 @@ void parse_elf(const char *elf_file) {
           //char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
           //fseek(file, sym.st_name, SEEK_SET);
           //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
-          char *name=&string_table[sym.st_name];
-          printf("函数符号名称为: %s\n", name);
-          strcpy(functions[num_functions].name, name);
+          printf("函数符号名称为: %s\n", &string_table[sym.st_name]);
+          strcpy(functions[num_functions].name, &string_table[sym.st_name]);
           functions[num_functions].addr = sym.st_value;
           functions[num_functions].size = sym.st_size;
           num_functions++;//func函数个数加一
