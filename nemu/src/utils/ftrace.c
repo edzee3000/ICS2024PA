@@ -59,7 +59,7 @@ void parse_elf(const char *elf_file) {
   fseek(file, ehdr.e_shoff, SEEK_SET);
   //读取节头表项
   Elf32_Shdr *shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
-  Elf32_Shdr *symtab_shdr;//=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
+  Elf32_Shdr *symtab_shdr;
   Elf32_Shdr *strtab_shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
   Elf32_Sym *sym=(Elf32_Sym *)malloc(ehdr.e_shentsize);//表示符号表条目的结构体
   char *content_strtab=(char *)malloc(8);
@@ -68,14 +68,15 @@ void parse_elf(const char *elf_file) {
   {
     if (fread(shdr, sizeof(Elf32_Shdr), 1, file) != 1){perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
     if (shdr->sh_type != SHT_STRTAB) continue;//遍历节头表，找到符号表节
-    printf("找到字符串表\n");
+    //printf("找到字符串表\n");
     strtab_shdr=shdr;
     //获取strtab中所有的字符串内容
     fseek(file, strtab_shdr->sh_offset, SEEK_SET);
     content_strtab=(char *)malloc(strtab_shdr->sh_size);
     if (fread(content_strtab, strtab_shdr->sh_size, 1, file) != 1){perror("读取string table字符串出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
-    printf("string table内容为:%s\n",content_strtab);
-    
+    printf("string table内容为:");
+    for(int l=0;l< strtab_shdr->sh_size;l++)printf("%c",content_strtab[l]);
+    printf("\n");
     shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
     break;
   }
