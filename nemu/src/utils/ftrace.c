@@ -72,7 +72,7 @@ void parse_elf(const char *elf_file) {
         char* string_table = (char *)malloc(shdr[i].sh_size);
         if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
             perror("读取字符串表发生错误");
-            free(string_table);
+            //free(string_table);
             fclose(file);
             exit(EXIT_FAILURE);
         }
