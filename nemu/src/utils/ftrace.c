@@ -167,7 +167,7 @@ void print_func_name(const char *elf_file)
 {
   parse_elf(elf_file);
   for (uint32_t i = 0; i < num_functions; i++) {
-      printf("Function: %s\t, Address: %#x\t, Size: %d\n",
+      printf("Function: %s  \t, Address: %#x  \t, Size: %d\n",
               functions[i].name,
               (paddr_t)functions[i].addr,
               functions[i].size);
