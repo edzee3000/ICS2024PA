@@ -70,12 +70,13 @@ void parse_elf(const char *elf_file) {
     if (shdr->sh_type != SHT_STRTAB) continue;//遍历节头表，找到符号表节
     printf("找到字符串表\n");
     strtab_shdr=shdr;
-    shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
     //获取strtab中所有的字符串内容
     fseek(file, shdr->sh_offset, SEEK_SET);
     content_strtab=(char *)malloc(shdr->sh_size);
-    if (fread(shdr, shdr->sh_size, 1, file) != 1){perror("读取string table字符串出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
+    if (fread(content_strtab, shdr->sh_size, 1, file) != 1){perror("读取string table字符串出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
     printf("string table内容为:%s\n",content_strtab);
+    
+    shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
     break;
   }
   //然后再获取symtab中的内容
