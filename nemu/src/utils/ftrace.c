@@ -38,7 +38,8 @@
 
 FunctionInfo functions[64];//假设最多只有64个函数
 uint32_t num_functions = 0;//记录一共有多少个函数
-
+Elf32_Sym sym;
+char *string_table = NULL;
 
 //解析elf文件函数（默认这里是elf32位的）已经自己查过使用 riscv64-linux-gnu-readelf -h build/add-riscv32-nemu.elf 命令，结果的Magic魔数第五个数01表示是32位的
 void parse_elf(const char *elf_file) {
@@ -51,7 +52,8 @@ void parse_elf(const char *elf_file) {
   Elf32_Ehdr ehdr; if(fread(&ehdr, sizeof(Elf32_Ehdr), 1, file) != 1) {perror("读取文件头出错\n");fclose(file);assert(0);};  // 读取 ELF 文件头，读取一个即可
   if(memcmp(ehdr.e_ident,ELFMAG,SELFMAG)==0){}//如果比较为0的话则表示确实是ELF文件
 
-  char *string_table = NULL;
+
+
 
   //定位到节头表
   fseek(file, ehdr.e_shoff, SEEK_SET);
@@ -65,7 +67,6 @@ void parse_elf(const char *elf_file) {
         // 接下来处理符号表节
         size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
         fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
-        Elf32_Sym sym;
 
         // 读取字符串表
         fseek(file, shdr[i].sh_offset, SEEK_SET);
