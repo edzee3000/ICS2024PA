@@ -109,7 +109,7 @@ static int parse_args(int argc, char *argv[]) {
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
-        printf("\t-e,--elf=FILE           input elf file to parse\n");
+        printf("\t-e,--elf=FILE           input elf file to parse\n");//这里我自己加上的
         printf("\n");
         exit(0);
     }
@@ -123,6 +123,9 @@ void init_monitor(int argc, char *argv[]) {
   /* Parse arguments. 解析参数*/
   parse_args(argc, argv);
   //parse_elf(elf_file);//###############################解析elf文件#################################
+  if(elf_file)
+    print_func_name(elf_file);
+  else printf("elf_file文件为空\n");
 
   /* Set random seed. 设置随机数种子*/
   init_rand();
