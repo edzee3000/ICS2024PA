@@ -68,9 +68,7 @@ void parse_elf(const char *elf_file) {
       size_t num_symbols = shdr[i].sh_size / shdr[i].sh_entsize;// 计算符号表的条目数量
       //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
       // 读取字符串表
-      //fseek(file, shdr[i].sh_offset, SEEK_SET);
-      fseek(file, shdr[i].sh_link * sizeof(Elf32_Shdr) + ehdr.e_shoff, SEEK_SET);
-      
+      fseek(file, shdr[i].sh_offset, SEEK_SET);
       char* string_table = (char *)malloc(shdr[i].sh_size);
       if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
           perror("读取字符串表发生错误");
@@ -79,6 +77,7 @@ void parse_elf(const char *elf_file) {
           exit(EXIT_FAILURE);
       }
       //printf("偏移量为:%d\n",shdr[i].sh_offset);
+      printf("节头大小为:%d\n",shdr[i].sh_size);
       printf("string_table为:%s\n",string_table);
       fseek(file, shdr[i].sh_offset, SEEK_SET);
       for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
