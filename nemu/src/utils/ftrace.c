@@ -51,6 +51,8 @@ void parse_elf(const char *elf_file) {
   Elf32_Ehdr ehdr; if(fread(&ehdr, sizeof(Elf32_Ehdr), 1, file) != 1) {perror("读取文件头出错\n");fclose(file);assert(0);};  // 读取 ELF 文件头，读取一个即可
   if(memcmp(ehdr.e_ident,ELFMAG,SELFMAG)==0){}//如果比较为0的话则表示确实是ELF文件
 
+  char *string_table = NULL;
+
   //定位到节头表
   fseek(file, ehdr.e_shoff, SEEK_SET);
   //读取节头表项
@@ -65,13 +67,25 @@ void parse_elf(const char *elf_file) {
         fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
         Elf32_Sym sym;
 
+        // 读取字符串表
+        fseek(file, shdr[i].sh_offset, SEEK_SET);
+        string_table = (char *)malloc(shdr[i].sh_size);
+        if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
+            perror("读取字符串表发生错误");
+            free(string_table);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
+
+
         for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
           if (fread(&sym, sizeof(Elf32_Sym), 1, file) != 1) {perror("读取符号表条目某一条出错");fclose(file);exit(EXIT_FAILURE);}
           // 检查符号类型如果是函数类型的话
           if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC) {
-            char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
-            fseek(file, sym.st_name, SEEK_SET);
-            if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
+            //char *name = (char*)malloc(shdr[i].sh_size);//防止'\0'不在name里面
+            //fseek(file, sym.st_name, SEEK_SET);
+            //if(fread(name, sizeof(char), 1, file)!=1){perror("读取函数名称出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}//注意fread函数是有返回值的为1的时候才表示读取成功
+            char *name=&string_table[sym.st_name];
             printf("函数符号名称为: %s\n", name);
             strcpy(functions[num_functions].name, name);
             functions[num_functions].addr = sym.st_value;
@@ -80,6 +94,7 @@ void parse_elf(const char *elf_file) {
             free(name);
           }       
         }
+    break;
     }
   }
   free(shdr);
