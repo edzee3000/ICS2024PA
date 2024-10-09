@@ -76,7 +76,8 @@ void parse_elf(const char *elf_file) {
           fclose(file);
           exit(EXIT_FAILURE);
       }
-      printf("偏移量为:%d\n",shdr[i].sh_offset);
+      //printf("偏移量为:%d\n",shdr[i].sh_offset);
+      printf("%c\n",string_table[2]);
       printf("string_table为:%s\n",string_table);
       fseek(file, shdr[i].sh_offset, SEEK_SET);
       for (size_t j = 0; j < num_symbols; j++) {//循环遍历符号表寻找STT_FUNC
