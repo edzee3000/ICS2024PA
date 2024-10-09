@@ -69,7 +69,7 @@ void parse_elf(const char *elf_file) {
       //fseek(file, shdr[i].sh_offset, SEEK_SET);// 读取符号表条目
       
       // 读取字符串表
-      fseek(file, shdr[i].sh_offset, SEEK_SET);
+      fseek(file, shdr[i].sh_offset+256, SEEK_SET);
       char* string_table = (char *)malloc(shdr[i].sh_size);
       if (fread(string_table, shdr[i].sh_size, 1, file) != 1) {
           perror("读取字符串表发生错误");
