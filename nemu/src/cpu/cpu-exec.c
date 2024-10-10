@@ -19,12 +19,16 @@
 #include <locale.h>
 
 #include <memory/vaddr.h>//################这里因为需要使用到vaddr.c中的print_trace_memory函数打印内存访问的踪迹
+
+#include <ftrace.h>
 /* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
  * You can modify this value as you want.你可以根据自己的需要修改这个值。
  */
 #define MAX_INST_TO_PRINT 1000//最多打印的指令数目
+
+
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -189,6 +193,8 @@ void assert_fail_msg() {
   statistic();
 }
 
+
+
 /* Simulate how the CPU works.模拟CPU如何运行 */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
@@ -202,6 +208,10 @@ void cpu_exec(uint64_t n) {
   uint64_t timer_start = get_time();
 
   execute(n);
+  
+  //能不能在这里调用打印调用信息的ftrace
+  IFDEF(CONFIG_FTRACE, display_ftrace());
+
 
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
