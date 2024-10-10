@@ -21,7 +21,10 @@ typedef struct {
     char name[64]; // 假设函数名称不超过64个字符
     Elf32_Addr addr; // 函数起始地址
     Elf32_Word size; // 函数大小
+    
     uint32_t funct_depth; //ftrace中记录函数深度的
+    int call_or_ret;//ftrace中记录是调用函数还是返回函数
+    Elf32_Addr last_addr;//ftrace中记录上一条地址的
 } FunctionInfo;
 
 void parse_elf(const char *elf_file);
@@ -30,5 +33,7 @@ void print_func_name(const char *elf_file);
 void trace_func_call(paddr_t pc, paddr_t dnpc);
 void trace_func_ret(paddr_t pc, paddr_t dnpc);
 void display_ftrace();
+
+enum {CALL,RET};
 
 #endif

@@ -179,20 +179,53 @@ void print_func_name(const char *elf_file)
 void trace_func_call(paddr_t pc, paddr_t dnpc)
 {
   //保存调用信息
-  //寻找被调用函数的名称（通过dnpc跳转目标地址遍历一遍functions即可）
-  printf("dnpc的值为:%#x\n",dnpc);
+  //寻找被调用函数的名称（通过dnpc跳转目标地址遍历一遍functions即可，看刚好和哪个function的地址一样）
+  //printf("dnpc的值为:%#x\n",dnpc);//这一条是用于测试验证我的猜想的
+  for(int i=0;i<num_functions;i++)
+  {
+    if(dnpc!=functions[i].addr)continue;
+    strcpy(traced_functions[traced_num].name,  functions[i].name);
+    traced_functions[traced_num].size=functions[i].size;
+    traced_functions[traced_num].addr=functions[i].addr;
+    traced_functions[traced_num].funct_depth=depth;
+    traced_functions[traced_num].call_or_ret=CALL;
+    traced_functions[traced_num].last_addr=pc;
 
+    depth++;//函数深度加一
+    traced_num++;//被记录的函数个数加一
+    break;
+  }
 }
 //记录返回函数
 void trace_func_ret(paddr_t pc, paddr_t dnpc)
 {
   //保存返回信息
+  for(int i=0;i<num_functions;i++)
+  {
+    if(dnpc!=functions[i].addr)continue;
+    strcpy(traced_functions[traced_num].name,  functions[i].name);
+    traced_functions[traced_num].size=functions[i].size;
+    traced_functions[traced_num].addr=functions[i].addr;
+    traced_functions[traced_num].funct_depth=depth;
+    traced_functions[traced_num].call_or_ret=RET;
+    traced_functions[traced_num].last_addr=pc;
 
+    depth--;//函数深度加一
+    traced_num++;//被记录的函数个数加一
+    break;
+  }
 
 
 }
 //打印函数信息
 void display_ftrace()
 {
-
+  for(int i=0;i<traced_num;i++)
+  {
+    printf("0x%#x:",traced_functions[i].addr);
+    for(int j=0;j<traced_functions[i].funct_depth;j++)printf("  ");
+    if (traced_functions[i].call_or_ret==RET)printf("call");else printf("ret");
+    printf(" [%s@0x%#x]",traced_functions[i].name,traced_functions[i].last_addr);
+    
+  }
 }
