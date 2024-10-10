@@ -27,4 +27,8 @@ typedef struct {
 void parse_elf(const char *elf_file);
 void print_func_name(const char *elf_file);
 
+void trace_func_call(paddr_t pc, paddr_t dnpc);
+void trace_func_ret(paddr_t pc, paddr_t dnpc);
+void display_ftrace();
+
 #endif
