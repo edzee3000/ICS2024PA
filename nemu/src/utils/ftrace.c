@@ -36,9 +36,12 @@
 //   call_depth--;
 // }
 
-FunctionInfo functions[64];//假设最多只有64个函数
+#define MAX_FUNC_NUM 64//假设最多只有64个函数
+#define MAX_TRACE_NUM 1024//假设最多只有1024个函数被记录了
+
+FunctionInfo functions[MAX_FUNC_NUM];
 uint32_t num_functions = 0;//记录一共有多少个函数
-FunctionInfo traced_functions[2048];//假设最多只有2048个函数被记录了
+FunctionInfo traced_functions[MAX_TRACE_NUM];
 uint32_t traced_num=0;
 uint32_t depth=0;
 
