@@ -46,8 +46,10 @@ int rs2;
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
   //decode_operand中用到了宏BITS和SEXT, 它们均在nemu/include/macro.h中定义, 分别用于位抽取和符号扩展
-  int rs1 = BITS(i, 19, 15);
-  int rs2 = BITS(i, 24, 20);
+  // int rs1 = BITS(i, 19, 15);
+  // int rs2 = BITS(i, 24, 20);
+  rs1 = BITS(i, 19, 15);
+  rs2 = BITS(i, 24, 20);
   //decode_operand会首先统一对目标操作数进行寄存器操作数的译码, 即调用*rd = BITS(i, 11, 7), 不同的指令类型可以视情况使用rd
   *rd     = BITS(i, 11, 7);
   switch (type) {
@@ -96,7 +98,7 @@ static int decode_exec(Decode *s) {
   //手册里面有提到过   jump and link （JAL） 指令使用 J 类型格式，其中 J-immediate 以 2 字节的倍数对有符号偏移量进行编码。偏移量是符号扩展的，并添加到跳转指令的地址中，以形成跳转目标地址。因此，跳跃可以针对 ±1 MiB 范围。JAL 存储跳转 （pc+4） 到寄存器 rd 后的指令地址。标准软件调用约定使用 x1 作为返回地址寄存器，使用 x5 作为备用链路寄存器
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, {R(rd)=s->snpc; s->dnpc=(src1+imm)&((-1)<<1);
   IFDEF(CONFIG_FTRACE, if(rd==1)trace_func_call(s->pc,s->dnpc); 
-  else if(rd ==0 && rs1==1) trace_func_ret(s->pc,s->dnpc); else printf("有问题\n"); );});
+  else if(rd == 0 && rs1==1) trace_func_ret(s->pc,s->dnpc); else printf("有问题\n"); );});
   INSTPAT("??????? ????? ????? ??? ????? 11001 11", ret    , N, {s->dnpc=R(1);
   IFDEF(CONFIG_FTRACE, if(rs1==1) trace_func_ret(s->pc,s->dnpc);             );});//执行ret函数后，会把PC设置成ra寄存器中保存的值，继续执行函数调用前的指令
   
