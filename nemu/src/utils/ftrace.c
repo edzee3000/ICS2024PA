@@ -38,6 +38,9 @@
 
 FunctionInfo functions[64];//假设最多只有64个函数
 uint32_t num_functions = 0;//记录一共有多少个函数
+FunctionInfo traced_functions[128];//假设最多只有128个函数被记录了
+uint32_t traced_num=0;
+uint32_t depth=0;
 
 //char *string_table = NULL;
 
@@ -165,3 +168,31 @@ void print_func_name(const char *elf_file)
 }
 }
 
+
+
+
+
+
+
+//call（调用）和ret（返回）都需要记录指令所在的地址，用参数pc表示  call的第二个参数target表示被调用函数的首地址
+//记录调用函数
+void trace_func_call(paddr_t pc, paddr_t dnpc)
+{
+  //保存调用信息
+  //寻找被调用函数的名称（通过dnpc跳转目标地址遍历一遍functions即可）
+  printf("dnpc的值为:%#x\n",dnpc);
+
+}
+//记录返回函数
+void trace_func_ret(paddr_t pc, paddr_t dnpc)
+{
+  //保存返回信息
+
+
+
+}
+//打印函数信息
+void display_ftrace()
+{
+
+}

@@ -229,6 +229,20 @@ config MTRACE_COND
 
 
 
+config FTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable Function tracer"
+  default y
+config FTRACE_COND
+  depends on FTRACE
+  string "Only trace Functions when the condition is true"
+  default "true"
+
+
+
+
+
+
 
 endmenu
 

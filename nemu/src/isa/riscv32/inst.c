@@ -18,6 +18,7 @@
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
 
+#include <ftrace.h>
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
@@ -83,12 +84,14 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi   , I, {R(rd) = src1 + imm;});
   //INSTPAT("??????? ????? ????? ??? ????? 00100 11",li,I,LI_Inst());
   INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw     , S, Mw(src1 + imm, 4, src2));//将src2数据存储到src1+imm的位置上去，并且写入的字节数为4
-  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, {R(rd)=s->snpc; s->dnpc=(s->pc)+imm*2;});//注意在inst_fetch当中已经实现了pc+4的过程，pc没有发生改变，但是snpc和dnpc都已经变化了     
+  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, {R(rd)=s->snpc; s->dnpc=(s->pc)+imm*2;
+  IFDEF(CONFIG_FTRACE, if(rd==1){trace_func_call(s->pc,ss->dnpc)}  );  });//注意在inst_fetch当中已经实现了pc+4的过程，pc没有发生改变，但是snpc和dnpc都已经变化了     
   //################################################################################################################
   //注意这里之前还出了一个bug就是有关于地址运算需要+imm*2?????????? 因为偏移量为立即数 imm20 经符扩展后的值的 2 倍！！！！  但是为什么是*2？？？？？？？  难道是因为偏移量每一次都是2的倍数？？？？但是每一次PC不是——4吗？不应该是4的倍数吗？？好奇怪……            
   //假设立即数其实是21位的,即[20:0]，只不过始终保持最低位为0，所以在指令中仅仅体现[20:1]，这样一来，21位的立即数一定是2的倍数，将立即数乘以2之后，一定是4的倍数，这样就可以保证跳转后的PC一定是4的倍数。所以，对于一个label,假设当前指令为第0行，label为第几行，立即数[20:1]则为多少，这样，立即数最低位补0再乘以2，与当前PC相加，则为正确的跳转地址。
   //手册里面有提到过   jump and link （JAL） 指令使用 J 类型格式，其中 J-immediate 以 2 字节的倍数对有符号偏移量进行编码。偏移量是符号扩展的，并添加到跳转指令的地址中，以形成跳转目标地址。因此，跳跃可以针对 ±1 MiB 范围。JAL 存储跳转 （pc+4） 到寄存器 rd 后的指令地址。标准软件调用约定使用 x1 作为返回地址寄存器，使用 x5 作为备用链路寄存器
-  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, {R(rd)=s->snpc; s->dnpc=(src1+imm)&((-1)<<1);});
+  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, {R(rd)=s->snpc; s->dnpc=(src1+imm)&((-1)<<1);
+  IFDEF(CONFIG_FTRACE, if(rd==1)trace_func_call(s->pc,ss->dnpc); else if(rd==0&&rs1==1)trace_func_ret(s->pc,s->dnpc) ); });
   INSTPAT("??????? ????? ????? ??? ????? 11001 11", ret    , N, s->dnpc=R(1));
   
 
