@@ -75,9 +75,9 @@ void parse_elf(const char *elf_file) {
     content_strtab=(char *)malloc(strtab_shdr->sh_size);
     if (fread(content_strtab, strtab_shdr->sh_size, 1, file) != 1){perror("读取string table字符串出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}
     
-    printf("string table内容为:\n");
-    for(int l=0;l< strtab_shdr->sh_size;l++)printf("%c",content_strtab[l]);
-    printf("\n");
+    // printf("string table内容为:\n");
+    // for(int l=0;l< strtab_shdr->sh_size;l++)printf("%c",content_strtab[l]);
+    // printf("\n");
     
     shdr=(Elf32_Shdr *)malloc(ehdr.e_shentsize);
     break;
@@ -105,11 +105,8 @@ void parse_elf(const char *elf_file) {
         num_functions++;//func函数个数加一
       }
     }
-
-
     break;
   }
-
   // for (int i = 0; i < ehdr.e_shnum; i++) {if (fread(&shdr[i], sizeof(Elf32_Shdr), 1, file) != 1) {perror("读取节头表项出错\n");free(shdr);fclose(file);exit(EXIT_FAILURE);}}
   //  // 遍历节头表，找到符号表节
   // for (int i = 0; i < ehdr.e_shnum; i++) {
