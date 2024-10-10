@@ -28,11 +28,12 @@ extern const char *regs[];//注意这里是需要从外部reg.c中引入一个co
 //特别地, isa_difftest_checkregs()对比结果不一致时, 第二个参数pc应指向导致对比结果不一致的指令, 可用于打印提示信息.
 //RTFSC, 从中找出这一顺序, 并检查你的NEMU实现是否已经满足约束.
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
-  if (ref_r->pc != cpu.pc) {
+  if (ref_r->pc != cpu.pc)//如果ref的pc指令地址不等于当前nemu的cpu指令地址
+  {
     Log("Different values of the PC! REF: " FMT_PADDR " DUT: " FMT_PADDR , ref_r->pc, cpu.pc);
     return false;
   }
-  for (int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
+  for (int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {//遍历ref与nemu每一个寄存器，对其内容进行比较，如果不相等就返回false
     if (ref_r->gpr[i] != gpr(i)) {
       Log("Different values of reg %s! REF: " FMT_WORD " DUT: " FMT_WORD, regs[i], ref_r->gpr[i], gpr(i));
       return false;
