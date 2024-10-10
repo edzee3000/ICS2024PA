@@ -122,11 +122,11 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse arguments. 解析参数*/
   parse_args(argc, argv);
-  //parse_elf(elf_file);//###############################解析elf文件#################################
-  if(elf_file)
-    print_func_name(elf_file);
-    //parse_elf(elf_file);//如果想要打印信息的话就使用上面的，如果不想打印的话就使用这一条代码
-  else printf("elf_file文件为空\n");
+  parse_elf(elf_file);//###############################解析elf文件#################################
+  // if(elf_file)
+  //   print_func_name(elf_file);
+  //   //parse_elf(elf_file);//如果想要打印信息的话就使用上面的，如果不想打印的话就使用这一条代码
+  // else printf("elf_file文件为空\n");
 
   /* Set random seed. 设置随机数种子*/
   init_rand();
