@@ -17,8 +17,11 @@
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
 
-#include <memory/vaddr.h>
-#include <common.h>
+// #include <memory/vaddr.h>
+#include "../include/common.h"
+
+
+extern const char *regs[];//注意这里是需要从外部reg.c中引入一个const char数组的regs
 
 //isa_difftest_checkregs()函数, 把通用寄存器和PC与从DUT中读出的寄存器的值进行比较. 
 //若对比结果一致, 函数返回true; 如果发现值不一样, 函数返回false, 框架代码会自动停止客户程序的运行. 
@@ -26,12 +29,12 @@
 //RTFSC, 从中找出这一顺序, 并检查你的NEMU实现是否已经满足约束.
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   if (ref_r->pc != cpu.pc) {
-    //Log("Different values of the PC! REF: " FMT_VADDR " DUT: " FMT_VADDR , ref_r->pc, cpu.pc);
+    Log("Different values of the PC! REF: " FMT_PADDR " DUT: " FMT_PADDR , ref_r->pc, cpu.pc);
     return false;
   }
   for (int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
     if (ref_r->gpr[i] != gpr(i)) {
-      //Log("Different values of reg %s! REF: " FMT_WORD " DUT: " FMT_WORD, regs[i], ref_r->gpr[i], gpr(i));
+      Log("Different values of reg %s! REF: " FMT_WORD " DUT: " FMT_WORD, regs[i], ref_r->gpr[i], gpr(i));
       return false;
     }
   }
