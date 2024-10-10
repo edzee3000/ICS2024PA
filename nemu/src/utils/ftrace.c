@@ -38,7 +38,7 @@
 
 FunctionInfo functions[64];//假设最多只有64个函数
 uint32_t num_functions = 0;//记录一共有多少个函数
-FunctionInfo traced_functions[128];//假设最多只有128个函数被记录了
+FunctionInfo traced_functions[2048];//假设最多只有2048个函数被记录了
 uint32_t traced_num=0;
 uint32_t depth=0;
 
@@ -199,7 +199,7 @@ void trace_func_call(paddr_t pc, paddr_t dnpc)
 //记录返回函数
 void trace_func_ret(paddr_t pc, paddr_t dnpc)
 {
-  printf("使用了返回函数，返回的目标地址为：0x%#x\n",dnpc);
+  //printf("使用了返回函数，返回的目标地址为：0x%#x\n",dnpc);//这一条是我用来测试的
   //保存返回信息
   //注意返回的时候判断不是靠函数的首地址去判断的，而是通过函数首地址+函数大小，看看返回地址是不是落在这个范围之内
   for(int i=0;i<num_functions;i++)
