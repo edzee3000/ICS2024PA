@@ -17,7 +17,7 @@
 #include "sim.h"
 #include "../../include/common.h"
 #include <difftest-def.h>
-
+ 
 #define NR_GPR MUXDEF(CONFIG_RVE, 16, 32)
 
 static std::vector<std::pair<reg_t, abstract_device_t*>> difftest_plugin_devices;
@@ -70,6 +70,7 @@ void sim_t::diff_set_regs(void* diff_context) {
   state->pc = ctx->pc;
 }
 
+
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
   mmu_t* mmu = p->get_mmu();
   for (size_t i = 0; i < n; i++) {
@@ -79,6 +80,8 @@ void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
 
 extern "C" {
 
+// 在DUT host memory的`buf`和REF guest memory的`addr`之间拷贝`n`字节,
+// `direction`指定拷贝的方向, `DIFFTEST_TO_DUT`表示往DUT拷贝, `DIFFTEST_TO_REF`表示往REF拷贝
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
   if (direction == DIFFTEST_TO_REF) {
     s->diff_memcpy(addr, buf, n);
@@ -87,6 +90,8 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
   }
 }
 
+// `direction`为`DIFFTEST_TO_DUT`时, 获取REF的寄存器状态到`dut`;
+// `direction`为`DIFFTEST_TO_REF`时, 设置REF的寄存器状态为`dut`;
 __EXPORT void difftest_regcpy(void* dut, bool direction) {
   if (direction == DIFFTEST_TO_REF) {
     s->diff_set_regs(dut);
@@ -95,10 +100,12 @@ __EXPORT void difftest_regcpy(void* dut, bool direction) {
   }
 }
 
+// 让REF执行`n`条指令
 __EXPORT void difftest_exec(uint64_t n) {
   s->diff_step(n);
 }
 
+// 初始化REF的DiffTest功能
 __EXPORT void difftest_init(int port) {
   difftest_htif_args.push_back("");
   const char *isa = "RV" MUXDEF(CONFIG_RV64, "64", "32") MUXDEF(CONFIG_RVE, "E", "I") "MAFDC";
