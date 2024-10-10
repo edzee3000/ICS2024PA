@@ -201,9 +201,10 @@ void trace_func_ret(paddr_t pc, paddr_t dnpc)
 {
   printf("使用了返回函数，返回的目标地址为：0x%#x\n",dnpc);
   //保存返回信息
+  //注意返回的时候判断不是靠函数的首地址去判断的，而是通过函数首地址+函数大小，看看返回地址是不是落在这个范围之内
   for(int i=0;i<num_functions;i++)
   {
-    if(dnpc!=functions[i].addr)continue;
+    if(!(dnpc>=functions[i].addr&&dnpc<=functions[i].addr+functions[i].size))continue;
     strcpy(traced_functions[traced_num].name,  functions[i].name);
     traced_functions[traced_num].size=functions[i].size;
     traced_functions[traced_num].addr=functions[i].addr;
