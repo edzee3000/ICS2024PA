@@ -207,7 +207,7 @@ void trace_func_ret(paddr_t pc, paddr_t dnpc)
     traced_functions[traced_num].size=functions[i].size;
     traced_functions[traced_num].addr=functions[i].addr;
     traced_functions[traced_num].funct_depth=depth;
-    traced_functions[traced_num].call_or_ret=RET;
+    traced_functions[traced_num].call_or_ret=CALL;
     traced_functions[traced_num].last_addr=pc;
 
     depth--;//函数深度加一
