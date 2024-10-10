@@ -220,6 +220,7 @@ void trace_func_ret(paddr_t pc, paddr_t dnpc)
 //打印函数信息
 void display_ftrace()
 {
+  printf("记录下的函数个数为:%x\n",traced_num);
   for(int i=0;i<traced_num;i++)
   {
     printf("0x%#x:",traced_functions[i].addr);
