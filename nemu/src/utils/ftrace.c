@@ -199,7 +199,7 @@ void trace_func_call(paddr_t pc, paddr_t dnpc)
 //记录返回函数
 void trace_func_ret(paddr_t pc, paddr_t dnpc)
 {
-  printf("使用了返回函数");
+  //printf("使用了返回函数\n");
   //保存返回信息
   for(int i=0;i<num_functions;i++)
   {
