@@ -226,6 +226,6 @@ void display_ftrace()
     for(int j=0;j<traced_functions[i].funct_depth;j++)printf("  ");
     if (traced_functions[i].call_or_ret==RET)printf("call");else printf("ret");
     printf(" [%s@0x%#x]",traced_functions[i].name,traced_functions[i].last_addr);
-    
+    printf("\n");
   }
 }
