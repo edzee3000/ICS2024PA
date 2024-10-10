@@ -18,7 +18,7 @@
 #include "../local-include/reg.h"
 
 // #include <memory/vaddr.h>
-#include "../include/common.h"
+//#include "../include/common.h"
 
 
 extern const char *regs[];//注意这里是需要从外部reg.c中引入一个const char数组的regs
