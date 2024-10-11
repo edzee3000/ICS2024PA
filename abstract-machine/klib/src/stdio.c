@@ -61,7 +61,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       {
         int num=va_arg(ap,int);
         char tem[128];int k=0;
-        if(num==0){ out[i]='0';j++; if(j>=n)break;}   
+        //if(num==0){ out[i]='0';j++; if(j>=n)break;}   
         while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';
         for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;       if(j>=n)break; } 
       }
