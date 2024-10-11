@@ -56,7 +56,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   {
     if(p[i]=='%')
     {
-      i++;
+      i++; 
       if(p[i]=='d'||p[i]=='i')
       {
         int num=va_arg(ap,int);
