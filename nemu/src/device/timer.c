@@ -50,3 +50,4 @@ void init_timer() {
 #endif
   IFNDEF(CONFIG_TARGET_AM, add_alarm_handle(timer_intr));
 }
+ 

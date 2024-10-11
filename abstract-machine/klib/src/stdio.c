@@ -2,10 +2,23 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
+#include <stdlib.h>
+// #include <regex.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // #if !defined(__ISA_NATIVE__) || !defined(__NATIVE_USE_KLIB__)
 #define MAX_LEN_INPUT (uint32_t)(65536)
+
+// static struct rule {
+//   const char *regex;
+//   int token_type;
+// } rules[] = {
+
+//   /* TODO: Add more rules.添加更多的规则
+//    * Pay attention to the precedence level of different rules.注意不同规则之间的优先级关系
+//    */
+//   {}
+// };
 
 int printf(const char *fmt, ...) {
   //panic("Not implemented");
@@ -44,24 +57,27 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     if(p[i]=='%')
     {
       i++;
-      switch (p[i])
+      if(p[i]=='d'||p[i]=='i')
       {
-      case 'd': case 'i'://输入一个整数
         int num=va_arg(ap,int);
         char tem[128];int k=0;
         while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';
         for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;       if(j>=n)break; } 
-        break;
-      case 'c'://输入一个字符
-        char c=va_arg(ap,int);
-        out[j]=c; j++;            if(j>=n)break;
-        break;
-      case 's'://输入一个字符串
-        const char *ch=va_arg(ap,const char*);
-        while(*ch!='\0'){out[j]=*ch;ch++;j++;            if(j>=n)break;}
-        break;
-      default:break;
       }
+      else if( p[i]=='c'){//输入一个字符
+        char c=va_arg(ap,int);
+        out[j]=c; j++;            
+        if(j>=n)break;
+      }
+      else if( p[i]=='s')//输入一个字符串
+      { 
+        const char *ch=va_arg(ap,const char*);
+        while(*ch!='\0'){out[j]=*ch;ch++;j++;     if(j>=n)break;}
+      }
+      else if( p[i]<='9'&&p[i]>='0'  && p[i+1]=='2'  &&p[i+2]=='d' ){i+=2;  int num=va_arg(ap,int);char tem[10];int k=0;while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;       if(j>=n)break; }  }
+
+
+
     }
     else{out[j]=p[i];j++;}
     i++;
