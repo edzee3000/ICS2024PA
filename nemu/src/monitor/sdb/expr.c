@@ -34,7 +34,7 @@ extern const char *regs[];
 // };
 
 enum {
-  TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,LEQ,
+  TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,LEQ,GEQ,L,G,
   ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
   /* TODO: Add more token types添加更多的token种类 */
   DECIMAL_NUM,HEX_NUM,REGISTER,
@@ -56,7 +56,11 @@ static struct rule {
   {"\\-", SUB},         //subtract
   {"==", TK_EQ},        // equal
   {"!=", NOT_EQ}, //NOT_EQUAL   
-  {">=", LEQ},          //LEQ
+
+  {">=", GEQ},          //GEQ
+  {"<=", LEQ},          //LEQ
+  {">", G},          //GEQ
+  {"<", L},          //GEQ
   {"\\/", DIV},         // divide
   {"\\*",MUL},//Multiply
   {"\\(",LEFT_PAR},//左括号
@@ -148,6 +152,9 @@ static bool make_token(char *e) {
         case TK_EQ:
         case NOT_EQ:
         case LEQ:
+        case GEQ:
+        case L:
+        case G:
         case NOT:
         case AND:
         case OR: tokens[nr_token].type=rules[i].token_type;break;
@@ -247,7 +254,7 @@ void judge_DEREF(int i)
   (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) || tokens[i - 1].type ==TK_NEG ||
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
    tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR||
-   tokens[i - 1].type == LEQ )) 
+   tokens[i - 1].type == LEQ || tokens[i - 1].type ==L|| tokens[i - 1].type ==GEQ|| tokens[i - 1].type ==G)) 
     tokens[i].type = DEREF;
 }
 
@@ -345,7 +352,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      printf("寄存器十六进制数值为：%#x\n",value);
+      // printf("寄存器十六进制数值为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
@@ -376,9 +383,10 @@ int eval(int p,int q) {
       return val1 / val2;
       case TK_EQ:return (val1==val2);
       case NOT_EQ:return (val1!=val2);
-      case LEQ:return (val1>=val2);
-
-
+      case LEQ:return (val1<=val2);
+      case GEQ:return (val1>=val2);
+      case L:return (val1<val2);
+      case G:return (val1>val2);
       case AND:return (val1 && val2);
       case OR:return (val1 || val2);
       // case DEREF: vaddr_read();
