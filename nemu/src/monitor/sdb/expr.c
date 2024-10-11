@@ -345,7 +345,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      printf("十六进制数为：%#x\n",value);
+      printf("寄存器十六进制数值为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
