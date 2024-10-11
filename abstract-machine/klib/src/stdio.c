@@ -13,7 +13,7 @@ int printf(const char *fmt, ...) {
   int len=vsprintf(out,fmt,args);
   for(int i=0;i<len;i++)
     putch(out[i]);
-  free(out);
+  // free(out);
   return len;
 }
 
