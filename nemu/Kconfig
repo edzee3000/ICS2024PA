@@ -141,7 +141,10 @@ config WATCHPOINT
   default y
   help
     Enable support for watchpoints which can be used to monitor specific memory addresses or register values.
-
+config WATCHPOINT_COND
+  depends on WATCHPOINT
+  string "Only WATCHPOINT when the condition is true"
+  default "true"
 
 
 
