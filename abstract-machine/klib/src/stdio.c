@@ -74,7 +74,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         const char *ch=va_arg(ap,const char*);
         while(*ch!='\0'){out[j]=*ch;ch++;j++;     if(j>=n)break;}
       }
-      else if( p[i]<='9'&&p[i]>='0'  && p[i+1]=='2'  &&p[i+2]=='d' ){i+=2;  int num=va_arg(ap,int);char tem[10];int k=0;while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;       if(j>=n)break; }  }
+      else if( p[i]<='9'&&p[i]>='0'  && p[i+1]=='2'  &&p[i+2]=='d' ){i+=2;  int num=va_arg(ap,int);    char tem[10];   itoa(num,tem,10);  char*pi=tem; while(*pi!='\0'){out[i]=*pi ;pi++;  j++;       if(j>=n)break; }  }
 
 
 
