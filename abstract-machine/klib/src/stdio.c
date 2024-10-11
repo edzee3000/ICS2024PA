@@ -3,10 +3,10 @@
 #include <klib-macros.h>
 #include <stdarg.h>
 
-// #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-#if !defined(__ISA_NATIVE__) || !defined(__NATIVE_USE_KLIB__)
+#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+// #if !defined(__ISA_NATIVE__) || !defined(__NATIVE_USE_KLIB__)
 int printf(const char *fmt, ...) {
-  //panic("Not implemented");
+  panic("Not implemented");
   va_list args;
   va_start(args,fmt);
   char out[256];
