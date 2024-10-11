@@ -124,11 +124,11 @@ static bool make_token(char *e) {
     for (i = 0; i < NR_REGEX; i ++) {
       //一个规则一个规则尝试如果匹配成功则进入if并且break不用循环了，如果没有成功则继续for循环直到最后判断都没有匹配
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {//regexec 匹配我们的目标文本串
-        char *substr_start = e + position;
+        // char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
         //Log()宏会输出识别成功的信息. 你需要做的是将识别出的token信息记录下来(一个例外是空格串),
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);  //在这里我先不管它
 
         position += substr_len;
 
