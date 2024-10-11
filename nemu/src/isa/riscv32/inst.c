@@ -40,7 +40,7 @@ int rs2;
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)   //将立即数符号扩展到 32 位   注意SEXT表示的意思是取12位然后扩展到32位
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
-#define immJ() do { *imm = (BITS(i,31,31)<<19) | (BITS(i,19,12)<<11) | (BITS(i,20,20)<<10) | BITS(i,30,21);} while(0)
+#define immJ() do { *imm = (SEXT(BITS(i,31,31),1)<<19) | (BITS(i,19,12)<<11) | (BITS(i,20,20)<<10) | BITS(i,30,21);} while(0)
 #define immB() do { *imm = (SEXT(BITS(i,31,31),1)<<11) | (SEXT(BITS(i,7,7),1)<<10) | (SEXT(BITS(i,30,25),6)<<4) | BITS(i,11,8);}while(0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
