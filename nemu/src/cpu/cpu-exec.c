@@ -166,7 +166,7 @@ static void execute(uint64_t n) {
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
-
+  printf("异常退出\n");
   //display_iringbuf的部分是不是可以放在这里？？？？？？？？？？？？？？？？？？
   if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_END)//#######注意这里需要修改，为了测试方便NEMU_END我也给它加进来了!!!!!!!!!!!!!!!!!!!!!!
   // if(nemu_state.state==NEMU_ABORT || nemu_state.state==NEMU_STOP)
