@@ -6,7 +6,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  //panic("Not implemented");
+  panic("Not implemented");
   va_list args;
   va_start(args,fmt);
   char *out=(char *)malloc(256);//假设一行最多只有256个字符
