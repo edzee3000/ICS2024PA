@@ -77,11 +77,11 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         const char *ch=va_arg(ap,const char*);
         while(*ch!='\0'){out[j]=*ch;ch++;j++;     if(j>=n)break;}
       }
-      else if( p[i]<='9'&&p[i]>='0'  && p[i+1]=='2'  &&p[i+2]=='d' ){i+=2;  int num=va_arg(ap,int);
-        char str[16];
-        itoa(num,str,10);
-        char *ch=str;
-        while(*ch!='\0'){out[j]=*ch;ch++;j++;     if(j>=n)break;} }  
+      // else if( p[i]<='9'&&p[i]>='0'  && p[i+1]=='2'  &&p[i+2]=='d' ){i+=2;  int num=va_arg(ap,int);
+      //   char str[16];
+      //   itoa(num,str,10);
+      //   char *ch=str;
+      //   while(*ch!='\0'){out[j]=*ch;ch++;j++;     if(j>=n)break;} }  
 
 
 
