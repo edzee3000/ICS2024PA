@@ -67,7 +67,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
   return content;
 }
 
-
+ 
 
 void vaddr_write(vaddr_t addr, int len, word_t data) {
   //先在vaddr_write中写好相关内容，然后不妨写完之后再调用vaddr_read函数一次，这样就不用重复写代码了
