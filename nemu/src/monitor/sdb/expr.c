@@ -128,7 +128,7 @@ static bool make_token(char *e) {
         int substr_len = pmatch.rm_eo;
         //Log()宏会输出识别成功的信息. 你需要做的是将识别出的token信息记录下来(一个例外是空格串),
         // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);  //在这里我先不管它
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -225,7 +225,7 @@ word_t expr(char *e, bool *success) {
       }
     else{
       // printf("toke%d类型为:%d\n",i,(char)tokens[i].type);
-    }
+      }
   }
 
 
@@ -345,7 +345,7 @@ int eval(int p,int q) {
       return value;break;
     case REGISTER: 
       sscanf(tokens[p].str,"%x",&value);
-      // printf("十六进制数为：%#x\n",value);
+      printf("十六进制数为：%#x\n",value);
       return value;break;
     default:assert(0);
       break;
