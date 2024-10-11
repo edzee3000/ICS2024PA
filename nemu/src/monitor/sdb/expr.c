@@ -168,6 +168,7 @@ static bool make_token(char *e) {
           char name[32];
           strncpy(name, &e[position-substr_len+1],substr_len-1);
           name[substr_len-1]='\0';
+          if(strcmp(name,"pc")==0){sprintf(tokens[nr_token].str,"%x",cpu.pc);break;}//################$pc的情况#########################
           int idx;
           for(idx=0;idx<num_regs;idx++){
             if(strcmp(reg_name(idx),name)==0)
@@ -177,7 +178,6 @@ static bool make_token(char *e) {
               break;
               } 
           }
-
           // if(idx==num_regs)assert(0);//表示输入寄存器名字有问题
           if(idx==num_regs){printf("输入的寄存器名字有问题\n");return false;}
           break;
