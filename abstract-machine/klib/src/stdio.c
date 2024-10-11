@@ -6,7 +6,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+  //panic("Not implemented");
   va_list args;
   va_start(args,fmt);
   char *out=(char *)malloc(256);//假设一行最多只有256个字符
@@ -18,7 +18,7 @@ int printf(const char *fmt, ...) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  //panic("Not implemented");
   const char *p=fmt;
   size_t i=0;
   size_t j=0;
@@ -53,7 +53,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
 
 int sprintf(char *out, const char *fmt, ...) {
-  panic("Not implemented");
+  //panic("Not implemented");
   va_list args;
   va_start(args,fmt);
   return vsprintf(out,fmt,args);
@@ -63,11 +63,13 @@ int sprintf(char *out, const char *fmt, ...) {
 
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  //panic("Not implemented");
+  return 0;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  //panic("Not implemented");
+  return 0;
 }
 
 #endif
