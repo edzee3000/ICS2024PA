@@ -34,7 +34,7 @@ static void rtc_io_handler(uint32_t offset, int len, bool is_write) {
 
 #ifndef CONFIG_TARGET_AM
 static void timer_intr() {//虚拟环境中唤醒时间指令    处理计时器中断的回调函数
-  if (nemu_state.state == NEMU_RUNNING) {//当模拟器处于运行状态时，它会触发一个设备中断当模拟器处于运行状态时，它会触发一个设备中断
+  if (nemu_state.state == NEMU_RUNNING) {//当模拟器处于运行状态时，它会触发一个设备中断
     extern void dev_raise_intr();
     dev_raise_intr();
   }
