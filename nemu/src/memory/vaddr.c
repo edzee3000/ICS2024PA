@@ -72,7 +72,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 void vaddr_write(vaddr_t addr, int len, word_t data) {
   //先在vaddr_write中写好相关内容，然后不妨写完之后再调用vaddr_read函数一次，这样就不用重复写代码了
   paddr_write(addr, len, data);
-  vaddr_read(addr,len);//直接调用vaddr_read函数，这样的话可以使用trace_memory
+  IFDEF(CONFIG_MTRACE,vaddr_read(addr,len));//直接调用vaddr_read函数，这样的话可以使用trace_memory
 }
 
 
