@@ -46,11 +46,15 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       i++;
       switch (p[i])
       {
-      case 'd': case 'i': case 'c'://输入一个整数
+      case 'd': case 'i'://输入一个整数
         int num=va_arg(ap,int);
         char tem[128];int k=0;
         while(num!=0){int t=num%10;num/=10;tem[k]='0'+t; k++;} tem[k]='\0';
         for(int l=k-1;l>=0;l--){out[j]=tem[l]; j++;       if(j>=n)break; } 
+        break;
+      case 'c'://输入一个字符
+        char c=va_arg(ap,int);
+        out[j]=c; j++;            if(j>=n)break;
         break;
       case 's'://输入一个字符串
         const char *ch=va_arg(ap,const char*);
