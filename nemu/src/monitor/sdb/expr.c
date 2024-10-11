@@ -34,7 +34,7 @@ extern const char *regs[];
 // };
 
 enum {
-  TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,
+  TK_NOTYPE = 256, TK_EQ=0,NOT_EQ,LEQ,
   ADD,SUB,MUL,DIV,LEFT_PAR,RIGHT_PAR,
   /* TODO: Add more token types添加更多的token种类 */
   DECIMAL_NUM,HEX_NUM,REGISTER,
@@ -56,6 +56,7 @@ static struct rule {
   {"\\-", SUB},         //subtract
   {"==", TK_EQ},        // equal
   {"!=", NOT_EQ}, //NOT_EQUAL   
+  {">=", LEQ},          //LEQ
   {"\\/", DIV},         // divide
   {"\\*",MUL},//Multiply
   {"\\(",LEFT_PAR},//左括号
@@ -146,6 +147,7 @@ static bool make_token(char *e) {
         case RIGHT_PAR:
         case TK_EQ:
         case NOT_EQ:
+        case LEQ:
         case NOT:
         case AND:
         case OR: tokens[nr_token].type=rules[i].token_type;break;
@@ -241,7 +243,8 @@ void judge_DEREF(int i)
   (i == 0 || 
   (tokens[i - 1].type <=DIV &&tokens[i - 1].type >=ADD) || tokens[i - 1].type ==TK_NEG ||
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
-   tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR) ) 
+   tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR||
+   tokens[i - 1].type == LEQ )) 
     tokens[i].type = DEREF;
 }
 
@@ -308,7 +311,7 @@ int priority(int token_type)
   if (token_type==NOT||token_type==DEREF)return 3;
   if (token_type==DIV||token_type==MUL)return 4;
   if (token_type==ADD||token_type==SUB)return 5;
-  if (token_type==TK_EQ||token_type==NOT_EQ)return 6;
+  if (token_type==TK_EQ||token_type==NOT_EQ||token_type==LEQ)return 6;
   if (token_type==AND)return 7;
   if (token_type==OR)return 8;
   
@@ -370,6 +373,9 @@ int eval(int p,int q) {
       return val1 / val2;
       case TK_EQ:return (val1==val2);
       case NOT_EQ:return (val1!=val2);
+      case LEQ:return (val1>=val2);
+
+
       case AND:return (val1 && val2);
       case OR:return (val1 || val2);
       // case DEREF: vaddr_read();
