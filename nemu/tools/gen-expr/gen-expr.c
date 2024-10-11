@@ -54,7 +54,7 @@ static void gen_rand_expr() {
 
 // 用于生成随机数字的函数
 void gen_num() {
-    int num = choose(100);//65596会数据溢出
+  int num = choose(100);//65596会数据溢出
   if (buf_start < buf_end) {
     int n_writes = snprintf(buf_start, buf_end-buf_start, "%d", num);
     if (n_writes > 0) {
