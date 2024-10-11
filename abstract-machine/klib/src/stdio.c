@@ -9,7 +9,7 @@ int printf(const char *fmt, ...) {
   //panic("Not implemented");
   va_list args;
   va_start(args,fmt);
-  char *out=(char *)malloc(256);//假设一行最多只有256个字符
+  char *out=(char *)malloc(32);//假设一行最多只有256个字符
   int len=vsprintf(out,fmt,args);
   for(int i=0;i<len;i++)
     putch(out[i]);
