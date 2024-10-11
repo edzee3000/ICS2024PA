@@ -21,7 +21,7 @@ IFDEF(CONFIG_TIMER_CLOCK_GETTIME,
 IFDEF(CONFIG_TIMER_CLOCK_GETTIME,
     static_assert(sizeof(clock_t) == 8, "sizeof(clock_t) != 8"));
 
-static uint64_t boot_time = 0;
+static uint64_t boot_time = 0;//boot_time 是一个静态变量，它用于存储系统启动时的时间戳。这个时间戳通常表示从某个特定起点（如系统启动）到当前时刻的经过时间。
 
 static uint64_t get_time_internal() {
 #if defined(CONFIG_TARGET_AM)

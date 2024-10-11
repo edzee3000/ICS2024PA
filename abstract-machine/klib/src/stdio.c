@@ -34,14 +34,6 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 
-
-
-int snprintf(char *out, size_t n, const char *fmt, ...) {
-  //panic("Not implemented");
-  
-  return 0;
-}
-
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   //panic("Not implemented");
   const char *p=fmt;
@@ -75,5 +67,14 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   //在 stdio.h 中，sprintf 与 vsprintf 函数的返回值是成功写入缓冲区的字符数量。这个返回值不包括终止的空字符（\0）。如果发生输出错误，函数会返回一个负数。
   return j;
 }
+
+
+int snprintf(char *out, size_t n, const char *fmt, ...) {
+  //panic("Not implemented");
+  va_list args;
+  va_start(args,fmt);
+  return vsnprintf(out,n,fmt,args);
+}
+
 
 #endif
