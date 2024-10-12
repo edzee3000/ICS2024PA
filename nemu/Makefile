@@ -58,6 +58,6 @@ ifdef CONFIG_TARGET_AM
 include $(AM_HOME)/Makefile
 LINKAGE += $(ARCHIVES)
 else
-# Include rules to build NEMU
+# Include rules to build NEMU  这一行会把native.mk包含进来，而run命令就在native.mk里面
 include $(NEMU_HOME)/scripts/native.mk
 endif
