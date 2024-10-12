@@ -19,8 +19,9 @@ include $(NEMU_HOME)/scripts/build.mk
 #那在native.mk里面又包含进来了difftest.mk文件，这个就是在PA2中进行difftest的部分的makefile文件
 include $(NEMU_HOME)/tools/difftest.mk
 
+#如果把$(call git_commit, "compile NEMU")这条语句注释掉的话那么每次make编译的时候就不会自动帮我commit了  $(call git_commit, "compile NEMU")
 compile_git:
-	$(call git_commit, "compile NEMU")
+	
 $(BINARY):: compile_git
 
 # Some convenient rules
@@ -35,6 +36,7 @@ NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 #如果把	$(call git_commit, "run NEMU")  这一行注释掉的话每一次make run的时候就不会帮我trace跟踪记录了   $(call git_commit, "run NEMU")  
+#但是这也挺危险的  毕竟需要自己手动commit……万一哪里出了问题emmm……
 run: run-env
 	
 	$(NEMU_EXEC)

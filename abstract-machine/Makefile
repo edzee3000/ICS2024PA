@@ -1,8 +1,9 @@
 # Makefile for AbstractMachine Kernels and Libraries
 
-### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)
+### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)  
+# 因为我的ubuntu上面的python环境好像有点问题，没有办法使用markdown_py因此我考虑使用了markdown命令 cat Makefile | sed 's/^\([^#]\)/    \1/g' | markdown_py > Makefile.html
 html:
-	cat Makefile | sed 's/^\([^#]\)/    \1/g' | markdown_py > Makefile.html
+	cat Makefile | sed 's/^\([^#]\)/    \1/g' | markdown > Makefile.html
 .PHONY: html
 
 ## 1. Basic Setup and Checks  基本设置和检查

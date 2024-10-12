@@ -24,6 +24,7 @@ LD := $(CXX)
 INCLUDES = $(addprefix -I, $(INC_PATH))
 #CFLAGS 是一个变量，它用于存储编译器标志（compiler flags），这些标志会被传递给 C/C++ 编译器，以控制编译过程。
 #编译器标志可以影响编译器的行为，例如优化级别、调试信息的生成、警告信息的处理等。
+#这里的gcc编译选项加了-Wall和-Werror会把所有的warning都当成error给你报出来了     建议不要改否则就和oj上测评行为不一样了
 CFLAGS  := -O2 -MMD -Wall -Werror $(INCLUDES) $(CFLAGS)
 LDFLAGS := -O2 $(LDFLAGS)
 
