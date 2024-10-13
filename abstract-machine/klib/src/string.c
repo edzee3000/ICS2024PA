@@ -41,8 +41,8 @@ char *strcpy(char *dst, const char *src) {
  
 char *strncpy(char *dst, const char *src, size_t n) {
   size_t i=0;
-  size_t len_src=strlen(src);
-  for(;i<n && i < len_src-1 ; i++)dst[i]=src[i];
+  size_t len_src=strlen(src);//src的长度是算上'\0'的
+  for(;i<n && i < len_src ; i++)dst[i]=src[i];
   return dst;
   //panic("Not implemented");
 }
@@ -111,16 +111,40 @@ void *memmove(void *dst, const void *src, size_t n) {
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
-  uint8_t * dst=(uint8_t *)out;
-  const uint8_t *src =(const uint8_t*)in;
-  size_t i=0;
-  for(;i<n;i++)
-    dst[i]=src[i];
-  return out;
+  //以下是我自己写的代码  感觉不如源代码写的好  直接贴源代码了
+  // uint8_t * dst=(uint8_t *)out;
+  // const uint8_t *src =(const uint8_t*)in;
+  // size_t i=0;
+  // for(;i<n;i++)
+  //   dst[i]=src[i];
+  // return out;
+
   //panic("Not implemented");
+
+  void *ret = out;
+	
+	if(out <= in || (uint8_t *)out >= (uint8_t *)in + n){
+		//没有内存重叠，从低地址开始复制
+		while(n--){
+			*(uint8_t *)out = *(uint8_t *)in;
+			out = (uint8_t *)out + 1;
+			out = (uint8_t *)in + 1;
+		}
+	}else{
+		//有内存重叠，从高地址开始复制
+		out = (uint8_t *)out + n - 1;
+		out = (uint8_t *)in + n - 1;
+		while(n--){
+			*(uint8_t *)out = *(uint8_t *)in;
+			out = (uint8_t *)out - 1;
+			out = (uint8_t *)in - 1;
+		}
+	}
+  return ret;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
+ 
   unsigned char *ptr1=(unsigned char *)s1;
   unsigned char *ptr2=(unsigned char *)s2;
   size_t i=0;
@@ -131,6 +155,11 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     else continue;
   }
   return 0;
+
+  if(s1 == NULL || s2 == NULL){
+		return 0;
+	}
+
   //panic("Not implemented");
   //The  memcmp()  function compares the first n bytes (each interpreted as注意每一个都是被解释为unsigned char的
   //     unsigned char) of the memory areas s1 and s2.

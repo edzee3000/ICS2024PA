@@ -18,7 +18,7 @@ void halt(int code) {
   for (const char *p = fmt; *p; p++) {
     char ch = *p;
     if (ch == '0' || ch == '4') {
-      ch = "0123456789abcdef"[(code >> (ch - '0')) & 0xf];
+      ch = "0123456789abcdef"[(code >> (ch - '0')) & 0xf];//我的妈呀这个是啥骚操作  算了以后再回来看吧
     }
     putch(ch);
   }
