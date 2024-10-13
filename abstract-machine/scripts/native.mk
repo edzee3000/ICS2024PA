@@ -1,3 +1,4 @@
+#AM_SRCS都是一些本地的src文件   路径在abstract-machine/am/src/native当中
 AM_SRCS := native/trm.c \
            native/ioe.c \
            native/cte.c \
@@ -17,6 +18,7 @@ ASFLAGS += -fpie -pie
 comma = ,
 LDFLAGS_CXX = $(addprefix -Wl$(comma), $(LDFLAGS)) -pie -ldl $(shell sdl2-config --libs)
 
+#这个会是在本地运行程序  make ARCH=native run的过程
 run: image
 	$(IMAGE).elf
 

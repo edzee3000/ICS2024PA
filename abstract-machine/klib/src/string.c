@@ -15,6 +15,7 @@ size_t strlen(const char *s) {
 }
 
 char *strcpy(char *dst, const char *src) {
+  //下面是我的实现  感觉没有strcpy源代码写的好，因此附加了一段头文件中的代码
   char *ptr1=dst;
   const char *ptr2=src;
   size_t i=0;
@@ -31,7 +32,11 @@ char *strcpy(char *dst, const char *src) {
   //            for allocating a  destination  buffer  large  enough,  that  is,
   //            strlen(src)  + 1.  For the difference between the two functions,
   //            see RETURN VALUE.
- 
+  
+  // assert((dst != NULL) || (src != NULL));   //[2]
+  // char *address = dst;					 //[3]
+  // while((*dst++ = *src++)!='\0');		 //[4]
+  // return address;
 }
  
 char *strncpy(char *dst, const char *src, size_t n) {
@@ -132,3 +137,9 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 }
 
 #endif
+
+
+
+//注意在我写的strcpy函数是没有考虑到区间重叠的情况的  但是在memcpy里面我是考虑到了区间重叠的情况的  因此这里暂时先埋了个坑  记得要回来补的！！！！！！！！
+
+

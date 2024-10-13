@@ -1,12 +1,11 @@
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
-#include <stdarg.h>
-#include <stdlib.h>
-// #include <regex.h>
+// #include <stdarg.h>
+// #include <stdlib.h>
+#include <regex.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-// #if !defined(__ISA_NATIVE__) || !defined(__NATIVE_USE_KLIB__)
 #define MAX_LEN_INPUT (uint32_t)(65536)
 
 // static struct rule {
