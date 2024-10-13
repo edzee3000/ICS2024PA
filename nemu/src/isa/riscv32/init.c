@@ -30,10 +30,12 @@ static void restart() {
   /* Set the initial program counter. */
   cpu.pc = RESET_VECTOR;
 
-  /* The zero register is always 0. */
+  /* The zero register is always 0. 零寄存器的值恒为0 */
   cpu.gpr[0] = 0;
 }
 
+//设置状态机的初始状态，程序img拷贝进内存 
+//cpu.pc默认为0x80000000
 void init_isa() {
   /* Load built-in image. */
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));

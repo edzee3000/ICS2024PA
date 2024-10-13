@@ -219,6 +219,17 @@ config DIFFTEST_REF_NAME
 
 
 
+config IRINGBUF
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable Iringbuf"
+  default y
+config IRINGBUF_COND
+  depends on IRINGBUF
+  string "Only Enable Iringbuf when the condition is true"
+  default "true"
+
+
+
 
 config MTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER

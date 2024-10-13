@@ -41,8 +41,9 @@ run: run-env
 	
 	$(NEMU_EXEC)
 
+#然后发现原来gdb也会帮我自动commit 因此我在这里先注释掉 $(call git_commit, "gdb NEMU")
 gdb: run-env
-	$(call git_commit, "gdb NEMU")
+	
 	gdb -s $(BINARY) --args $(NEMU_EXEC)
 
 clean-tools = $(dir $(shell find ./tools -maxdepth 2 -mindepth 2 -name "Makefile"))

@@ -21,6 +21,8 @@
 #include <memory/vaddr.h>//################这里因为需要使用到vaddr.c中的print_trace_memory函数打印内存访问的踪迹
 
 #include <ftrace.h>
+#include <iringbuf.h>
+
 /* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
@@ -58,53 +60,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
 
-//##################################由于不太会写头文件因此在cpu-exec.c当中实现iringbuf#####################################
-//##################################打算在这里实现输出iringbuf的功能######################################################
-//打算在这里去实现iringbuf指令环形缓冲区的功能  先定义一个iringbuf缓冲区节点
-#define MAX_NUM_NODE 16
-typedef struct IringNode{
-  word_t pc;
-  uint32_t instr;
-  struct IringNode *next;
-}IringNode;
-int num_node=0;
-IringNode* head;
-IringNode* tail;
-//定义更新buf的函数
-void Update_Buf(word_t pc,uint32_t instr)
-{
-  IringNode *new_node=(IringNode *)malloc(sizeof(IringNode));
-  new_node->pc=pc;  new_node->instr=instr;   new_node->next=NULL;
-  //针对是否到达16个节点的buf进行分类讨论
-  if(num_node==0) { head=tail=new_node;num_node++;  return;}
-  if(num_node<MAX_NUM_NODE)
-  { tail->next = new_node;
-    tail=tail->next;
-    num_node++;return;}
-  else{tail->next=new_node;
-    new_node->next=NULL;tail=tail->next;
-    IringNode *temp=head; head=head->next; free(temp);return;}//这里差点就内存泄露了……
-}
-//定义打印buf的函数
-void display_iringbuf()
-{
-  char buf[1024]; // 1024应该足够了吧……
-  char *p;
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  printf("最新执行的几条指令有：\n");
-  IringNode *temp=head;
-  while(temp!=NULL)
-  {
-    p=buf;
-    p += sprintf(buf, "%s" FMT_WORD ": %08x ", temp->next==NULL ? " --> ":"     ", temp->pc, temp->instr);
-    disassemble(p, buf+sizeof(buf)-p,  temp->pc, (uint8_t *)&(temp->instr), 4);
-    if(temp->next==NULL) printf(ANSI_FG_RED);
-    puts(buf);
-    temp=temp->next;
-  }
-  puts(ANSI_NONE);
-}
-//##########################################################################
+
  
 
 
@@ -125,8 +81,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = s->dnpc;//最后是更新PC. 更新PC的操作非常简单, 只需要把s->dnpc赋值给cpu.pc即可. 
   //现在来说明一下snpc和dnpc的区别：在程序分析领域中, 静态指令是指程序代码中的指令, 动态指令是指程序运行过程中的指令  jmp指令的下一条静态指令是add指令, 而下一条动态指令则是xor指令.
   //对于顺序执行的指令, 它们的snpc和dnpc是一样的; 但对于跳转指令, snpc和dnpc就会有所不同, dnpc应该指向跳转目标的指令. 显然, 我们应该使用s->dnpc来更新PC, 并且在指令执行的过程中正确地维护s->dnpc.
+  
   //##############################这里需要更新buf###################################
-  Update_Buf(s->pc,s->isa.inst.val);
+  IFDEF(CONFIG_IRINGBUF,Update_Buf(s->pc,s->isa.inst.val);)
   //###############################################################################
 
 #ifdef CONFIG_ITRACE
@@ -172,7 +129,7 @@ static void execute(uint64_t n) {
   if(nemu_state.state==NEMU_ABORT || nemu_state.state==NEMU_STOP)
   { 
     printf("异常退出\n");
-    display_iringbuf();//打印iringbuf内容
+    IFDEF(CONFIG_IRINGBUF,display_iringbuf();)//打印iringbuf内容
     IFDEF(CONFIG_MTRACE,print_trace_memory()); //打印mtrace内容
   }
 }
