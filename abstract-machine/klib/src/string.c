@@ -5,11 +5,11 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
-  size_t len=1;
-  while(s[len-1]!='\0')len++;
+  size_t len=0;
+  while(s[len]!='\0')len++;
   return len;
   //panic("Not implemented");
-  //根据strlen1的manual显示：注意长度是需要算上'\0'的
+  //根据strlen1的manual显示：注意长度是不算上'\0'的！！！！！！！！！！！！！！！！！！！
   // The strlen() function calculates the length of the string pointed to by
   //     s, excluding the terminating null byte ('\0').
 }
@@ -41,7 +41,7 @@ char *strcpy(char *dst, const char *src) {
  
 char *strncpy(char *dst, const char *src, size_t n) {
   size_t i=0;
-  size_t len_src=strlen(src);//src的长度是算上'\0'的
+  size_t len_src=strlen(src)+1;//src的长度是算上'\0'的
   for(;i<n && i < len_src ; i++)dst[i]=src[i];
   return dst;
   //panic("Not implemented");
@@ -49,7 +49,7 @@ char *strncpy(char *dst, const char *src, size_t n) {
 
 char *strcat(char *dst, const char *src) {
   //先寻找dst尾部（不包含'\0'）
-  char *begin= dst+strlen(dst)-1;
+  char *begin= dst+strlen(dst);
   strcpy(begin , src);
   return dst;
   //panic("Not implemented");
@@ -57,26 +57,26 @@ char *strcat(char *dst, const char *src) {
 
 int strcmp(const char *s1, const char *s2) {
   //panic("Not implemented");
-  size_t len_s1=strlen(s1);//算上'\0'的长度
-  size_t len_s2=strlen(s2);
+  size_t len_s1=strlen(s1)+1;//算上'\0'的长度
+  size_t len_s2=strlen(s2)+1;
   size_t i=0;
-  for(;i < len_s1-1 && i < len_s2-1;i++)
+  for(;i < len_s1 && i < len_s2;i++)
   {
     if(s1[i]>s2[i]) return 1;
     else if (s1[i]<s2[i]) return -1;
   }
   if(len_s1==len_s2) return 0;
-  else if(i==len_s1-1) return -1;
-  else if(i==len_s2-1) return 1;
+  else if(i==len_s1) return -1;
+  else if(i==len_s2) return 1;
   else return 0;
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
   //panic("Not implemented");
-  size_t len_s1=strlen(s1);//算上'\0'的长度
+  size_t len_s1=strlen(s1);//不算上'\0'的长度
   size_t len_s2=strlen(s2);
   size_t i=0;
-  for(;i<len_s1-1 && i<len_s2-1 && i<n;i++)
+  for(;i<len_s1 && i<len_s2 && i<n;i++)
   {
     if(s1[i]>s2[i])return 1;
     else if (s1[i]<s2[i]) return -1;
@@ -84,8 +84,8 @@ int strncmp(const char *s1, const char *s2, size_t n) {
   }
   if(i==n) return 0;
   if(len_s1==len_s2) return 0;
-  else if(i==len_s1-1) return -1;
-  else if(i==len_s2-1) return 1;
+  else if(i==len_s1) return -1;
+  else if(i==len_s2) return 1;
   else return 0;
 }
 
@@ -123,21 +123,22 @@ void *memcpy(void *out, const void *in, size_t n) {
 
   void *ret = out;
 	
-	if(out <= in || (uint8_t *)out >= (uint8_t *)in + n){
+	if(out <= in || (char *)out >= (char *)in + n){
 		//没有内存重叠，从低地址开始复制
 		while(n--){
-			*(uint8_t *)out = *(uint8_t *)in;
-			out = (uint8_t *)out + 1;
-			out = (uint8_t *)in + 1;
+			*(char *)out = *(char *)in;
+			out = (char *)out + 1;
+			in = (char *)in + 1;
 		}
 	}else{
 		//有内存重叠，从高地址开始复制
-		out = (uint8_t *)out + n - 1;
-		out = (uint8_t *)in + n - 1;
+    // printf("存在内存重叠\n");
+		out = (char *)out + n - 1;
+    in = (char *)in + n - 1;
 		while(n--){
-			*(uint8_t *)out = *(uint8_t *)in;
-			out = (uint8_t *)out - 1;
-			out = (uint8_t *)in - 1;
+			*(char *)out = *(char *)in;
+			out = (char *)out - 1;
+			in = (char *)in - 1;
 		}
 	}
   return ret;
