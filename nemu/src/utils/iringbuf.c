@@ -9,6 +9,7 @@
 //##################################打算在这里实现输出iringbuf的功能######################################################
 //打算在这里去实现iringbuf指令环形缓冲区的功能  先定义一个iringbuf缓冲区节点
 
+#ifdef CONFIG_IRINGBUF
 int num_node=0;
 IringNode* head;
 IringNode* tail;
@@ -47,4 +48,5 @@ void display_iringbuf()
   }
   puts(ANSI_NONE);
 }
+#endif
 //##########################################################################

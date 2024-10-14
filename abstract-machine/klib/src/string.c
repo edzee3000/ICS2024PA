@@ -146,10 +146,9 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-  uint8_t *ptr = (uint8_t *)s;
-  size_t i=0;
-  for (; i < n; i++) ptr[i] = (uint8_t)c;
-  return (void *)s;
+  char *xs = s;
+  while (n--) *xs++ = c;
+  return s;
   //panic("Not implemented");
   //The  memset()  function  fills  the  first  n  bytes of the memory area
   //     pointed to by s with the constant byte c.
@@ -159,35 +158,35 @@ void *memmove(void *dst, const void *src, size_t n) {
   if(dst==NULL&&src==NULL){printf("注意此时你传进来了2个NULL空指针\n");return dst;}
   else if(dst==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return dst;}
   else if(src==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return dst;}
-  else if(n==0){*(char*)dst='\0';return dst;}
-  //panic("Not implemented");
-  // uint8_t *temp=(uint8_t *)malloc(n);
-  uint8_t temp[1024];
-  uint8_t *s1=(uint8_t*)dst;
-  uint8_t *s2=(uint8_t*)src;
-  size_t i;
-  for(i=0;i<n;i++) temp[i]=s2[i];
-  for(i=0;i<n;i++) s1[i]=temp[i];
-  return (void *)dst;
+  else if(n==0){printf("拷贝长度为0\n");char* cp=(char*)dst;*cp='\0';return dst;}
+  // //panic("Not implemented");
+  // // uint8_t *temp=(uint8_t *)malloc(n);
+  // uint8_t temp[1024];
+  // uint8_t *s1=(uint8_t*)dst;
+  // uint8_t *s2=(uint8_t*)src;
+  // size_t i;
+  // for(i=0;i<n;i++) temp[i]=s2[i];
+  // for(i=0;i<n;i++) s1[i]=temp[i];
+  // return (void *)dst;
 
-  // void *ret=dst;
-  // //这里来判别dest和src是否是指向同一字符串中不同位置，
-  // //如果是指向同一字符串，但是dest在src前面，则可以从前往后逐个赋值
-  // //如果是指向同一字符串，但是dest在src后面，且dest>=src+count,那么仍然从前往后赋值
-  // if(dst<=src||dst>=src+n)
-  // {
-  //     while(n--)
-  //         *(char*)dst++=*(char*)src++;
-  // }
-  // //如果是指向同一字符串，但是dest在src后面，且dest<=src+count,那么从后往前赋值
-  // else
-  // {
-  //     dst+=n-1;
-  //     src+=n-1;
-  //     while(n--)
-  //         *(char*)dst--=*(char*)src--;
-  // }
-  // return ret;
+  void *ret=dst;
+  //这里来判别dest和src是否是指向同一字符串中不同位置，
+  //如果是指向同一字符串，但是dest在src前面，则可以从前往后逐个赋值
+  //如果是指向同一字符串，但是dest在src后面，且dest>=src+count,那么仍然从前往后赋值
+  if(dst<=src||dst>=src+n)
+  {
+      while(n--)
+          *(char*)dst++=*(char*)src++;
+  }
+  //如果是指向同一字符串，但是dest在src后面，且dest<=src+count,那么从后往前赋值
+  else
+  {
+      dst+=n-1;
+      src+=n-1;
+      while(n--)
+          *(char*)dst--=*(char*)src--;
+  }
+  return ret;
 
 
   //memmove() 函数是 C 语言标准库中的一个函数，用于拷贝内存区域。与 memcpy() 不同的是，memmove() 可以安全地处理源内存区域和目标内存区域重叠的情况
