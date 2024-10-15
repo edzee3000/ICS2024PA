@@ -254,7 +254,14 @@ config FTRACE_COND
 
 
 
-
+config DTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable Device tracer"
+  default y
+config DTRACE_COND
+  depends on DTRACE
+  string "Only trace Devices when the condition is true"
+  default "true"
 
 
 
