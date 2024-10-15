@@ -58,10 +58,10 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *s1, const char *s2) {
-  if(s1==NULL&&s2==NULL){printf("注意此时你传进来了2个NULL空指针\n");return 0;}
+  if(s1==NULL && s2==NULL){printf("注意此时你传进来了2个NULL空指针\n");return 0;}
   else if(s1==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return -1;}
   else if(s2==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return 1;}
-  else if(strlen(s1)==1&&strlen(s2)==1){return 0;}
+  else if(strlen(s1)==1 && strlen(s2)==1){return 0;}
   //panic("Not implemented");
   size_t len_s1=strlen(s1)+1;//算上'\0'的长度
   size_t len_s2=strlen(s2)+1;
@@ -75,6 +75,14 @@ int strcmp(const char *s1, const char *s2) {
   else if(i==len_s1) return -1;
   else if(i==len_s2) return 1;
   else return 0;
+  //  int ret = 0 ;
+  //   while( ! (ret = *(unsigned char *)s1 - *(unsigned char *)s2) && *s2)
+  //               ++s1, ++s2;  
+  //   if ( ret < 0 )
+  //          ret = -1 ;
+  //   else if ( ret > 0 )
+  //          ret = 1 ;
+  //   return( ret );
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
@@ -146,8 +154,10 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-  char *xs = s;
-  while (n--) *xs++ = c;
+  const unsigned char uc = c;
+  unsigned char *su=s;
+  // printf("su的值为:%u\n",su);
+  for(; 0 < n;su++,n--) {*su = uc;}
   return s;
   //panic("Not implemented");
   //The  memset()  function  fills  the  first  n  bytes of the memory area
@@ -168,24 +178,30 @@ void *memmove(void *dst, const void *src, size_t n) {
   // for(i=0;i<n;i++) temp[i]=s2[i];
   // for(i=0;i<n;i++) s1[i]=temp[i];
   // return (void *)dst;
-
-  void *ret=dst;
-  //这里来判别dest和src是否是指向同一字符串中不同位置，
-  //如果是指向同一字符串，但是dest在src前面，则可以从前往后逐个赋值
-  //如果是指向同一字符串，但是dest在src后面，且dest>=src+count,那么仍然从前往后赋值
-  if(dst<=src||dst>=src+n)
-  {
-      while(n--)
-          *(char*)dst++=*(char*)src++;
-  }
-  //如果是指向同一字符串，但是dest在src后面，且dest<=src+count,那么从后往前赋值
-  else
-  {
-      dst+=n-1;
-      src+=n-1;
-      while(n--)
-          *(char*)dst--=*(char*)src--;
-  }
+  // printf("调用memmove\n");
+  void *ret = dst;
+	
+	if(dst <= src || (char *)dst >= (char *)src + n){
+		//没有内存重叠，从低地址开始复制
+    // printf("调用memmove\n");
+		while(n!=0){
+      // printf("调用memmove\n");
+			*(char *)dst = *(char *)src;
+			dst = (char *)dst + 1;
+			src = (char *)src + 1;
+      n--;
+		}
+	}else{
+		//有内存重叠，从高地址开始复制
+    printf("存在内存重叠\n");
+		dst = (char *)dst + n - 1;
+    src = (char *)src + n - 1;
+		while(n!=0){
+			*(char *)dst = *(char *)src;
+			dst = (char *)dst - 1;
+			src = (char *)src - 1;
+		}
+	}
   return ret;
 
 

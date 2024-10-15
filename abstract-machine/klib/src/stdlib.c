@@ -43,6 +43,9 @@ void *malloc(size_t size) {
   // panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
   // panic("Not implemented");
+#endif
+  // #if defined(__NATIVE_USE_KLIB__)
+  // panic("Not implemented");
   // The  malloc(), calloc(), realloc(), and reallocarray() functions return
   //  a pointer to the allocated memory, which is suitably  aligned  for  any
   //  type  that fits into the requested size or less.  On error, these func‐
@@ -67,12 +70,13 @@ void *malloc(size_t size) {
   // extern char _heap_start;
   static char *addr = NULL; // 上次分配内存的位置
   static char *heap_end = NULL; // 堆的结束地址
+  // printf("调用了malloc函数\n");
   // 初始化堆的起始和结束地址
-    if (heap_end == NULL) {
-        addr = heap.start;
-        heap_end = heap.end;
-        printf("heap.start值为:%d\n");
-    }
+  if (heap_end == NULL) {
+      addr = heap.start;
+      heap_end = heap.end;
+      // printf("heap.start值为:%u\n",heap.start);
+  }
   // if(addr==0) { addr=heap.start;printf("heap.start值为:%d\n", (char *)heap.start);}
   // 确保size是按对齐要求对齐的
   size = (size + sizeof(void*) - 1) & ~(sizeof(void*) - 1);//和 ~(0000000000011)进行与操作  和4字节进行对齐
@@ -92,4 +96,4 @@ void *malloc(size_t size) {
 void free(void *ptr) {
 }
 
-#endif
+

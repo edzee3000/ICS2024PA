@@ -5,7 +5,7 @@
 
 void __am_gpu_init() {
 }
-
+// // 难道是这里有问题？？？？？？
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
@@ -13,6 +13,13 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
     .vmemsz = 0
   };
 }
+// void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+//   *cfg = (AM_GPU_CONFIG_T) {
+//     .present = true, .has_accel = false,
+//     .width = 400, .height = 300,
+//     .vmemsz = 0
+//   };
+// }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
