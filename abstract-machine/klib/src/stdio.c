@@ -103,7 +103,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
               buf[buf_len] = NUM_CHAR[val % 10];    //这里buf会是逆序的
             for(int i = buf_len - 1; i >= 0; i--)
               out[len++] = buf[i];
-          break;
+            break;
           case 'u':
             uint32_t uval = va_arg(ap, uint32_t);
             // 同%d, 只不过不用考虑负数
@@ -112,16 +112,16 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
               buf[buf_len] = NUM_CHAR[uval % 10];    //这里buf会是逆序的
             for(int i = buf_len - 1; i >= 0; i--)
               out[len++] = buf[i];
-          break;
+            break;
           case 'c':
             char c = (char)va_arg(ap, int);    //va_arg函数没有char这个参数
             out[len++] = c;
-          break;
+            break;
           case 's':
             char *s = va_arg(ap, char*);
             for(int i = 0; s[i] != '\0'; i++)
               out[len++] = s[i];
-          break;
+            break;
           case 'p':
             out[len++] = '0'; out[len++] = 'x';
             uint32_t address = va_arg(ap, uint32_t);
@@ -129,14 +129,22 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
               buf[buf_len] = NUM_CHAR[address % 16];
             for(int i = buf_len - 1; i >= 0; i--)
               out[len++] = buf[i];
-          break;               
+            break;
+          default:
+            //接下来就处理一些特殊情况了  比如%02d之类的
+            break;               
         }
       break; // case % 的break.
       case '\n':
-        out[len++] = '\n';
-      break;
+        out[len++] = '\n';break;
+      case '\t':
+        out[len++] = '\t';break;
+      case '\b':
+        out[len++] = '\b';break;
+      case '\0':
+        out[len++] = '\0';break;
       default:
-        out[len++] = *fmt;
+        out[len++] = *fmt;break;
     }
     fmt++;
   }
