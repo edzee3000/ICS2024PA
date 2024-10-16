@@ -39,7 +39,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-// IFDEF(CONFIG_WATCHPOINT,void wp_diff_test();)
+IFDEF(CONFIG_WATCHPOINT,void wp_diff_test();)
 
 void print_trace_memory();
 
