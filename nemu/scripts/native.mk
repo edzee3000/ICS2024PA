@@ -21,7 +21,7 @@ include $(NEMU_HOME)/tools/difftest.mk
 
 #如果把$(call git_commit, "compile NEMU")这条语句注释掉的话那么每次make编译的时候就不会自动帮我commit了  $(call git_commit, "compile NEMU")
 compile_git:
-	
+	$(call git_commit, "compile NEMU")
 $(BINARY):: compile_git
 
 # Some convenient rules
@@ -38,12 +38,12 @@ run-env: $(BINARY) $(DIFF_REF_SO)
 #如果把	$(call git_commit, "run NEMU")  这一行注释掉的话每一次make run的时候就不会帮我trace跟踪记录了   $(call git_commit, "run NEMU")  
 #但是这也挺危险的  毕竟需要自己手动commit……万一哪里出了问题emmm……
 run: run-env
-	
+	$(call git_commit, "run NEMU") 
 	$(NEMU_EXEC)
 
 #然后发现原来gdb也会帮我自动commit 因此我在这里先注释掉 $(call git_commit, "gdb NEMU")
 gdb: run-env
-	
+	$(call git_commit, "gdb NEMU")
 	gdb -s $(BINARY) --args $(NEMU_EXEC)
 
 clean-tools = $(dir $(shell find ./tools -maxdepth 2 -mindepth 2 -name "Makefile"))
