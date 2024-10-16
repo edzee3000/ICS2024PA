@@ -12,7 +12,11 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
+// 键盘是最基本的输入设备. 一般键盘的工作方式如下: 当按下一个键的时候, 键盘将会发送该键的通码(make code); 
+// 当释放一个键的时候, 键盘将会发送该键的断码(break code). 
+// nemu/src/device/keyboard.c模拟了i8042通用设备接口芯片的功能. 其大部分功能也被简化, 只保留了键盘接口. 
+// i8042芯片初始化时会分别注册0x60处长度为4个字节的端口, 以及0xa0000060处长度为4字节的MMIO空间, 它们都会映射到i8042的数据寄存器. 
+// 每当用户敲下/释放按键时, 将会把相应的键盘码放入数据寄存器, CPU可以访问数据寄存器, 获得键盘码; 当无按键可获取时, 将会返回AM_KEY_NONE.
 #include <device/map.h>
 #include <utils.h>
 
@@ -21,7 +25,7 @@
 #ifndef CONFIG_TARGET_AM
 #include <SDL2/SDL.h>
 
-// Note that this is not the standard
+// Note that this is not the standard  注意这里面的f()并不是标准的
 #define NEMU_KEYS(f) \
   f(ESCAPE) f(F1) f(F2) f(F3) f(F4) f(F5) f(F6) f(F7) f(F8) f(F9) f(F10) f(F11) f(F12) \
 f(GRAVE) f(1) f(2) f(3) f(4) f(5) f(6) f(7) f(8) f(9) f(0) f(MINUS) f(EQUALS) f(BACKSPACE) \
@@ -70,7 +74,7 @@ void send_key(uint8_t scancode, bool is_keydown) {
     key_enqueue(am_scancode);
   }
 }
-#else // !CONFIG_TARGET_AM
+#else // !CONFIG_TARGET_AM    
 #define NEMU_KEY_NONE 0
 
 static uint32_t key_dequeue() {

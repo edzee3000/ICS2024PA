@@ -7,6 +7,8 @@ void __am_timer_init() {
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   // uint32_t low = inl(RTC_ADDR);
   // uint32_t high = inl(RTC_ADDR+4);
+  // 这里可能会很奇怪inl()是个什么玩意？？它的函数定义在abstract-machine/am/src/riscv/riscv.h当中
+  // static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }  用来访问设备过程中读取设备地址的
   uint32_t high = inl(RTC_ADDR+4);
   uint32_t low = inl(RTC_ADDR);
   uptime->us=(uint64_t)low | ((uint64_t)high)<<32;

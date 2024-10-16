@@ -13,8 +13,8 @@ AM_DEVREG( 3, UART_RX,      RD, char data);
 AM_DEVREG( 4, TIMER_CONFIG, RD, bool present, has_rtc);
 AM_DEVREG( 5, TIMER_RTC,    RD, int year, month, day, hour, minute, second);
 AM_DEVREG( 6, TIMER_UPTIME, RD, uint64_t us);
-AM_DEVREG( 7, INPUT_CONFIG, RD, bool present);
-AM_DEVREG( 8, INPUT_KEYBRD, RD, bool keydown; int keycode);
+AM_DEVREG( 7, INPUT_CONFIG, RD, bool present);//输入配置
+AM_DEVREG( 8, INPUT_KEYBRD, RD, bool keydown; int keycode);//定义了一个键盘输入的抽象寄存器
 AM_DEVREG( 9, GPU_CONFIG,   RD, bool present, has_accel; int width, height, vmemsz);
 AM_DEVREG(10, GPU_STATUS,   RD, bool ready);
 AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
@@ -32,7 +32,7 @@ AM_DEVREG(22, NET_STATUS,   RD, int rx_len, tx_len);
 AM_DEVREG(23, NET_TX,       WR, Area buf);
 AM_DEVREG(24, NET_RX,       WR, Area buf);
 
-// Input
+// Input 输入部分
 
 #define AM_KEYS(_) \
   _(ESCAPE) _(F1) _(F2) _(F3) _(F4) _(F5) _(F6) _(F7) _(F8) _(F9) _(F10) _(F11) _(F12) \
@@ -47,9 +47,9 @@ AM_DEVREG(24, NET_RX,       WR, Area buf);
 enum {
   AM_KEY_NONE = 0,
   AM_KEYS(AM_KEY_NAMES)
-};
+};//定义一个枚举类型讲上面的那些键分别赋予一个enum的值
 
-// GPU
+// GPU 图形处理器部分
 
 #define AM_GPU_TEXTURE  1
 #define AM_GPU_SUBTREE  2

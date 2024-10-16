@@ -15,6 +15,7 @@
 
 #include <device/map.h>
 #include <memory/paddr.h>
+#include <dtrace.h>
 
 #define NR_MAP 16
 
@@ -26,12 +27,20 @@ static IOMap* fetch_mmio_map(paddr_t addr) {
   return (mapid == -1 ? NULL : &maps[mapid]);
 }
 
+
+
+
+
 //报告内存映射输入输出重叠了
 static void report_mmio_overlap(const char *name1, paddr_t l1, paddr_t r1,
     const char *name2, paddr_t l2, paddr_t r2) {
   panic("MMIO region %s@[" FMT_PADDR ", " FMT_PADDR "] is overlapped "
                "with %s@[" FMT_PADDR ", " FMT_PADDR "]", name1, l1, r1, name2, l2, r2);
 }
+
+
+
+
 
 /* device interface 设备接口  添加内存映射输入输出的接口  serial串口、timer时钟等等都要用它*/
 void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_callback_t callback) {
@@ -49,16 +58,26 @@ void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_
   maps[nr_map] = (IOMap){ .name = name, .low = addr, .high = addr + len - 1,
     .space = space, .callback = callback };
   Log("Add mmio map '%s' at [" FMT_PADDR ", " FMT_PADDR "]",
-      maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);
+      maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);//这里有一个Log语句表示添加内存映射输入输出map映射
 
   nr_map ++;
 }
 
+
+
+
+
 /* bus interface 总线接口*/
 word_t mmio_read(paddr_t addr, int len) {
-  return map_read(addr, len, fetch_mmio_map(addr));
+  //在这里添加dtrace语句####################################################################################
+  IOMap* map=fetch_mmio_map(addr);
+  IFDEF(CONFIG_DTRACE,trace_dread(addr,len,map));
+  return map_read(addr, len, map);
 }
 
 void mmio_write(paddr_t addr, int len, word_t data) {
-  map_write(addr, len, data, fetch_mmio_map(addr));
+  //在这里添加dtrace语句####################################################################################
+  IOMap* map=fetch_mmio_map(addr);
+  IFDEF(CONFIG_DTRACE,trace_dwrite(addr,len,data,map));
+  map_write(addr, len, data, map);
 }
