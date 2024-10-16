@@ -4,7 +4,7 @@
 #define SYNC_ADDR (VGACTL_ADDR + 4)  //这里软件(AM)实现了同步屏幕的功能, 但硬件(NEMU)尚未添加相应的支持.
 
 void __am_gpu_init() {
-  // 这一段的测试代码只是在最开始给画面填充了一些没有意义的颜色而已，运行起来就会看到蓝绿渐变的一副画面
+  // // 这一段的测试代码只是在最开始给画面填充了一些没有意义的颜色而已，运行起来就会看到蓝绿渐变的一副画面
   // int i;
   // int w = (inl(VGACTL_ADDR)>>16);  // TODO: get the correct width
   // int h = (inl(VGACTL_ADDR)& 0xffff);  // TODO: get the correct height
@@ -50,13 +50,19 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int y=ctl->y;
   int w=ctl->w;
   int h=ctl->h;
+  uint32_t screen_wh = inl(VGACTL_ADDR);//获取VGACTL地址
+  // uint32_t screen_h = screen_wh & 0xffff; //获取低4位的内容 作为高
+  uint32_t screen_w = screen_wh >> 16;  //获取高四位的内容  作为宽
   if (!ctl->sync && (w == 0 || h == 0)) return;//若ctl->sync为false/0  并且w或h为0  则不输出直接返回
   uint32_t *pixels = ctl->pixels;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for(int i=y;i<y+h;i++)//从竖直方向上的y轴上的y开始画
   {
-    for(int j=x;x<x+w;j++)
-      fb[]
+    for(int j=x;j<x+w;j++)
+      fb[screen_w*i+j] = pixels[w*(i-y)+(j-x)];  //这里为什么是pixels[w*(i-y)+(j-x)]???????
+  }
+  if (ctl->sync) {
+    outl(SYNC_ADDR, 1);
   }
 }
 
