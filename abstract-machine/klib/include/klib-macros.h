@@ -18,7 +18,7 @@
 #define io_read(reg) \
   ({ reg##_T __io_param; \
     ioe_read(reg, &__io_param); \
-    __io_param; })
+    __io_param; })//从reg寄存器里面读取内容  执行三个操作
 
 #define io_write(reg, ...) \
   ({ reg##_T __io_param = (reg##_T) { __VA_ARGS__ }; \

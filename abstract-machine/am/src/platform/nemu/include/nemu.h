@@ -29,10 +29,10 @@
 #define SERIAL_PORT     (DEVICE_BASE + 0x00003f8)  //串口端口
 #define KBD_ADDR        (DEVICE_BASE + 0x0000060)  //设备的键盘地址
 #define RTC_ADDR        (DEVICE_BASE + 0x0000048)  //RTC实时时钟地址
-#define VGACTL_ADDR     (DEVICE_BASE + 0x0000100)
+#define VGACTL_ADDR     (DEVICE_BASE + 0x0000100)  //VDACTL的地址
 #define AUDIO_ADDR      (DEVICE_BASE + 0x0000200)
 #define DISK_ADDR       (DEVICE_BASE + 0x0000300)
-#define FB_ADDR         (MMIO_BASE   + 0x1000000)
+#define FB_ADDR         (MMIO_BASE   + 0x1000000)  //Flame Buffer帧缓冲区的物理地址
 #define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000)
 
 extern char _pmem_start;
