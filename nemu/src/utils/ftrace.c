@@ -2,6 +2,7 @@
 #include <isa.h>
 #include <elf.h>
 #include <ftrace.h>
+#include <stdlib.h>
 #include <memory/paddr.h>
 #define ftrace_write log_write
 

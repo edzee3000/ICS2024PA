@@ -15,29 +15,13 @@
 
 #include "sdb.h"
 
-#define NR_WP 32
-
 #include <string.h>
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-  char EXPR[128];
-  uint32_t Res;
-} WP;
+#include <watchpoint.h>
 
 
 static WP* new_wp();//其中new_wp()从free_链表中返回一个空闲的监视点结构, 
 //需要注意的是, 调用new_wp()时可能会出现没有空闲监视点结构的情况, 为了简单起见, 此时可以通过assert(0)马上终止程序
 static void free_wp(WP *wp);//free_wp()将wp归还到free_链表中
-void print_wp();
-void set_watch_pointer(char *args,uint32_t res);
-void delete_N_wp(int N);
-void wp_diff_test();
-
-
-
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;//其中head用于组织使用中的监视点结构, free_用于组织空闲的监视点结构, init_wp_pool()函数会对两个链表进行初始化.

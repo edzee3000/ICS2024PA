@@ -22,6 +22,7 @@
 
 #include <ftrace.h>
 #include <iringbuf.h>
+#include <watchpoint.h>
 
 /* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
@@ -38,7 +39,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-void wp_diff_test() ;
+IFDEF(CONFIG_WATCHPOINT,void wp_diff_test();)
 
 void print_trace_memory();
 
@@ -51,7 +52,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 //################################################################################################################################
 #ifdef CONFIG_WATCHPOINT
-  wp_diff_test();  //***************************在pa2当中为了提高效率暂时先把watchpointer的功能给关闭掉********************************************
+  //***************************在pa2当中为了提高效率暂时先把watchpointer的功能给关闭掉********************************************
   IFDEF(CONFIG_WATCHPOINT, wp_diff_test()); //使用CONFIG_WATCHPOINT的宏把检查监视点的代码包起来
   //后在nemu/Kconfig中为监视点添加一个开关选项, 最后通过menuconfig打开这个选项, 从而激活监视点的功能
 #endif
