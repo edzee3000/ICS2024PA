@@ -24,6 +24,8 @@
 #include <iringbuf.h>
 #include <watchpoint.h>
 
+
+#include <debug.h>
 /* The assembly code of instructions executed is only output to the screen  当执行的指令数量小于这个值时，执行的指令汇编代码才会输出到屏幕上。
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.当你使用 `si' 命令时，这很有用。
