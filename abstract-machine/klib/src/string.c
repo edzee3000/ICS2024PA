@@ -184,19 +184,18 @@ void *memmove(void *dst, const void *src, size_t n) {
 	if(dst <= src || (char *)dst >= (char *)src + n){
 		//没有内存重叠，从低地址开始复制
     // printf("调用memmove\n");
-		while(n!=0){
+		while(n--){
       // printf("调用memmove\n");
 			*(char *)dst = *(char *)src;
 			dst = (char *)dst + 1;
 			src = (char *)src + 1;
-      n--;
 		}
 	}else{
 		//有内存重叠，从高地址开始复制
     printf("存在内存重叠\n");
 		dst = (char *)dst + n - 1;
     src = (char *)src + n - 1;
-		while(n!=0){
+		while(n--){
 			*(char *)dst = *(char *)src;
 			dst = (char *)dst - 1;
 			src = (char *)src - 1;
