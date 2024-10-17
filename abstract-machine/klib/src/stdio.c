@@ -137,12 +137,12 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       break; // case % 的break.
       case '\n':
         out[len++] = '\n';break;
-      // case '\t':
-      //   out[len++] = '\t';break;
-      // case '\b':
-      //   out[len++] = '\b';break;
-      // case '\0':
-      //   out[len++] = '\0';break;
+      case '\t':
+        out[len++] = '\t';break;
+      case '\b':
+        out[len++] = '\b';break;
+      case '\0':
+        out[len++] = '\0';break;
       default:
         out[len++] = *fmt;break;
     }
