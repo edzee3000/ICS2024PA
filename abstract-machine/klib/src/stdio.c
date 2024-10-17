@@ -122,7 +122,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
             for(int i = 0; s[i] != '\0'; i++)
               out[len++] = s[i];
             break;
-          case 'p':
+          case 'x':
             out[len++] = '0'; out[len++] = 'x';
             uint32_t address = va_arg(ap, uint32_t);
             for(buf_len = 0; address; address /= 16, buf_len++)
@@ -132,6 +132,14 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
             break;
           default:
             //接下来就处理一些特殊情况了  比如%02d之类的
+            if(*fmt<='9'&&*fmt>='0'  &&  *(fmt+1)<='9'&&*(fmt+1)>'0'   &&  *(fmt+2)=='d' )
+            {int val = va_arg(ap, int);     int ne_flag=0;
+            if(val<0){ne_flag=1;val=0-val;}   for(buf_len=0;val; val /= 10, buf_len++) buf[buf_len] = NUM_CHAR[val % 10];
+            while(buf_len<(int)(*(fmt+1)-'0')){buf[buf_len]='0';buf_len++;}    if(ne_flag==1){buf[buf_len]='-'; buf_len++;}
+            for(int i = buf_len - 1; i >= 0; i--)  out[len++] = buf[i];
+            fmt+=2;
+            }
+            
             break;               
         }
       break; // case % 的break.
