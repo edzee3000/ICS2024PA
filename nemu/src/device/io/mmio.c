@@ -49,21 +49,21 @@ static void report_mmio_overlap(const char *name1, paddr_t l1, paddr_t r1,
 void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_callback_t callback) {
   //限制最多只能有NR_MAP个设备接口（map方式）
   assert(nr_map < NR_MAP);//如果自己添加的设备接口数目超过NR_MAP的话会assert报错
-  paddr_t left = addr, right = addr + len - 1;
-  if (in_pmem(left) || in_pmem(right)) {
+  paddr_t left = addr, right = addr + len - 1;//设备接口需要的长度为len，比如serial串口设备就需要8字节的内存大小
+  if (in_pmem(left) || in_pmem(right)) {  //我们需要保证设备接口不在我们真实的物理地址里面，因为可能会误访问  因此需要判断  如果在里面的话就panic报错
     report_mmio_overlap(name, left, right, "pmem", PMEM_LEFT, PMEM_RIGHT);
   }
-  for (int i = 0; i < nr_map; i++) {
+  for (int i = 0; i < nr_map; i++) {//重新检查所有的所有的设备映射map之间是否存在内存重叠的问题
     if (left <= maps[i].high && right >= maps[i].low) {
       report_mmio_overlap(name, left, right, maps[i].name, maps[i].low, maps[i].high);
     }
   }
-
+  //如果一切检查都没有问题的话就创建新的map并且赋值给新id的map
   maps[nr_map] = (IOMap){ .name = name, .low = addr, .high = addr + len - 1,
     .space = space, .callback = callback };
   Log("Add mmio map '%s' at [" FMT_PADDR ", " FMT_PADDR "]",
       maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);//这里有一个Log语句表示添加内存映射输入输出map映射
-
+  //更新设备接口的个数
   nr_map ++;
 }
 
@@ -73,14 +73,14 @@ void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_
 
 /* bus interface 总线接口*/
 word_t mmio_read(paddr_t addr, int len) {
-  //在这里添加dtrace语句####################################################################################
+  //########在这里添加dtrace语句####################################################################################
   IOMap* map=fetch_mmio_map(addr);
   IFDEF(CONFIG_DTRACE,trace_dread(addr,len,map));
   return map_read(addr, len, map);
 }
 
 void mmio_write(paddr_t addr, int len, word_t data) {
-  //在这里添加dtrace语句####################################################################################
+  //########在这里添加dtrace语句####################################################################################
   IOMap* map=fetch_mmio_map(addr);
   IFDEF(CONFIG_DTRACE,trace_dwrite(addr,len,data,map));
   map_write(addr, len, data, map);
