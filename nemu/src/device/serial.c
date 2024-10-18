@@ -27,7 +27,7 @@ static uint8_t *serial_base = NULL;
 static void serial_putc(char ch) {
   MUXDEF(CONFIG_TARGET_AM, putch(ch), putc(ch, stderr));
 }
-
+//serial_io_handler函数是一个回调函数  若offset为0的话并且是write写的话则从串口写入内容  否则panic报错
 static void serial_io_handler(uint32_t offset, int len, bool is_write) {
   assert(len == 1);
   switch (offset) {

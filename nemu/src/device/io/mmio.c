@@ -22,8 +22,11 @@
 static IOMap maps[NR_MAP] = {};
 static int nr_map = 0;
 
+
+
+//获取内存映射输入输出map函数
 static IOMap* fetch_mmio_map(paddr_t addr) {
-  int mapid = find_mapid_by_addr(maps, nr_map, addr);
+  int mapid = find_mapid_by_addr(maps, nr_map, addr);//通过地址去找到map映射的id
   return (mapid == -1 ? NULL : &maps[mapid]);
 }
 
@@ -42,9 +45,10 @@ static void report_mmio_overlap(const char *name1, paddr_t l1, paddr_t r1,
 
 
 
-/* device interface 设备接口  添加内存映射输入输出的接口  serial串口、timer时钟等等都要用它*/
+/* device interface 初始化添加设备接口  添加内存映射输入输出的接口  serial串口、timer时钟等等都要用它*/
 void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_callback_t callback) {
-  assert(nr_map < NR_MAP);
+  //限制最多只能有NR_MAP个设备接口（map方式）
+  assert(nr_map < NR_MAP);//如果自己添加的设备接口数目超过NR_MAP的话会assert报错
   paddr_t left = addr, right = addr + len - 1;
   if (in_pmem(left) || in_pmem(right)) {
     report_mmio_overlap(name, left, right, "pmem", PMEM_LEFT, PMEM_RIGHT);

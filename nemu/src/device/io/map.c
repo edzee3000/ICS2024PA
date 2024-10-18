@@ -23,6 +23,7 @@
 static uint8_t *io_space = NULL;
 static uint8_t *p_space = NULL;
 
+//开辟新空间函数
 uint8_t* new_space(int size) {
   uint8_t *p = p_space;
   // page aligned;  页面对齐
@@ -32,8 +33,10 @@ uint8_t* new_space(int size) {
   return p;
 }
 
-//用于检查给定的地址 addr 是否在指定的内存映射 map 的有效范围内。这个函数通常用于模拟器、虚拟机或者操作系统的内存管理单元（MMU）中，以确保对内存的访问是合法的，没有越界。
+// 用于检查给定的地址 addr 是否在指定的内存映射 map 的有效范围内。
+// 这个函数通常用于模拟器、虚拟机或者操作系统的内存管理单元（MMU）中，以确保对内存的访问是合法的，没有越界。
 static void check_bound(IOMap *map, paddr_t addr) {
+  //假设map为NULL或者addr不在[map->low,map->high]的范围里面的话那就报错
   if (map == NULL) {
     Assert(map != NULL, "address (" FMT_PADDR ") is out of bound at pc = " FMT_WORD, addr, cpu.pc);
   } else {
@@ -44,7 +47,7 @@ static void check_bound(IOMap *map, paddr_t addr) {
 }
 //唤醒callback回调函数，在serial.c串口文件中有使用过用以判断是否是写而非读
 static void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
-  if (c != NULL) { c(offset, len, is_write); }
+  if (c != NULL) { c(offset, len, is_write); }  //执行callback回调函数
 }
 
 void init_map() {
@@ -54,11 +57,11 @@ void init_map() {
 }
 //map_read 函数用于从指定的内存映射区域读取数据。
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-  assert(len >= 1 && len <= 8);
-  check_bound(map, addr);
-  paddr_t offset = addr - map->low;
-  invoke_callback(map->callback, offset, len, false); // prepare data to read
-  word_t ret = host_read(map->space + offset, len);
+  assert(len >= 1 && len <= 8);//检查len的长度要在[1,8]之内
+  check_bound(map, addr);//检查addr是否越界（不在device设备的内存映射范围里面）
+  paddr_t offset = addr - map->low; // addr相对于device的映射偏移量
+  invoke_callback(map->callback, offset, len, false); // 准备读取的数据  根据本次映射的回调函数  根据不同的设备准备了不同的回调函数
+  word_t ret = host_read(map->space + offset, len);  
   return ret;
 }
 //map_write 函数用于向指定的内存映射区域写入数据

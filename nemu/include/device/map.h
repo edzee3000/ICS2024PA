@@ -37,7 +37,7 @@ static inline bool map_inside(IOMap *map, paddr_t addr) {
 static inline int find_mapid_by_addr(IOMap *maps, int size, paddr_t addr) {
   int i;
   for (i = 0; i < size; i ++) {
-    if (map_inside(maps + i, addr)) {
+    if (map_inside(maps + i, addr)){ //如果addr是在map映射的范围里面的话返回对应的map的id
       difftest_skip_ref();
       return i;
     }

@@ -16,9 +16,13 @@ endef
 _default:
 	@echo "Please run 'make' under subprojects."
 
+
+
+#	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://175.24.131.173:8080/static/submit.sh)"
+#	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s ./submit.sh)"
 submit:
 	git gc
-	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://175.24.131.173:8080/static/submit.sh)"
+	STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$(PA_HOME)/submit.sh"
 
 count:
 	@echo "PA1和PA0相比修改的代码行数为："
