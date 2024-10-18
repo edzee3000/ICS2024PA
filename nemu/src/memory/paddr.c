@@ -63,8 +63,6 @@ word_t paddr_read(paddr_t addr, int len) {
 // 是需要经过  vaddr_read(addr,len) <- paddr_read(addr,len) <- mmio_read(addr,len) 
 //                            <-  map_read(addr,len,map)  <-  host_read(real_addr , len)
 
-
-
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);

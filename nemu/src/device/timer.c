@@ -29,7 +29,12 @@ static void rtc_io_handler(uint32_t offset, int len, bool is_write) {
     // 注意这里有个trick有一个判断offset==4才会执行下面的语句
     // 意思是获取一次系统时间会触发两次这个回调函数，加一个判断避免重复get_time
     // 在上层am当中的__am_timer_uptime中inl的顺序应该是先读高32位，获取到当前系统时间，然后再读低32位
-    uint64_t us = get_time();//获得时间  而且这个时间是相对于boot_time而言的时间
+    // 假设根据am中的timer.c先  uint32_t low = inl(RTC_ADDR); 再 uint32_t high = inl(RTC_ADDR+4);  也就是先获取低字节再获取高字节时间
+    // 那么硬件nemu根据am中的命令，所获得的指令应该是先offset==0再offset==4，  
+    // 那么此时根据offset=0不获得当前的时间，即不更新rtc_port_base[0]低32位，获取到的是上一次__am_timer_uptime得到的系统时间的低32位
+    // 等到要获取高字节时间的时候，此时的offset==4，开始获得当前时间  并且将获得的时间更新到rtc_port_base里面去
+    // 在native里面到时没啥问题，但是在nemu里面就要命了，因为效率不是很高，其实是差了一拍的……
+    uint64_t us = get_time();//获得当前时间  而且这个时间是相对于boot_time而言的时间
     rtc_port_base[0] = (uint32_t)us; //存储低32位
     rtc_port_base[1] = us >> 32;  //存储高32位
   }
@@ -45,7 +50,7 @@ static void timer_intr() {//虚拟环境中唤醒时间指令    处理计时器
   }
 }
 #endif
-
+ 
 void init_timer() {
   rtc_port_base = (uint32_t *)new_space(8);
   // 给rtc开辟8字节的空间用于存储rtc端口的内容  
