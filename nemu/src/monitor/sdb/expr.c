@@ -303,7 +303,7 @@ int dominant_operator(int p , int q){
       else if(tokens[i].type == DECIMAL_NUM||tokens[i].type == HEX_NUM||tokens[i].type == REGISTER) continue;
       else if(priority(tokens[i].type) ==pr && tokens[i].type ==TK_NEG){ continue;}//////////////////////////////////////////////////
       else if(priority(tokens[i].type) ==pr && tokens[i].type ==NOT){ continue;}
-      else if(priority(tokens[i].type) >= pr ){//主操作运算符也是要按照顺序来，比如说4*3/2
+      else if(priority(tokens[i].type) >= pr ){//主操作运算符也是要按照顺序来，比如说4*3/2   -*0x80000000
           pr = priority(tokens[i].type);
           dom = i;
       }      
@@ -365,7 +365,7 @@ int eval(int p,int q) {
   }
   else {
     int op = dominant_operator(p,q);
-    // printf("op值为：%d\n",op);
+    printf("op值为：%d\n",op);
     if (tokens[op].type==TK_NEG){return 0-eval(op+1,q);}
     else if (tokens[op].type==DEREF){return vaddr_read(eval(op+1,q),4);}
     else if (tokens[op].type==NOT){return !eval(op+1,q);}
