@@ -26,11 +26,16 @@ static uint32_t *rtc_port_base = NULL;
 static void rtc_io_handler(uint32_t offset, int len, bool is_write) {
   assert(offset == 0 || offset == 4);
   if (!is_write && offset == 4) {//如果是read并且偏移量为4的话
+    // 注意这里有个trick有一个判断offset==4才会执行下面的语句
+    // 意思是获取一次系统时间会触发两次这个回调函数，加一个判断避免重复get_time
+    // 在上层am当中的__am_timer_uptime中inl的顺序应该是先读高32位，获取到当前系统时间，然后再读低32位
     uint64_t us = get_time();//获得时间  而且这个时间是相对于boot_time而言的时间
     rtc_port_base[0] = (uint32_t)us; //存储低32位
     rtc_port_base[1] = us >> 32;  //存储高32位
   }
 }
+// nemu/src/device/io/map.c中的  map_read()函数   当offset为4的时候，表示此时 
+
 
 #ifndef CONFIG_TARGET_AM
 static void timer_intr() {//虚拟环境中唤醒时间指令    处理计时器中断的回调函数
@@ -43,6 +48,8 @@ static void timer_intr() {//虚拟环境中唤醒时间指令    处理计时器
 
 void init_timer() {
   rtc_port_base = (uint32_t *)new_space(8);
+  // 给rtc开辟8字节的空间用于存储rtc端口的内容  
+  // 在这个情境下面表示的是 rtc_port_base[0]存储64位时间的低32位  rtc_port_base[1]存储64位时间的高32位
 #ifdef CONFIG_HAS_PORT_IO
   add_pio_map ("rtc", CONFIG_RTC_PORT, rtc_port_base, 8, rtc_io_handler);
 #else

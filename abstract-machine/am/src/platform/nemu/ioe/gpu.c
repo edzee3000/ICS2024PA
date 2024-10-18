@@ -63,6 +63,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
+    //abstract-machine/am/src/riscv/riscv.h当中定义的
+    //static inline void outl(uintptr_t addr, uint32_t data) { *(volatile uint32_t *)addr = data; }//写入一个字长的数据
   }
 }
 

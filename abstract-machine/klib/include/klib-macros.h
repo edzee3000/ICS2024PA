@@ -15,6 +15,10 @@
 #define putstr(s) \
   ({ for (const char *p = s; *p; p++) putch(*p); })
 
+
+// 为了方便地对这些抽象寄存器进行访问, klib中提供了io_read()和io_write()这两个宏, 
+// 它们分别对ioe_read()和ioe_write()这两个API进行了进一步的封装.
+// 这些都是在具体的游戏程序里面使用的
 #define io_read(reg) \
   ({ reg##_T __io_param; \
     ioe_read(reg, &__io_param); \

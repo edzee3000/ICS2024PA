@@ -1,7 +1,12 @@
 #ifndef __AMDEV_H__
 #define __AMDEV_H__
 
-// **MAY SUBJECT TO CHANGE IN THE FUTURE**
+
+// abstract-machine/am/include/amdev.h中定义了常见设备的"抽象寄存器"编号和相应的结构. 
+// 这些定义是架构无关的, 每个架构在实现各自的IOE API时, 都需要遵循这些定义(约定)
+
+
+// **MAY SUBJECT TO CHANGE IN THE FUTURE 在未来下面的可能会发生改变**
 
 #define AM_DEVREG(id, reg, perm, ...) \
   enum { AM_##reg = (id) }; \

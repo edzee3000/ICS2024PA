@@ -33,7 +33,8 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
   switch (offset) {
     /* We bind the serial port with the host stderr in NEMU. */
     case CH_OFFSET:
-      if (is_write) serial_putc(serial_base[0]);
+      if (is_write) serial_putc(serial_base[0]);//这里有个问题，既然只输出serial_base[0]字符，那为啥一开给它创建8字节的空间？  难道是为了页面对齐？？
+      // 操作系统使用页作为内存管理的基本单元，来管理进程的虚拟内存和物理内存之间的映射关系。
       //serial_putc(serial_base[0]);
       else panic("do not support read");
       break;
@@ -42,7 +43,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 void init_serial() {
-  serial_base = new_space(8);//开辟一块新的8字节的空间给串口基址（8字节存储2个地址）
+  serial_base = new_space(8);//开辟一块新的8字节的空间给串口基址（8字节存储64位bit）
 #ifdef CONFIG_HAS_PORT_IO
   add_pio_map ("serial", CONFIG_SERIAL_PORT, serial_base, 8, serial_io_handler);
 #else

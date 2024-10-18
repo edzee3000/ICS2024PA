@@ -9,6 +9,8 @@ static const char mainargs[MAINARGS_MAX_LEN] = MAINARGS_PLACEHOLDER; // defined 
 
 void putch(char ch) {
   outb(SERIAL_PORT, ch);
+  // outb是在riscv.h当中定义的   
+  // static inline void outb(uintptr_t addr, uint8_t  data) { *(volatile uint8_t  *)addr = data; }//写入一个字节的数据
 }
 
 void halt(int code) {
