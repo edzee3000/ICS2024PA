@@ -255,7 +255,7 @@ void judge_DEREF(int i)
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
    tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR||
    tokens[i - 1].type == LEQ || tokens[i - 1].type ==L|| tokens[i - 1].type ==GEQ|| tokens[i - 1].type ==G)) 
-    {tokens[i].type = DEREF;printf("出现解引用\n");}
+    {tokens[i].type = DEREF;/*printf("出现解引用\n");*/}
 }
 
 void judge_NEG(int i)
@@ -265,7 +265,7 @@ void judge_NEG(int i)
   (tokens[i-1].type!=DECIMAL_NUM&&
   tokens[i-1].type!=HEX_NUM&&tokens[i-1].type!=REGISTER&&tokens[i-1].type!=RIGHT_PAR)   ||
    tokens[i-1].type==LEFT_PAR))
-        {tokens[i].type = TK_NEG;printf("出现负数\n");}
+        {tokens[i].type = TK_NEG;/*printf("出现负数\n");*/}
 }
 
 //括号匹配函数
@@ -316,15 +316,14 @@ int dominant_operator(int p , int q){
 //判断优先级数值函数
 int priority(int token_type)
 {
-  if (token_type==TK_NEG)return 1;
+  // if (token_type==TK_NEG)return 1;
   if (token_type==REGISTER)return 2;
-  if (token_type==NOT||token_type==DEREF)return 3;
+  if (token_type==NOT||token_type==DEREF||token_type==TK_NEG)return 3;
   if (token_type==DIV||token_type==MUL)return 4;
   if (token_type==ADD||token_type==SUB)return 5;
-  if (token_type==TK_EQ||token_type==NOT_EQ||token_type==LEQ)return 6;
+  if (token_type==TK_EQ||token_type==NOT_EQ||token_type==LEQ||token_type==GEQ||token_type==L||token_type==G)return 6;
   if (token_type==AND)return 7;
   if (token_type==OR)return 8;
-  
   
   return -1;
 }
