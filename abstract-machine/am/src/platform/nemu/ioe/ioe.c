@@ -46,14 +46,26 @@ static void *lut[128] = { //lut的意思是 "lookup table"（查找表)
 
 static void fail(void *buf) { panic("access nonexist register"); }
 
+//用于进行IOE相关的初始化操作
 bool ioe_init() {
   for (int i = 0; i < LENGTH(lut); i++)
     if (!lut[i]) lut[i] = fail;
-  __am_gpu_init();
+  __am_gpu_init();  
   __am_timer_init();
   __am_audio_init();
   return true;
+  //初始化gpu、timer、audio等
 }
 
-void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); }
-void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } //通过ioe_write调用对应的lut "lookup table"（查找表)  然后执行am中对应的函数
+void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); } //从编号为reg的寄存器中读出内容到缓冲区buf中
+void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } //往编号为reg寄存器中写入缓冲区buf中的内容
+//通过ioe_write调用对应的lut "lookup table"（查找表)  然后执行am中对应的函数
+
+//需要注意的是, 这里的reg寄存器并不是上文讨论的设备寄存器, 因为设备寄存器的编号是架构相关的. 
+// 在IOE中, 我们希望采用一种架构无关的"抽象寄存器", 这个reg其实是一个功能编号,
+//  我们约定在不同的架构中, 同一个功能编号的含义也是相同的, 这样就实现了设备寄存器的抽象.
+
+
+// 设备访问的具体实现是架构相关的, 比如NEMU的VGA显存位于物理地址区间[0xa1000000, 0xa1080000), 
+// 但对native的程序来说, 这是一个不可访问的非法区间, 因此native程序需要通过别的方式来实现类似的功能. 
+// 自然地, 设备访问这一架构相关的功能, 应该归入AM中
