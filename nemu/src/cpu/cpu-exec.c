@@ -130,7 +130,12 @@ static void execute(uint64_t n) {
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
+    // cpu_exec()在执行每条指令之后就会调用device_update()函数, 
+    // 这个函数首先会检查距离上次设备更新是否已经超过一定时间, 
+    // 若是, 则会尝试刷新屏幕, 并进一步检查是否有按键按下/释放, 以及是否点击了窗口的X按钮; 
+    // 否则则直接返回, 避免检查过于频繁, 因为上述事件发生的频率是很低的.
   }
+
 
   //display_iringbuf的部分是不是可以放在这里？？？？？？？？？？？？？？？？？？
   // if(nemu_state.state==NEMU_ABORT||nemu_state.state==NEMU_STOP||nemu_state.state==NEMU_END)//#######注意这里需要修改，为了测试方便NEMU_END我也给它加进来了!!!!!!!!!!!!!!!!!!!!!!

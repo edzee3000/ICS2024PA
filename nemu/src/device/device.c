@@ -66,6 +66,8 @@ void device_update() {
 #endif
 }
 
+//NEMU使用SDL库来实现设备的模拟, nemu/src/device/device.c含有和SDL库相关的代码.
+
 void sdl_clear_event_queue() {
 #ifndef CONFIG_TARGET_AM
   SDL_Event event;
@@ -73,11 +75,18 @@ void sdl_clear_event_queue() {
 #endif
 }
 
-void init_device() {
-  IFDEF(CONFIG_TARGET_AM, ioe_init());
-  init_map();
 
-  IFDEF(CONFIG_HAS_SERIAL, init_serial());
+// init_device()函数主要进行以下工作:
+// 调用init_map()进行初始化.
+// 对上述设备进行初始化, 其中在初始化VGA时还会进行一些和SDL相关的初始化工作, 包括创建窗口, 设置显示模式等;
+// 然后会进行定时器(alarm)相关的初始化工作. 定时器的功能在PA4最后才会用到, 目前可以忽略它.
+
+void init_device() {
+  //如果nemu的上层目标是am的话就调用ioe_init函数
+  IFDEF(CONFIG_TARGET_AM, ioe_init());
+  init_map();//调用init_map()进行初始化映射的操作  在nemu/src/device/io/map.c文件里面
+  //如果有对应的设备定义的话就调用对应设备的初始化函数（因为声卡是选做内容因此暂时还没有config定义）
+  IFDEF(CONFIG_HAS_SERIAL, init_serial());//
   IFDEF(CONFIG_HAS_TIMER, init_timer());
   IFDEF(CONFIG_HAS_VGA, init_vga());
   IFDEF(CONFIG_HAS_KEYBOARD, init_i8042());
@@ -85,5 +94,5 @@ void init_device() {
   IFDEF(CONFIG_HAS_DISK, init_disk());
   IFDEF(CONFIG_HAS_SDCARD, init_sdcard());
 
-  IFNDEF(CONFIG_TARGET_AM, init_alarm());
+  IFNDEF(CONFIG_TARGET_AM, init_alarm());//定时器的功能在PA4最后才会用到, 目前可以忽略它.
 }
