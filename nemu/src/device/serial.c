@@ -27,7 +27,7 @@ static uint8_t *serial_base = NULL;
 static void serial_putc(char ch) {
   MUXDEF(CONFIG_TARGET_AM, putch(ch), putc(ch, stderr));
 }
-//serial_io_handler函数是一个回调函数  若offset为0的话并且是write写的话则从串口写入内容  否则panic报错
+//serial_io_handler串口输入输出处理函数 是一个回调函数  若offset为0的话并且是write写的话则从串口写入内容  否则panic报错
 static void serial_io_handler(uint32_t offset, int len, bool is_write) {
   assert(len == 1);
   switch (offset) {
@@ -42,7 +42,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
 }
 
 void init_serial() {
-  serial_base = new_space(8);
+  serial_base = new_space(8);//开辟一块新的8字节的空间给串口基址（8字节存储2个地址）
 #ifdef CONFIG_HAS_PORT_IO
   add_pio_map ("serial", CONFIG_SERIAL_PORT, serial_base, 8, serial_io_handler);
 #else

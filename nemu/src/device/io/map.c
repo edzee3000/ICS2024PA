@@ -60,8 +60,9 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);//检查len的长度要在[1,8]之内
   check_bound(map, addr);//检查addr是否越界（不在device设备的内存映射范围里面）
   paddr_t offset = addr - map->low; // addr相对于device的映射偏移量
-  invoke_callback(map->callback, offset, len, false); // 准备读取的数据  根据本次映射的回调函数  根据不同的设备准备了不同的回调函数
-  word_t ret = host_read(map->space + offset, len);  
+  invoke_callback(map->callback, offset, len, false); // 准备要读取的数据  根据本次映射的回调函数  根据不同的设备准备了不同的回调函数
+  word_t ret = host_read(map->space + offset, len);  //  真正从 map->space + offset 这个地址处读取长度为len的数据
+  //事实上真正的物理地址不是addr，addr只是一个虚拟地址，真正的物理地址应该是 addr - (map->low) + (map->space)  
   return ret;
 }
 //map_write 函数用于向指定的内存映射区域写入数据
