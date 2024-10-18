@@ -255,7 +255,7 @@ void judge_DEREF(int i)
    (tokens[i - 1].type == NOT || tokens[i - 1].type ==AND ||tokens[i - 1].type ==OR) ||
    tokens[i - 1].type == NOT_EQ || tokens[i - 1].type ==TK_EQ || tokens[i - 1].type ==LEFT_PAR||
    tokens[i - 1].type == LEQ || tokens[i - 1].type ==L|| tokens[i - 1].type ==GEQ|| tokens[i - 1].type ==G)) 
-    tokens[i].type = DEREF;
+    {tokens[i].type = DEREF;printf("出现解引用\n");}
 }
 
 void judge_NEG(int i)
@@ -265,7 +265,7 @@ void judge_NEG(int i)
   (tokens[i-1].type!=DECIMAL_NUM&&
   tokens[i-1].type!=HEX_NUM&&tokens[i-1].type!=REGISTER&&tokens[i-1].type!=RIGHT_PAR)   ||
    tokens[i-1].type==LEFT_PAR))
-        tokens[i].type = TK_NEG;
+        {tokens[i].type = TK_NEG;printf("出现负数\n");}
 }
 
 //括号匹配函数
