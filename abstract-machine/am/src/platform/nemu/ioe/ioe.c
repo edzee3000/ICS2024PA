@@ -73,13 +73,14 @@ void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } //往编号�
 // 自然地, 设备访问这一架构相关的功能, 应该归入AM中
 
 
-// 举个例子  在am-kernels/kernels/typing-game/game.c中的io_write函数
-// io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);  <- 
-// <- io_write(reg, ...) \
-//      ({ reg##_T __io_param = (reg##_T) { __VA_ARGS__ }; \
-//         ioe_write(reg, &__io_param); })
-// <- void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } 
-
+/*
+举个例子  在am-kernels/kernels/typing-game/game.c中的io_write函数
+io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);  <- 
+<- io_write(reg, ...) \
+     ({ reg##_T __io_param = (reg##_T) { __VA_ARGS__ }; \
+        ioe_write(reg, &__io_param); })
+<- void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } 
+*/
 
 
 
