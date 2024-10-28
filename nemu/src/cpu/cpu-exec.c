@@ -56,13 +56,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_WATCHPOINT, wp_diff_test();) //使用CONFIG_WATCHPOINT的宏把检查监视点的代码包起来
   //后在nemu/Kconfig中为监视点添加一个开关选项, 最后通过menuconfig打开这个选项, 从而激活监视点的功能
 #endif
-
-
-
 //###############################################################################################################################
-
-
-
 }
 
 
@@ -169,6 +163,15 @@ void assert_fail_msg() {
 
 /* Simulate how the CPU works.模拟CPU如何运行 */
 void cpu_exec(uint64_t n) {
+  // 让DiffTest支持异常响应机制，为了让DiffTest机制正确工作，针对riscv32, 你需要将mstatus初始化为0x1800； 针对riscv64, 你需要将mstatus初始化为0xa00001800.
+  #ifdef CONFIG_ISA
+  if(strcmp(CONFIG_ISA,"riscv32")==0) cpu.CSRs.mstatus=0x1800;
+  // else if(strcmp(CONFIG_ISA,"riscv64")==0) cpu.CSRs.mstatus=0xa00001800;
+  #endif
+  //###########################################################################################################################
+
+
+
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
@@ -177,11 +180,12 @@ void cpu_exec(uint64_t n) {
     default: nemu_state.state = NEMU_RUNNING;
   }
 
+
   uint64_t timer_start = get_time();
 
   execute(n);
   
-  //能不能在这里调用打印调用信息的ftrace
+  //能不能在这里调用打印调用信息的ftrace？？？？
   IFDEF(CONFIG_FTRACE, display_ftrace());
 
 

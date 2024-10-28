@@ -18,12 +18,28 @@
 
 #include <common.h>
 
+
+
+//riscv32提供了一些特殊的系统寄存器, 叫控制状态寄存器(CSR寄存器)
+//这里对CSR寄存器进行定义  给cpu的寄存器种类进行扩充
+typedef struct {
+  vaddr_t mepc;
+  word_t mstatus;
+  word_t mcause;
+  vaddr_t mtvec;//存储 异常入口地址
+} riscv32_CSRs;
+
+
+//riscv32的cpu结构体
 typedef struct {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;
+  riscv32_CSRs CSRs;//如果是riscv64的话也是可以用的  但是这里因为自己默认选择的就是riscv32的因此名字可能取得不是很好
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
-// decode
+
+
+// decode 解码
 typedef struct {
   union {
     uint32_t val;
