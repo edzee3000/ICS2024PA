@@ -71,7 +71,7 @@ word_t* CSRs(uint32_t index)
   case 0x342:return &(cpu.CSRs.mcause);
   case 0x300:return &(cpu.CSRs.mstatus);
   case 0x305:return &(cpu.CSRs.mtvec);
-  default:panic("访问CSR控制状态寄存器索引出问题\n出问题索引为%#x\n",index);return NULL;}
+  default:panic("访问CSR控制状态寄存器索引出问题\n出问题的索引为%#x\n",index);return NULL;}
 }
 
 
