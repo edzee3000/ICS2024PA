@@ -62,7 +62,6 @@ void yield() {
 #else
   asm volatile("li a7, -1; ecall");//这里手动加入一条ecall语句  将-1加载load到a7当中
 #endif
-
 }
 
 bool ienabled() {
