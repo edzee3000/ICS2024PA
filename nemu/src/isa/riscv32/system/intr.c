@@ -20,6 +20,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.    触发一个带有“NO”的中断/异常
    * Then return the address of the interrupt/exception vector.  然后返回中断/异常向量的地址
    */
+  if(NO==-1)epc+=4;//表示这个时候是需要加4的  因为是yield自陷
   cpu.CSRs.mcause=NO;//存储触发异常的原因NO
   cpu.CSRs.mepc=epc; //存储触发异常的pc
   // printf("异常入口地址为:%#x\n",cpu.CSRs.mtvec);
