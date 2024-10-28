@@ -164,10 +164,10 @@ void assert_fail_msg() {
 /* Simulate how the CPU works.模拟CPU如何运行 */
 void cpu_exec(uint64_t n) {
   // 让DiffTest支持异常响应机制，为了让DiffTest机制正确工作，针对riscv32, 你需要将mstatus初始化为0x1800； 针对riscv64, 你需要将mstatus初始化为0xa00001800.
-  #ifdef CONFIG_ISA
-  if(strcmp(CONFIG_ISA,"riscv32")==0) cpu.CSRs.mstatus=0x1800;
-  // else if(strcmp(CONFIG_ISA,"riscv64")==0) cpu.CSRs.mstatus=0xa00001800;
-  #endif
+  // #ifdef CONFIG_ISA
+  // if(strcmp(CONFIG_ISA,"riscv32")==0) cpu.CSRs.mstatus=0x1800;
+  // // else if(strcmp(CONFIG_ISA,"riscv64")==0) cpu.CSRs.mstatus=0xa00001800;
+  // #endif
   //###########################################################################################################################
 
 

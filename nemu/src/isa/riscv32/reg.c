@@ -50,11 +50,15 @@ void isa_reg_display() {
   //-------------------疑问：为什么在这里调用不了vaddr.c当中的函数，但是可以在sdb.c当中调用vaddr.c中的函数？？？？------------------
   //好的知道为什么了，原来不管是在哪里（sdb.c或者reg.c当中都是需要对vaddr_read函数进行声明的，声明之后才可以使用）
   //但是在这里修改了之后使用vaddr_read函数仍然会报错，而且错误更加严重，直接导致nemu虚拟机崩溃，根据错误
-
-
   }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
+  // //isa_reg_str2val这个函数是
+  // *success=true;
+  // int num_regs=sizeof(regs) / sizeof(regs[0]);
+  // for(int idx=0;idx<num_regs;idx++)
+  // {if(strcmp(s,regs[idx])==0)return gpr(idx);}
+  // panic("没有对应的寄存器\n");
   return 0;
 }

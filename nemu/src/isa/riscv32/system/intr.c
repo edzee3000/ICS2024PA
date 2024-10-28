@@ -15,12 +15,14 @@
 
 #include <isa.h>
 
+extern CPU_state cpu;
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  /* TODO: Trigger an interrupt/exception with ``NO''.
-   * Then return the address of the interrupt/exception vector.
+  /* TODO: Trigger an interrupt/exception with ``NO''.    触发一个带有“NO”的中断/异常
+   * Then return the address of the interrupt/exception vector.  然后返回中断/异常向量的地址
    */
-
-  return 0;
+  cpu.CSRs.mcause=NO;//存储触发异常的原因NO
+  cpu.CSRs.mepc=epc; //存储触发异常的pc
+  return cpu.CSRs.mtvec;//从mtvec寄存器中取出异常入口地址并返回
 }
 
 word_t isa_query_intr() {

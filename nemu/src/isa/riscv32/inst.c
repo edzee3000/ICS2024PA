@@ -22,6 +22,8 @@
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
+// #define ECALL(dnpc,pc) {bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc));}
+#define ECALL(dnpc,pc) dnpc = (isa_raise_intr(gpr(17), pc))
 
 enum {
   TYPE_I, TYPE_U, TYPE_S,
@@ -61,6 +63,16 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_R: src1R(); src2R(); break;
   }
 }
+
+word_t* CSR(uint32_t index)
+{ switch (index)
+  {case 0x341:return &(cpu.CSRs.mepc);
+  case 0x342:return &(cpu.CSRs.mcause);
+  case 0x310:return &(cpu.CSRs.mstatus);
+  case 0x305:return &(cpu.CSRs.mtvec);
+  default:printf("访问CSR控制状态寄存器索引出问题\n");assert(0);return NULL;}
+}
+
 
 static int decode_exec(Decode *s) {
   int rd = 0;
@@ -173,7 +185,11 @@ static int decode_exec(Decode *s) {
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai  ,I,{R(rd)=((int32_t)src1)>>(imm%32);});//立即数算术右移指令
 
 
-
+  //针对控制状态寄存器的相关指令
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs ,I,{R(rd)=*(CSR(imm)); *(CSR(imm))|= src1; });
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw ,I,{R(rd)=*(CSR(imm)); *(CSR(imm)) = src1; });
+  //riscv32的自陷指令
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL(s->dnpc,s->pc););//为了要更新pc并保存有问题的pc
 
 
   //一些奇奇怪怪的置位指令
@@ -186,9 +202,6 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));//在模式匹配过程的最后有一条inv的规则, 表示"若前面所有的模式匹配规则都无法成功匹配, 则将该指令视为非法指令
   INSTPAT_END();
-
-
-  //针对
 /*
 ·模式字符串中只允许出现4种字符:
 0表示相应的位只能匹配0
