@@ -22,7 +22,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
    */
   cpu.CSRs.mcause=NO;//存储触发异常的原因NO
   cpu.CSRs.mepc=epc; //存储触发异常的pc
-  printf("异常入口地址为:%#x\n",cpu.CSRs.mtvec);
+  // printf("异常入口地址为:%#x\n",cpu.CSRs.mtvec);
   return cpu.CSRs.mtvec;//从mtvec寄存器中取出异常入口地址并返回
 }
 
