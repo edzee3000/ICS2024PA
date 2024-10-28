@@ -8,7 +8,7 @@
 #endif
 
 struct Context {
-  // TODO: fix the order of these members to match trap.S
+  // TODO: fix the order of these members to match trap.S   修正成员的顺序以匹配 trap.S 文件
   uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
   void *pdir;
 };
