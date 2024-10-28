@@ -13,7 +13,8 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      default: ev.event = EVENT_ERROR; break;
+      case 0:ev.event= EVENT_YIELD;break;
+      default: ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
 
     c = user_handler(ev, c);
