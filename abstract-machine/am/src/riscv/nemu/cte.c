@@ -20,7 +20,7 @@ Context* __am_irq_handle(Context *c) {
 
     c = user_handler(ev, c);
     
-    printf("c的内容为:\nmcause为:%#x\nmstatus为:%#x\n",c->mcause,c->mstatus);
+    printf("c的内容为:\nmcause为:%u\nmstatus为:%u\n",c->mcause,c->mstatus);
 
     assert(c != NULL);
   }
