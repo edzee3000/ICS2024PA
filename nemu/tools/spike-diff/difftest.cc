@@ -37,8 +37,17 @@ static debug_module_config_t difftest_dm_config = {
 };
 
 struct diff_context_t {
+  //让DiffTest支持异常响应机制
+  // 这里有点坑的，文档只是提到了mstatus要初始化为0xa00001800，
+  // 但是我们得跑去c++代码里添加些代码来使得difftest支持新加入的CSR寄存器，
+  // 首先在difftest.cc中给diff_context_t添加新的寄存器，注意添加顺序要和riscv64_CPU_state中的寄存器顺序相同
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   word_t pc;
+  //CSR寄存器 控制状态寄存器
+  csr_t_p mepc;
+  mstatus_csr_t_p mstatus;
+  csr_t_p mcause;
+  csr_t_p mtvec;
 };
 
 static sim_t* s = NULL;
@@ -60,6 +69,10 @@ void sim_t::diff_get_regs(void* diff_context) {
     ctx->gpr[i] = state->XPR[i];
   }
   ctx->pc = state->pc;
+  ctx->mepc = state->mepc;
+  ctx->mstatus = state->mstatus;
+  ctx->mcause = state->mcause;
+  ctx->mtvec = state->mtvec;
 }
 
 void sim_t::diff_set_regs(void* diff_context) {
@@ -68,6 +81,10 @@ void sim_t::diff_set_regs(void* diff_context) {
     state->XPR.write(i, (sword_t)ctx->gpr[i]);
   }
   state->pc = ctx->pc;
+  state->mepc=ctx->mepc;
+  state->mstatus=ctx->mstatus;
+  state->mcause=ctx->mcause;
+  state->mtvec=ctx->mtvec ;
 }
 
 
