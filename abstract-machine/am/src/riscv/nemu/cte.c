@@ -9,6 +9,7 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 
 
 Context* __am_irq_handle(Context *c) {
+  // 可以在__am_irq_handle()中通过printf输出上下文c的内容, 然后通过简易调试器观察触发自陷时的寄存器状态, 从而检查你的Context实现是否正确
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
@@ -16,6 +17,9 @@ Context* __am_irq_handle(Context *c) {
     }
 
     c = user_handler(ev, c);
+    
+    printf("c的内容为:\nmcause为:%#x\nmstatus为:%#x\n",c->mcause,c->mstatus);
+
     assert(c != NULL);
   }
 
@@ -55,7 +59,6 @@ void yield() {
 #else
   asm volatile("li a7, -1; ecall");//这里手动加入一条ecall语句  将-1加载load到a7当中
 #endif
-
 
 }
 
