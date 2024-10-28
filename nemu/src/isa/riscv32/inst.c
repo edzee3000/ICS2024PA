@@ -23,7 +23,7 @@
 #define Mr vaddr_read
 #define Mw vaddr_write
 // #define ECALL(dnpc,pc) {bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc));}
-#define ECALL(dnpc,pc) dnpc = (isa_raise_intr(gpr(17), pc))
+#define ECALL s->dnpc = (isa_raise_intr(gpr(17),s->pc))
 #define CSR(index) CSRs(index)
 
 enum {
@@ -190,7 +190,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs ,I,{R(rd)=*(CSR(imm)); *(CSR(imm))|= src1; });
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw ,I,{R(rd)=*(CSR(imm)); *(CSR(imm)) = src1; });
   //riscv32的自陷指令
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL(s->dnpc,s->pc););//为了要更新pc并保存有问题的pc
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL;);//为了要更新pc并保存有问题的pc
 
 
   //一些奇奇怪怪的置位指令
