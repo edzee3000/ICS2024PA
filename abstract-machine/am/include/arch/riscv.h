@@ -13,6 +13,7 @@ struct Context {
   // uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;  这个是原本的顺序
   uintptr_t gpr[NR_REGS], mcause, mstatus, mepc;
   void *pdir;
+  // uintptr_t np;
 };
 
 #ifdef __riscv_e

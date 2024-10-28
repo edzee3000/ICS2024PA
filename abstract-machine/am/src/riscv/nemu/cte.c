@@ -54,6 +54,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 //用于进行自陷操作, 会触发一个编号为EVENT_YIELD事件. 不同的ISA会使用不同的自陷指令来触发自陷操作
 void yield() {
+
 #ifdef __riscv_e
   asm volatile("li a5, -1; ecall");
 #else
