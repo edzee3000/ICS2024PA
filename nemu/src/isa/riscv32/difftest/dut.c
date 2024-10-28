@@ -20,8 +20,23 @@
 // #include <memory/vaddr.h>
 //#include "../include/common.h"
 
-
 extern const char *regs[];//注意这里是需要从外部reg.c中引入一个const char数组的regs
+
+
+#define CHECKDIFFPC(p) if (ref_r->p != cpu.p) { \
+  printf("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.p); \
+  return false; \
+}
+#define CHECKDIFF(p) if (ref_r->p != cpu.CSRs.p) { \
+  printf("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.CSRs.p); \
+  return false; \
+}
+#define CHECKDIFF_FMT(name, i) if (ref_r->gpr[i] != gpr(i)) { \
+  printf("Different values of reg %s, REF: " FMT_WORD "DUT: " FMT_WORD "\n", name, ref_r->gpr[i], gpr(i)); \
+  return false; \
+}
+
+
 
 //isa_difftest_checkregs()函数, 把通用寄存器和PC与从DUT中读出的寄存器的值进行比较. 
 //若对比结果一致, 函数返回true; 如果发现值不一样, 函数返回false, 框架代码会自动停止客户程序的运行. 
@@ -39,6 +54,23 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       return false;
     }
   }
+
+
+  //#######################################################################考虑一下使用
+  // int reg_num = ARRLEN(cpu.gpr);
+  // for (int i = 0; i < reg_num; i++) {
+  //   CHECKDIFF_FMT(regs[i], i);
+  // }
+  // CHECKDIFFPC(pc); 
+  // CHECKDIFF(mstatus);
+	// CHECKDIFF(mcause);
+  // CHECKDIFF(mepc);
+  // CHECKDIFF(mtvec);
+  //#######################################################################
+
+
+
+
   return true;
 
 }

@@ -69,10 +69,12 @@ void sim_t::diff_get_regs(void* diff_context) {
     ctx->gpr[i] = state->XPR[i];
   }
   ctx->pc = state->pc;
+  //###############################################
   ctx->mepc = state->mepc;
   ctx->mstatus = state->mstatus;
   ctx->mcause = state->mcause;
   ctx->mtvec = state->mtvec;
+  //###############################################
 }
 
 void sim_t::diff_set_regs(void* diff_context) {
@@ -81,10 +83,12 @@ void sim_t::diff_set_regs(void* diff_context) {
     state->XPR.write(i, (sword_t)ctx->gpr[i]);
   }
   state->pc = ctx->pc;
+  //###############################################
   state->mepc=ctx->mepc;
   state->mstatus=ctx->mstatus;
   state->mcause=ctx->mcause;
   state->mtvec=ctx->mtvec ;
+  //###############################################
 }
 
 
