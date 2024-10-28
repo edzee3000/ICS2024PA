@@ -24,6 +24,7 @@
 #define Mw vaddr_write
 // #define ECALL(dnpc,pc) {bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc));}
 #define ECALL(dnpc,pc) dnpc = (isa_raise_intr(gpr(17), pc))
+#define CSR(index) CSRs(index)
 
 enum {
   TYPE_I, TYPE_U, TYPE_S,
@@ -64,7 +65,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
-word_t* CSR(uint32_t index)
+word_t* CSRs(uint32_t index)
 { switch (index)
   {case 0x341:return &(cpu.CSRs.mepc);
   case 0x342:return &(cpu.CSRs.mcause);
