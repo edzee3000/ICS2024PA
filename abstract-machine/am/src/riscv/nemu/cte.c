@@ -12,6 +12,7 @@ Context* __am_irq_handle(Context *c) {
   // 可以在__am_irq_handle()中通过printf输出上下文c的内容, 然后通过简易调试器观察触发自陷时的寄存器状态, 从而检查你的Context实现是否正确
   if (user_handler) {
     Event ev = {0};
+    printf("mcause为:%d\n",c->mcause);
     switch (c->mcause) {
       case 0:ev.event= EVENT_YIELD;break;
       default: ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
