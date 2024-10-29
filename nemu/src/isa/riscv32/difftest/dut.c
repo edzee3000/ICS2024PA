@@ -22,20 +22,20 @@
 
 extern const char *regs[];//注意这里是需要从外部reg.c中引入一个const char数组的regs
 
-
+/*
 #define CHECKDIFFPC(p) if (ref_r->p != cpu.p) { \
-  printf("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.p); \
+  Log("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.p); \
   return false; \
 }
 #define CHECKDIFF(p) if (ref_r->p != cpu.CSRs.p) { \
-  printf("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.CSRs.p); \
+  Log("Different values of reg " #p ", REF: "FMT_PADDR "DUT: " FMT_PADDR "\n", ref_r->p, cpu.CSRs.p); \
   return false; \
 }
 #define CHECKDIFF_FMT(name, i) if (ref_r->gpr[i] != gpr(i)) { \
   printf("Different values of reg %s, REF: " FMT_WORD "DUT: " FMT_WORD "\n", name, ref_r->gpr[i], gpr(i)); \
   return false; \
 }
-
+*/
 
 
 //isa_difftest_checkregs()函数, 把通用寄存器和PC与从DUT中读出的寄存器的值进行比较. 
