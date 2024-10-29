@@ -267,7 +267,7 @@ config DTRACE_COND
 
 
 config ETRACE
-  depends on ERACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable Device tracer"
   default y
 config ETRACE_COND
