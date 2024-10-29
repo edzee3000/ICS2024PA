@@ -17,13 +17,13 @@ static char NUM_CHAR[] = "0123456789ABCDEF";    // 为后面取余做铺垫
 //    * Pay attention to the precedence level of different rules.注意不同规则之间的优先级关系
 //    */
 //   {}
-// };
+// }; 
 
 int printf(const char *fmt, ...) {
   //panic("Not implemented");
   va_list args;
   va_start(args,fmt);
-  char out[256];
+  char out[2048]="";
   int len=vsprintf(out,fmt,args);
   for(int i=0;i<len;i++)
     putch(out[i]);
