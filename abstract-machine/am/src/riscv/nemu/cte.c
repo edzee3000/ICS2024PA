@@ -35,7 +35,7 @@ extern void __am_asm_trap(void);
 
 // 用于进行CTE相关的初始化操作. 其中它还接受一个来自操作系统的事件处理回调函数的指针, 
 // 当发生事件时, CTE将会把事件和相关的上下文作为参数, 来调用这个回调函数, 交由操作系统进行后续处理. 
-bool cte_init(Context*(*handler)(Event, Context*)) {
+bool cte_init(Context*(*handler)(Event, Context*)) {  //举个例子比如说main.c里面传了simple_trap函数作为CTE的h参数开始初始化作为这里的handler回调函数
   // 当我们选择yield test时, am-tests会通过cte_init()函数对CTE进行初始化, 其中包含一些简单的宏展开代码. 
   // 这最终会调用位于abstract-machine/am/src/$ISA/nemu/cte.c中的cte_init()函数.
   // cte_init()函数会做两件事情, 第一件就是设置异常入口地址:对于riscv32来说, 直接将异常入口地址设置到mtvec寄存器中即可.
