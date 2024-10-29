@@ -23,7 +23,7 @@ int printf(const char *fmt, ...) {
   //panic("Not implemented");
   va_list args;
   va_start(args,fmt);
-  char out[2048]="";
+  char out[4096]="";//这里一开始出了bug因为我一开始只给它分配了256的空间  结果就数据溢出了……shit……
   int len=vsprintf(out,fmt,args);
   for(int i=0;i<len;i++)
     putch(out[i]);
