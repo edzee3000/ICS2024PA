@@ -13,10 +13,10 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     // printf("mcause为:%d\n",c->mcause);
-    switch (c->mcause) {
-      case -1:ev.event= EVENT_YIELD; break;
+    switch (c->mcause) {//根据c->mcause上下文信息判断对应的事件是什么  （即事件分发）
+      case -1:  ev.event= EVENT_YIELD; break;  
 
-      default: ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
+      default:  ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
 
     c = user_handler(ev, c);

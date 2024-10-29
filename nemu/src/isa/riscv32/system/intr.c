@@ -14,16 +14,26 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <etrace.h>
 
 extern CPU_state cpu;
-word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  /* TODO: Trigger an interrupt/exception with ``NO''.    触发一个带有“NO”的中断/异常
+word_t isa_raise_intr(word_t NO, vaddr_t epc) {  //触发了一个异常/中断 asm volatile("li a7, -1; ecall");  其中NO为-1存储咋a7当中
+  /* TODO: Trigger an interrupt/exception with ``NO''.    触发一个带有“NO”的中断/异常  
    * Then return the address of the interrupt/exception vector.  然后返回中断/异常向量的地址
    */
-  if(NO==-1)epc+=4;//表示这个时候是需要加4的  因为是yield自陷
+  //如果会抛出一个异常/中断的话，那调用指令的时候就会调用ecall指令，而且调用ecall指令是一定会调用isa_raise_intr函数的，那么估计etrace功能就应该是放在这里的
+
+  #ifdef CONFIG_ETRACE
+  etrace_errors(NO, epc);
+  #endif
+
+  switch (NO)
+  {case -1: epc+=4; break; //表示这个时候是需要加4的  因为是yield自陷  看asm手动插入的那一条汇编语言代码
+  default:   break;}
+
   cpu.CSRs.mcause=NO;//存储触发异常的原因NO
-  cpu.CSRs.mepc=epc; //存储触发异常的pc
-  // printf("异常入口地址为:%#x\n",cpu.CSRs.mtvec);
+  cpu.CSRs.mepc=epc; //存储触发异常的pc(如果经历了+4的话就是存储mret的时候下一条将要执行的指令)
+
   return cpu.CSRs.mtvec;//从mtvec寄存器中取出异常入口地址并返回
 }
 

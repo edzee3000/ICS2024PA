@@ -23,7 +23,7 @@
 #define Mr vaddr_read
 #define Mw vaddr_write
 // #define ECALL(dnpc,pc) {bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc));}
-#define ECALL s->dnpc = (isa_raise_intr(gpr(17),s->pc))
+#define ECALL s->dnpc = (isa_raise_intr(gpr(17),s->pc))         //注意在这里会调用到isa_raise_intr函数表示进入了ecall
 #define CSR(index) CSRs(index)
 
 enum {
