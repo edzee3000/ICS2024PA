@@ -43,11 +43,11 @@ struct diff_context_t {
   // 首先在difftest.cc中给diff_context_t添加新的寄存器，注意添加顺序要和riscv64_CPU_state中的寄存器顺序相同
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   word_t pc;
-  // //CSR寄存器 控制状态寄存器
-  // vaddr_t mepc;
-  // word_t mstatus;
-  // word_t mcause;
-  // vaddr_t mtvec;
+  //CSR寄存器 控制状态寄存器
+  vaddr_t mepc;
+  word_t mstatus;
+  word_t mcause;
+  vaddr_t mtvec;
 };
 
 static sim_t* s = NULL;

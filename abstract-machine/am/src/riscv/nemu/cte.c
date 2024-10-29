@@ -15,6 +15,7 @@ Context* __am_irq_handle(Context *c) {
     // printf("mcause为:%d\n",c->mcause);
     switch (c->mcause) {
       case -1:ev.event= EVENT_YIELD; break;
+
       default: ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
 
@@ -60,8 +61,13 @@ void yield() {
 #ifdef __riscv_e
   asm volatile("li a5, -1; ecall");
 #else
-  asm volatile("li a7, -1; ecall");//这里手动加入一条ecall语句  将-1加载load到a7当中
+  asm volatile("li a7, -1; ecall");//这里手动加入一条ecall内联汇编语句  将-1加载load到a7当中
 #endif
+
+//asm是手动插入内联汇编语句
+
+
+
 }
 
 bool ienabled() {
