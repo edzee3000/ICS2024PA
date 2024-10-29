@@ -92,7 +92,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
-  if (!isa_difftest_checkregs(ref, pc)) {
+  if (!isa_difftest_checkregs(ref, pc)) {  //调用nemu/src/isa/riscv32/difftest/dut.c当中的isa_difftest_checkregs函数，看是否比较成功
     nemu_state.state = NEMU_ABORT;
     nemu_state.halt_pc = pc;
     isa_reg_display();
