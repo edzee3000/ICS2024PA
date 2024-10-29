@@ -57,7 +57,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
 
 
-  // difftest功能先暂停使用，因为比较regs出了一点点小问题
+  // difftest功能先暂停使用，因为比较regs比较出了一点点小问题，在8000148c:	342022f3   csrr	t0,mcause这条指令
   //
   //#######################################################################考虑一下使用
   // int reg_num = ARRLEN(cpu.gpr);
