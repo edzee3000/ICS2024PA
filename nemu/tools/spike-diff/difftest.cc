@@ -44,10 +44,10 @@ struct diff_context_t {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   word_t pc;
   //CSR寄存器 控制状态寄存器
-  csr_t_p mepc;
-  mstatus_csr_t_p mstatus;
-  csr_t_p mcause;
-  csr_t_p mtvec;
+  vaddr_t mepc;
+  word_t mstatus;
+  word_t mcause;
+  vaddr_t mtvec;
 };
 
 static sim_t* s = NULL;
@@ -70,10 +70,10 @@ void sim_t::diff_get_regs(void* diff_context) {
   }
   ctx->pc = state->pc;
   //###############################################
-  ctx->mepc = state->mepc;
-  ctx->mstatus = state->mstatus;
-  ctx->mcause = state->mcause;
-  ctx->mtvec = state->mtvec;
+  // ctx->mepc = state->mepc;
+  // ctx->mstatus = state->mstatus;
+  // ctx->mcause = state->mcause;
+  // ctx->mtvec = state->mtvec;
   //###############################################
 }
 
@@ -84,10 +84,10 @@ void sim_t::diff_set_regs(void* diff_context) {
   }
   state->pc = ctx->pc;
   //###############################################
-  state->mepc=ctx->mepc;
-  state->mstatus=ctx->mstatus;
-  state->mcause=ctx->mcause;
-  state->mtvec=ctx->mtvec ;
+  // state->mepc=ctx->mepc;
+  // state->mstatus=ctx->mstatus;
+  // state->mcause=ctx->mcause;
+  // state->mtvec=ctx->mtvec ;
   //###############################################
 }
 
