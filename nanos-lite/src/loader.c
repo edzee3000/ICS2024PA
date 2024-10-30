@@ -73,6 +73,6 @@ void naive_uload(PCB *pcb, const char *filename) {
   // 这说明loader已经成功加载dummy, 并且成功地跳转到dummy中执行了
   uintptr_t entry = loader(pcb, filename);
   Log("Jump to entry = %p", entry);
-  ((void(*)())entry) ();
+  ((void(*)())entry) ();//跳转到程序的入口地址  开始执行程序
 }
 
