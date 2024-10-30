@@ -54,7 +54,7 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   // 由于寄存器和自陷指令都是ISA相关的, 因此这里根据不同的ISA定义了不同的宏, 来对它们进行抽象. 
   // CTE会将这个自陷操作打包成一个系统调用事件EVENT_SYSCALL, 并交由Nanos-lite继续处理.
   // 下面的定义请参考这一条宏定义  # define ARGS_ARRAY ("ecall", "a7", "a0", "a1", "a2", "a0")
-  register intptr_t _gpr1 asm (GPR1) = type;
+  register intptr_t _gpr1 asm (GPR1) = type;  //使用a7作为系统传递号  比如"li a7, -1; ecall"为了和RISC-V Linux的系统调用参数传递的约定相匹配
   register intptr_t _gpr2 asm (GPR2) = a0;
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
