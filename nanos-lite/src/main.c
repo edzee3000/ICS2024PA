@@ -20,7 +20,7 @@ int main() {//简单梳理一下Nanos-lite目前的行为
   init_ramdisk();//初始化ramdisk. 一般来说, 程序应该存放在永久存储的介质中(比如磁盘). 但要在NEMU中对磁盘进行模拟是一个略显复杂工作, 因此先让Nanos-lite把其中的一段内存作为磁盘来使用. 这样的磁盘有一个专门的名字, 叫ramdisk.
 
 #ifdef HAS_CTE
-  init_irq();
+  init_irq();//初始化时调用init_irq()函数, 它将通过cte_init()函数初始化CTE  在panic()前调用yield()来触发自陷操作
 #endif 
 
   init_fs();//init_fs()和init_proc(), 分别用于初始化文件系统和创建进程, 目前它们均未进行有意义的操作, 可以忽略它们.
