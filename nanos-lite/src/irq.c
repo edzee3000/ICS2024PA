@@ -2,8 +2,10 @@
 
 static Context* do_event(Event e, Context* c) {
   //Nanos-lite的事件处理回调函数默认不处理所有事件, 你需要在其中识别出自陷事件EVENT_YIELD, 然后输出一句话即可, 目前无需进行其它操作
-  printf("自陷事件的编号为:%d\n",c->mcause);
+  printf("自陷事件的编号为:%d\n",e.event);
+
   switch (e.event) {
+    
     default: panic("Unhandled event ID = %d", e.event);
   }
 
