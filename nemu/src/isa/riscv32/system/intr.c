@@ -28,9 +28,9 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {  //触发了一个异常/中断 
   #endif
 
   printf("NO的值为:%d\n",NO);
-  switch (NO)
-  {case -1: epc+=4; break; //表示这个时候是需要加4的  因为是yield自陷  看asm手动插入的那一条汇编语言代码
-  default:   break;}
+  // switch (NO)
+  // {case -1: epc+=4; break; //表示这个时候是需要加4的  因为是yield自陷  看asm手动插入的那一条汇编语言代码
+  // default:   break;}
 
   cpu.CSRs.mcause=NO;//存储触发异常的原因NO
   cpu.CSRs.mepc=epc; //存储触发异常的pc(如果经历了+4的话就是存储mret的时候下一条将要执行的指令)
