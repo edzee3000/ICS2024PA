@@ -9,7 +9,7 @@ static Context* do_event(Event e, Context* c) {
   
   // printf("上下文c当中的cause原因为:%d\n",c->mcause);
   switch (e.event)
-  {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件，编号为1\n");  break;
+  {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件，编号为1\t");  break;
   case EVENT_SYSCALL: printf("识别到EVENT_SYSCALL系统调用事件，编号为2\n");  break;
   default:break;}
  
