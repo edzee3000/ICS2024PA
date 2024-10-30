@@ -15,10 +15,11 @@
 // 你很有可能会因为疏忽, 从而让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy. 
 // 从ISA规范的角度来说, 这种行为显然属于UB, 具体而言通常会发生一些难以理解的错误. 
 // 为了避免这种情况, 可以在loader中检测ELF文件的ISA类型.
+// 在abstract-machine/am/src/platform/nemu/include/nemu.h当中查看AM中定义的宏
 #if defined(__ISA_AM_NATIVE__)
 # define EXPECT_TYPE EM_X86_64
 #elif defined(__ISA_X86__)
-# define EXPECT_TYPE EM_X86_64
+# define EXPECT_TYPE EM_386
 // see /usr/include/elf.h to get the right type
 #elif defined(__ISA_MIPS32__) 
 # define EXPECT_TYPE EM_MIPS_X   
@@ -46,6 +47,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   ramdisk_read(elf, 0, sizeof(Elf_Ehdr));//读取elf的header
   // assert(*(uint32_t *)elf->e_ident ==  0x7f454c46);//Linux/GNU 上的 ELF 文件的魔数是 0x7F 'E' 'L' 'F'，即十六进制的 7f 45 4c 46。  话说0x7f454c46是怎么摆放的？？？
   assert(*(uint32_t *)elf->e_ident ==  0x464c457f); //好吧我承认原来是因为小端模式  e_ident里面有16个字节的内容  读数据的时候是从小到大摆放  强制类型转换为uint32_t *之后一次读取字节为4个字节但是解引用之后高位确实为0x46 低位确实为0x7f
+  // 检测ELF文件的ISA类型 避免让native的Nanos-lite来加载运行一个dummy
+  if(elf->e_machine!=EXPECT_TYPE) panic("您可能因为疏忽，让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy.");
 
   Elf_Phdr ProgramHeaders[elf->e_phnum];
   ramdisk_read(ProgramHeaders, elf->e_phoff, sizeof(Elf_Phdr)*elf->e_phnum);//读取程序头表（即段头表）一共要读取Elf_Phdr大小乘以程序头表个数
