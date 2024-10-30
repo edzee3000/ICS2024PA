@@ -14,7 +14,7 @@ void do_syscall(Context *c) {
   //c->GPRx 表示的是 gpr[4]在nemu里面也就是a0寄存器
   switch (a[0]) {
     case 0: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
-    case 1:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);yield(); //c->mcause为系统调用SYS_yield的情况
+    case 1:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);yield(); break;  //c->mcause为系统调用SYS_yield的情况
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   

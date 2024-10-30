@@ -8,7 +8,11 @@ static Context* do_event(Event e, Context* c) {
   //重新运行Nanos-lite, 如果你的实现正确, 你会看到识别到自陷事件之后输出的信息, 并且最后仍然触发了main()函数末尾设置的panic().
   
   // printf("上下文c当中的cause原因为:%d\n",c->mcause);
-  printf("自陷事件的编号为:%d\n",e.event);
+  switch (e.event)
+  {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件，编号为1\n");  break;
+  case EVENT_SYSCALL: printf("识别到EVENT_SYSCALL系统调用事件，编号为2\n");  break;
+  default:break;}
+ 
 
   switch (e.event) {
     case EVENT_YIELD: printf("识别到自陷事件\n");    break;
