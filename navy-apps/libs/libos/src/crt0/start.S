@@ -1,6 +1,10 @@
 .globl  _start
 _start:
 
+// 这里的crt是C RunTime的缩写, 0的含义表示最开始. 
+// _start()函数会调用navy-apps/libs/libos/src/crt0/crt0.c中的call_main()函数, 
+// 然后调用用户程序的main()函数, 从main()函数返回后会调用exit()结束运行.
+
 #if defined(__ISA_AM_NATIVE__)
 
   movq $0, %rbp
