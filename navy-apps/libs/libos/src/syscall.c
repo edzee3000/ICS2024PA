@@ -45,14 +45,25 @@
 #error _syscall_ is not implemented
 #endif
 
+
+// 既然我们通过自陷指令来触发系统调用, 那么对用户程序来说, 用来向操作系统描述需求的最方便手段就是使用通用寄存器了, 
+// 因为执行自陷指令之后, 执行流就会马上切换到事先设置好的入口, 通用寄存器也会作为上下文的一部分被保存起来. 
+// 系统调用处理函数只需要从上下文中获取必要的信息, 就能知道用户程序发出的服务请求是什么了.
 intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
+  // 会先把系统调用的参数依次放入寄存器中, 然后执行自陷指令. 
+  // 由于寄存器和自陷指令都是ISA相关的, 因此这里根据不同的ISA定义了不同的宏, 来对它们进行抽象. 
+  // CTE会将这个自陷操作打包成一个系统调用事件EVENT_SYSCALL, 并交由Nanos-lite继续处理.
+  // 下面的定义请参考这一条宏定义  # define ARGS_ARRAY ("ecall", "a7", "a0", "a1", "a2", "a0")
   register intptr_t _gpr1 asm (GPR1) = type;
   register intptr_t _gpr2 asm (GPR2) = a0;
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
-  register intptr_t ret asm (GPRx);
+  register intptr_t ret asm (GPRx);  
   asm volatile (SYSCALL : "=r" (ret) : "r"(_gpr1), "r"(_gpr2), "r"(_gpr3), "r"(_gpr4));
-  return ret;
+  return ret;//回过头来看dummy程序, 它触发了一个SYS_yield系统调用。我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0.
+  
+  // 经过CTE, 执行流会从do_syscall()一路返回到用户程序的_syscall_()函数中. 
+  // 代码最后会从相应寄存器中取出系统调用的返回值, 并返回给_syscall_()的调用者, 告知其系统调用执行的情况(如是否成功等).
 }
 
 void _exit(int status) {

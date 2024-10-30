@@ -15,10 +15,13 @@ Context* __am_irq_handle(Context *c) {
     // printf("mcause为:%d\n",c->mcause);
     switch (c->mcause) {//根据c->mcause上下文信息判断对应的事件是什么  （即事件分发）
       case -1:  ev.event= EVENT_YIELD; break;  
-
+      //观察navy-apps/libs/libos/src/syscall.h可得  当c->mcause为1~19时都属于syscall
+      case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:
+      case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19: 
+      ev.event=EVENT_SYSCALL;break;
       default:  ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
-
+    //然后执行user_handler函数   即cte_init中传入的handler函数
     c = user_handler(ev, c);
     
     // printf("\nc的内容为:\nmcause为:%u\nmstatus为:%u\n",c->mcause,c->mstatus);
@@ -56,6 +59,8 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 
 //用于进行自陷操作, 会触发一个编号为EVENT_YIELD事件. 不同的ISA会使用不同的自陷指令来触发自陷操作
+//在GNU/Linux中, 用户程序通过自陷指令来触发系统调用, Nanos-lite也沿用这个约定. 
+// CTE中的yield()也是通过自陷指令来实现, 虽然它们触发了不同的事件, 但从上下文保存到事件分发, 它们的过程都是非常相似的. 
 void yield() {
 
 #ifdef __riscv_e
@@ -63,7 +68,6 @@ void yield() {
 #else
   asm volatile("li a7, -1; ecall");//这里手动加入一条ecall内联汇编语句  将-1加载load到a7当中
 #endif
-
 //asm是手动插入内联汇编语句
 
 

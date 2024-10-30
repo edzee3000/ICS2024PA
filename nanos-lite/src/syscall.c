@@ -1,10 +1,21 @@
 #include <common.h>
 #include "syscall.h"
-void do_syscall(Context *c) {
-  uintptr_t a[4];
-  a[0] = c->GPR1;
 
+
+
+
+
+void do_syscall(Context *c) {
+  // Nanos-lite收到系统调用事件之后, 就会调出系统调用处理函数do_syscall()进行处理. 
+  // do_syscall()首先通过宏GPR1从上下文c中获取用户进程之前设置好的系统调用参数, 
+  // 通过第一个参数 - 系统调用号 - 进行分发. 但目前Nanos-lite没有实现任何系统调用, 因此触发了panic
+  uintptr_t a[4];
+  a[0] = c->GPR1;//c->GPR1里的GPR1为#define GPR1 gpr[17]也就是a7  也就是c->mcause  存储的是规定好的异常号
+  //c->GPRx 表示的是 gpr[4]在nemu里面也就是a0寄存器
   switch (a[0]) {
+    case 0: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
+    case 1:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);yield(); //c->mcause为系统调用SYS_yield的情况
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
+  
 }
