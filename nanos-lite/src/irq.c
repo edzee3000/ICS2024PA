@@ -7,7 +7,7 @@ static Context* do_event(Event e, Context* c) {
   // printf("自陷事件的编号为:%d\n",e.event);
 
   switch (e.event) {
-    case EVENT_YIELD:printf("识别到自陷事件\n");    break;
+    case EVENT_YIELD: printf("识别到自陷事件\n");    break;
     default: panic("Unhandled event ID = %d", e.event);
   }
 
