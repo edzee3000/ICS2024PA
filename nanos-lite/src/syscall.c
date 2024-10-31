@@ -40,7 +40,7 @@ void do_syscall(Context *c) {
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:c->GPRx = system_write(a[1],  a[2] , a[3]);
-                  printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%u\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx); break;//返回值为写入的字节数。
+                  printf("do_syscall(4)\tSYS_write\tfd=%d\tbuf=%d\tcount=%u\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx); break;//返回值为写入的字节数。
     case SYS_brk: c->GPRx = system_brk(a[1]); //接收一个参数addr, 用于指示新的program break的位置. 
                   printf("do_syscall(9)\tSYS_brk\t返回值c->GPRx=%d\n",c->GPRx); break;
                  
