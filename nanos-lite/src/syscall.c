@@ -24,8 +24,8 @@ void do_syscall(Context *c) {
   // 通过第一个参数 - 系统调用号 - 进行分发. 但目前Nanos-lite没有实现任何系统调用, 因此触发了panic
   uintptr_t a[4];
   a[0] = c->GPR1;//c->GPR1里的GPR1为#define GPR1 gpr[17]也就是a7  也就是c->mcause  存储的是规定好的异常号
-  a[1] = c->GPR2;
-  a[2] = c->GPR3;
+  a[1] = c->GPR2;//a0寄存器
+  a[2] = c->GPR3;//a1寄存器
   a[3] = c->GPR4;
   //c->GPRx 表示的是 gpr[4]在nemu里面也就是a0寄存器
   #ifdef CONFIG_STRACE
@@ -37,7 +37,7 @@ void do_syscall(Context *c) {
                   halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
-    case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx);
+    case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPR3);//返回值为写入的字节数。
                   system_write(a[1] , a[2]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
