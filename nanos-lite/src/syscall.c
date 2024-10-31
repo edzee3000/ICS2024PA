@@ -39,7 +39,8 @@ void do_syscall(Context *c) {
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPR3);//返回值为写入的字节数。
                   system_write(a[1] , a[2]); break;
-    case SYS_brk:  c->GPRx = system_brk(a[1]);  break;//接收一个参数addr, 用于指示新的program break的位置. 
+    case SYS_brk: c->GPRx = system_brk(a[1]);  break;//接收一个参数addr, 用于指示新的program break的位置. 
+                  printf("do_syscall(9)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx); 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   
