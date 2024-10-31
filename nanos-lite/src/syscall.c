@@ -37,7 +37,7 @@ void do_syscall(Context *c) {
                   halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
-    case SYS_write:printf("do_syscall(4)\tSYS_write\t返回值c->GPRx=%d\n",c->GPR3);
+    case SYS_write:printf("do_syscall(4)\tSYS_write\t返回值c->GPRx=%d\n",c->GPRx);
                   system_write(a[3],a[1],a[2]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
