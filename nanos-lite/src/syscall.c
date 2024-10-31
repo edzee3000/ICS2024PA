@@ -3,7 +3,20 @@
 
 
 #include <strace.h>
+void System_Trace(Context* c);
 
+/*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
+config STRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable System-Call tracer"
+  default y
+config STRACE_COND
+  depends on STRACE
+  string "Only trace System Call when the condition is true"
+  default "true"
+*/
+
+// #define CONFIG_STRACE
 
 void do_syscall(Context *c) {
   // Nanos-lite收到系统调用事件之后, 就会调出系统调用处理函数do_syscall()进行处理. 

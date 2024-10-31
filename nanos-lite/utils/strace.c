@@ -1,4 +1,4 @@
-#include <strace.h>
+#include <include/strace.h>
 #include <src/syscall.h>
 
 void System_Trace(Context* c)
