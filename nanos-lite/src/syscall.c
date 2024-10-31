@@ -15,7 +15,7 @@ config STRACE_COND
   string "Only trace System Call when the condition is true"
   default "true"
 */
-// #define CONFIG_STRACE
+#define CONFIG_STRACE
 void System_Trace(Context* c);
 
 
