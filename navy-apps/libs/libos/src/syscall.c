@@ -55,7 +55,7 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   // CTE会将这个自陷操作打包成一个系统调用事件EVENT_SYSCALL, 并交由Nanos-lite继续处理.
   // 下面的定义请参考这一条宏定义  # define ARGS_ARRAY ("ecall", "a7", "a0", "a1", "a2", "a0")
   register intptr_t _gpr1 asm (GPR1) = type;  //使用a7作为系统传递号  比如"li a7, -1; ecall"为了和RISC-V Linux的系统调用参数传递的约定相匹配
-  register intptr_t _gpr2 asm (GPR2) = a0;
+  register intptr_t _gpr2 asm (GPR2) = a0;  
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
   register intptr_t ret asm (GPRx);  
@@ -77,6 +77,9 @@ int _open(const char *path, int flags, mode_t mode) {
 }
 
 int _write(int fd, void *buf, size_t count) {
+  assert(fd==1 || fd==2);
+  // _syscall_(SYS_write, (intptr_t)buf, count, 0);
+  _syscall_(SYS_write, (intptr_t)buf, count, fd);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
   _exit(SYS_write);
   return 0;
 }
