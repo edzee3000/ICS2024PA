@@ -20,7 +20,7 @@ extern uint8_t ramdisk_end;
 /* read `len' bytes starting from `offset' of ramdisk into `buf'
   从 offset 开始，读取 len 个字节的 ramdisk 数据到 buf 中 */
 size_t ramdisk_read(void *buf, size_t offset, size_t len) {
-  // printf("%u",RAMDISK_SIZE);
+  printf("%u",RAMDISK_SIZE);
   assert(offset + len <= RAMDISK_SIZE);
   memcpy(buf, &ramdisk_start + offset, len);  //我一直不理解为什么这里要用到&取地址符？？？？##################################
   return len;
