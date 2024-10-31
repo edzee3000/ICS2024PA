@@ -33,8 +33,8 @@ void do_syscall(Context *c) {
   #ifdef CONFIG_STRACE
   System_Trace(c);
   #endif
-  // printf("GPR1:%d\tGPR2:%d\tGPR3:%d\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
-  // assert(0);
+  printf("GPR1:%d\tGPR2:%d\tGPR3:%d\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
+  assert(0);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); 
@@ -86,7 +86,7 @@ void do_syscall(Context *c) {
 size_t system_write(int fd, intptr_t buf, size_t count)
 {//这里会出一个问题  就是这个buf在调试的时候显示的是0  ？？？？？？？
   // if(fd!=1&&fd!=2) return -1;
-  // assert(fd==1||fd==2);
+  assert(fd==1||fd==2);
   char* ptr=(char *)buf;
   for(int i=0;i<count;i++){putch(ptr[i]);}
   return count;
