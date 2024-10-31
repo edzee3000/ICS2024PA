@@ -14,7 +14,7 @@ config STRACE_COND
 */
 // #define CONFIG_STRACE
 void System_Trace(Context* c);
-unsigned int system_write(int fd, intptr_t buf, unsigned int count);
+size_t system_write(intptr_t buf, size_t count);
 
 
 
@@ -38,7 +38,7 @@ void do_syscall(Context *c) {
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx);
-                  system_write(1 , a[1] , a[2]); break;
+                  system_write(a[1] , a[2]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   
@@ -64,7 +64,7 @@ void do_syscall(Context *c) {
 
 
 
-unsigned int system_write(int fd, intptr_t buf, unsigned int count)
+size_t system_write(intptr_t buf, size_t count)
 {
   char* ptr=(char *)buf;
   for(int i=0;i<count;i++){putch(ptr[i]);}
