@@ -58,7 +58,7 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   register intptr_t _gpr2 asm (GPR2) = a0;  
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
-  register intptr_t ret asm (GPRx);  //GPRx和a0是一样的
+  register intptr_t ret asm (GPRx);  //在riscv32里面GPRx和a0一般是一样的
   asm volatile (SYSCALL : "=r" (ret) : "r"(_gpr1), "r"(_gpr2), "r"(_gpr3), "r"(_gpr4));
   return ret;//回过头来看dummy程序, 它触发了一个SYS_yield系统调用。我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0.
   
@@ -84,8 +84,31 @@ int _write(int fd, void *buf, size_t count) {
   return 0;
 }
 
+extern char _end;//我们知道可执行文件里面有代码段和数据段, 链接的时候ld会默认添加一个名为_end的符号, 来指示程序的数据段结束的位置. 
+
+//调整堆区大小是通过sbrk()库函数来实现的
 void *_sbrk(intptr_t increment) {
+  //用于将用户程序的program break增长increment字节, 其中increment可为负数. 
+  // 所谓program break, 就是用户程序的数据段(data segment)结束的位置. 
+  // 我们知道可执行文件里面有代码段和数据段, 链接的时候ld会默认添加一个名为_end的符号, 来指示程序的数据段结束的位置
+  // 用户程序开始运行的时候, program break会位于_end所指示的位置, 意味着此时堆区的大小为0. 
+  // malloc()被第一次调用的时候, 会通过sbrk(0)来查询用户程序当前program break的位置, 
+  // 之后就可以通过后续的sbrk()调用来动态调整用户程序program break的位置了. 
+  // 当前program break和和其初始值之间的区间就可以作为用户程序的堆区, 由malloc()/free()进行管理.
+  //  注意用户程序不应该直接使用sbrk(), 否则将会扰乱malloc()/free()对堆区的管理记录
+  static intptr_t program_break = (intptr_t)& _end;
+  intptr_t original_program_break=program_break;
+  if (_syscall_(SYS_brk, increment, 0, 0) == 0) {
+    program_break += increment;
+    return (void*)original_program_break; 
+   }
   return (void *)-1;
+  //若SYS_brk系统调用成功, 该系统调用会返回0, 此时更新之前记录的program break的位置, 并将旧program break的位置作为_sbrk()的返回值返回
+
+  //由于目前Nanos-lite还是一个单任务操作系统, 空闲的内存都可以让用户程序自由使用, 
+  // 因此我们只需要让SYS_brk系统调用总是返回0即可, 表示堆区大小的调整总是成功. 
+  // 在PA4中, 我们会对这一系统调用进行修改, 实现真正的内存分配.
+
 }
 
 int _read(int fd, void *buf, size_t count) {

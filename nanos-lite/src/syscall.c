@@ -15,7 +15,7 @@ config STRACE_COND
 // #define CONFIG_STRACE
 void System_Trace(Context* c);
 size_t system_write(intptr_t buf, size_t count);
-
+intptr_t system_brk(intptr_t increment);
 
 
 void do_syscall(Context *c) {
@@ -39,6 +39,7 @@ void do_syscall(Context *c) {
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPR3);//返回值为写入的字节数。
                   system_write(a[1] , a[2]); break;
+    case SYS_brk:  c->GPRx = system_brk(a[1]);  break;//接收一个参数addr, 用于指示新的program break的位置. 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   
@@ -49,13 +50,25 @@ void do_syscall(Context *c) {
   // 最后还要设置正确的返回值, 否则系统调用的调用者会认为write没有成功执行, 从而进行重试. 
   // 至于write系统调用的返回值是什么, 请查阅man 2 write. 
   // 另外不要忘记在navy-apps/libs/libos/src/syscall.c的_write()中调用系统调用接口函数.
-  // 根据man 2 write的return value部分： 
+  // 根据man 2 write手册的return value部分： 
   // 当操作成功时，write() 函数返回写入的字节数。如果发生错误，则返回 -1，并设置 errno 以指示错误。
   // 请注意，成功的 write() 调用可能会传输少于 count 指定的字节数。这种部分写入可能因各种原因发生；例如，因为磁盘设备上没有足够的空间来写入所有请求的字节，或者因为一个阻塞的 write() 调用到套接字、管道或类似对象时，在传输了一些但不是所有请求的字节后被信号处理程序中断。在发生部分写入的情况下，调用者可以再次调用 write() 来传输剩余的字节。随后的调用将传输更多的字节，或者可能返回一个错误（例如，如果磁盘现在已满）。
   // 如果 count 为0且 fd 引用的是普通文件，则 write() 可能会在检测到以下错误之一时返回失败状态。如果没有检测到错误，或者没有执行错误检测，则返回 0，不会产生其他效果。如果 count 为零且 fd 引用的不是普通文件，结果未指定。
 
 
+  //所谓program break, 就是用户程序的数据段(data segment)结束的位置.
+  // 在数据段的上面就应该是堆区了嘛  然后通过sbrk()函数动态变化与初始阶段的end之间的区域就可以当成堆区
 
+
+
+  // 但如果堆区总是不可用, Newlib中很多库函数的功能将无法使用, 因此现在你需要实现_sbrk()了. 
+  // 为了实现_sbrk()的功能, 我们还需要提供一个用于设置堆区大小的系统调用. 
+  // 在GNU/Linux中, 这个系统调用是SYS_brk, 它接收一个参数addr, 用于指示新的program break的位置. _sbrk()通过记录的方式来对用户程序的program break位置进行管理, 其工作方式如下:
+  // program break一开始的位置位于_end
+  // 被调用时, 根据记录的program break位置和参数increment, 计算出新program break
+  // 通过SYS_brk系统调用来让操作系统设置新program break
+  // 若SYS_brk系统调用成功, 该系统调用会返回0, 此时更新之前记录的program break的位置, 并将旧program break的位置作为_sbrk()的返回值返回
+  // 若该系统调用失败, _sbrk()会返回-1
 
 
 }
@@ -73,9 +86,11 @@ size_t system_write(intptr_t buf, size_t count)
 
 
 
-
-
-
+//这里我还不太确定是用increment还是用program_break去作为参数
+intptr_t system_brk(intptr_t increment)
+{
+  return 0;//暂时先返回0
+}
 
 
 
