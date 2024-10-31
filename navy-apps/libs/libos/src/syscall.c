@@ -79,9 +79,9 @@ int _open(const char *path, int flags, mode_t mode) {
 int _write(int fd, void *buf, size_t count) {
   assert(fd==1 || fd==2);
   // _syscall_(SYS_write, (intptr_t)buf, count, 0);  //fd给a0寄存器  buf给a1寄存器  count给a2寄存器
-  _syscall_(SYS_write, fd,(intptr_t)buf, count);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
-  _exit(SYS_write);
-  return 0;
+  return _syscall_(SYS_write, fd,(intptr_t)buf, count);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
+  // _exit(SYS_write);
+  // return 0;
 }
 
 
