@@ -58,7 +58,7 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   register intptr_t _gpr2 asm (GPR2) = a0;  
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
-  register intptr_t ret asm (GPRx);  
+  register intptr_t ret asm (GPRx);  //GPRx和a0是一样的
   asm volatile (SYSCALL : "=r" (ret) : "r"(_gpr1), "r"(_gpr2), "r"(_gpr3), "r"(_gpr4));
   return ret;//回过头来看dummy程序, 它触发了一个SYS_yield系统调用。我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0.
   
@@ -78,8 +78,8 @@ int _open(const char *path, int flags, mode_t mode) {
 
 int _write(int fd, void *buf, size_t count) {
   assert(fd==1 || fd==2);
-  // _syscall_(SYS_write, (intptr_t)buf, count, 0);
-  _syscall_(SYS_write, (intptr_t)buf, count, fd);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
+  _syscall_(SYS_write, (intptr_t)buf, count, 0);  //buf给a0寄存器  count给a1寄存器  0给a2寄存器
+  // _syscall_(SYS_write, (intptr_t)buf, count, fd);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
   _exit(SYS_write);
   return 0;
 }
