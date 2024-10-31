@@ -25,6 +25,7 @@ struct Context {
 
 //在abstract-machine/am/include/arch/目录下的相应头文件中实现正确的GPR?宏, 让它们从上下文c中获得正确的系统调用参数寄存器.
 
+//下面这个是写错了的！！！！！！！！！！！！！！！！！！！！！！可是debug了将近4个小时
 // #define GPR2 gpr[4]  //观察_syscall_的代码  asm (GPR2) = a0;  而a0正好为gpr[4]
 // #define GPR3 gpr[5]  //asm (GPR3) = a1;  a1正好为gpr[5]
 // #define GPR4 gpr[6]  //asm (GPR4) = a2;  a2正好为gpr[6]

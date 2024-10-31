@@ -25,7 +25,8 @@ void do_syscall(Context *c) {
   uintptr_t a[4];
   a[0] = c->GPR1;//c->GPR1里的GPR1为#define GPR1 gpr[17]也就是a7  也就是c->mcause  存储的是规定好的异常号
   //完了好像知道自己问题出在哪里了……这里的c->GPR不是navy-apps/libs/libos/src/syscall.c中的GPR宏定义  而是在abstract-machine/am/include/arch/riscv.h中的……shit啊啊啊啊啊啊啊啊啊  我这debug了好久啊啊啊
-  //但是不对啊 观察riscv.h中也一样啊……怎么回事啊啊啊啊啊
+  //但是不对啊 观察riscv.h中也一样啊……怎么回事啊啊啊啊啊    
+  //啊啊啊啊啊啊啊啊啊啊啊在debug4个小时之后我终于知道自己错在哪里了啊啊啊啊啊  原来是riscv.h中的
   a[1] = c->GPR2;//a0寄存器
   a[2] = c->GPR3;//a1寄存器
   a[3] = c->GPR4;//a2寄存器
@@ -33,8 +34,7 @@ void do_syscall(Context *c) {
   #ifdef CONFIG_STRACE
   System_Trace(c);
   #endif
-  printf("GPR1:%d\tGPR2:%d\tGPR3:%d\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
-  assert(0);
+  printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); 
