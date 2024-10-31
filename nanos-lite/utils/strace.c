@@ -1,5 +1,5 @@
 #include <strace.h>
-
+#include <src/syscall.h>
 
 void System_Trace(Context* c)
 {

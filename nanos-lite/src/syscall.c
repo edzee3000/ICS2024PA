@@ -2,7 +2,7 @@
 #include "syscall.h"
 
 
-
+#include <strace.h>
 
 
 void do_syscall(Context *c) {
