@@ -84,7 +84,7 @@ int _write(int fd, void *buf, size_t count) {
   return 0;
 }
 
-extern char _end;//我们知道可执行文件里面有代码段和数据段, 链接的时候ld会默认添加一个名为_end的符号, 来指示程序的数据段结束的位置. 
+extern char end;//我们知道可执行文件里面有代码段和数据段, 链接的时候ld会默认添加一个名为_end的符号, 来指示程序的数据段结束的位置. 
 
 //调整堆区大小是通过sbrk()库函数来实现的
 void *_sbrk(intptr_t increment) {
@@ -96,7 +96,7 @@ void *_sbrk(intptr_t increment) {
   // 之后就可以通过后续的sbrk()调用来动态调整用户程序program break的位置了. 
   // 当前program break和和其初始值之间的区间就可以作为用户程序的堆区, 由malloc()/free()进行管理.
   //  注意用户程序不应该直接使用sbrk(), 否则将会扰乱malloc()/free()对堆区的管理记录
-  static intptr_t program_break = (intptr_t)& _end;
+  static intptr_t program_break = (intptr_t)& end;
   intptr_t original_program_break=program_break;
   if (_syscall_(SYS_brk, increment, 0, 0) == 0) {
     program_break += increment;
