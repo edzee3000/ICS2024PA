@@ -14,7 +14,7 @@ config STRACE_COND
 */
 // #define CONFIG_STRACE
 void System_Trace(Context* c);
-size_t system_write(intptr_t buf, size_t count);
+size_t system_write(int fd, intptr_t buf, size_t count);
 intptr_t system_brk(intptr_t increment);
 
 
@@ -26,7 +26,7 @@ void do_syscall(Context *c) {
   a[0] = c->GPR1;//c->GPR1里的GPR1为#define GPR1 gpr[17]也就是a7  也就是c->mcause  存储的是规定好的异常号
   a[1] = c->GPR2;//a0寄存器
   a[2] = c->GPR3;//a1寄存器
-  a[3] = c->GPR4;
+  a[3] = c->GPR4;//a2寄存器
   //c->GPRx 表示的是 gpr[4]在nemu里面也就是a0寄存器
   #ifdef CONFIG_STRACE
   System_Trace(c);
@@ -37,10 +37,10 @@ void do_syscall(Context *c) {
                   halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
-    case SYS_write:printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPR3);//返回值为写入的字节数。
-                  system_write(a[1] , a[2]); break;
+    case SYS_write://返回值为写入的字节数。
+                  c->GPRx = system_write(a[1],  a[2] , a[3]);printf("do_syscall(4)\tSYS_write\t寄存器a0=%d\t寄存器a1=%d\t寄存器a2=%d\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx); break;
     case SYS_brk: c->GPRx = system_brk(a[1]); //接收一个参数addr, 用于指示新的program break的位置. 
-                  printf("do_syscall(9)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx); break;
+                  printf("do_syscall(9)\tSYS_brk\t返回值c->GPRx=%d\n",c->GPRx); break;
                  
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
@@ -79,8 +79,9 @@ void do_syscall(Context *c) {
 
 
 
-size_t system_write(intptr_t buf, size_t count)
+size_t system_write(int fd, intptr_t buf, size_t count)
 {//这里会出一个问题  就是这个buf在调试的时候显示的是0  ？？？？？？？
+  if(fd!=1&&fd!=2) return -1;
   char* ptr=(char *)buf;
   for(int i=0;i<count;i++){putch(ptr[i]);}
   return count;
