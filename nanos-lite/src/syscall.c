@@ -24,6 +24,8 @@ void do_syscall(Context *c) {
   // 通过第一个参数 - 系统调用号 - 进行分发. 但目前Nanos-lite没有实现任何系统调用, 因此触发了panic
   uintptr_t a[4];
   a[0] = c->GPR1;//c->GPR1里的GPR1为#define GPR1 gpr[17]也就是a7  也就是c->mcause  存储的是规定好的异常号
+  //完了好像知道自己问题出在哪里了……这里的c->GPR不是navy-apps/libs/libos/src/syscall.c中的GPR宏定义  而是在abstract-machine/am/include/arch/riscv.h中的……shit啊啊啊啊啊啊啊啊啊  我这debug了好久啊啊啊
+  //但是不对啊 观察riscv.h中也一样啊……怎么回事啊啊啊啊啊
   a[1] = c->GPR2;//a0寄存器
   a[2] = c->GPR3;//a1寄存器
   a[3] = c->GPR4;//a2寄存器
