@@ -34,7 +34,7 @@ void do_syscall(Context *c) {
   #ifdef CONFIG_STRACE
   System_Trace(c);
   #endif
-  printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
+  // printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); 
