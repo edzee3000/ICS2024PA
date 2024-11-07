@@ -17,6 +17,10 @@ typedef struct {
   size_t open_offset;//另外, 我们也不希望每次读写操作都需要从头开始. 于是我们需要为每一个已经打开的文件引入偏移量属性open_offset, 来记录目前文件操作的位置. 每次对文件读写了多少个字节, 偏移量就前进多少.   
   //注意要在Finfo中添加一个open_offset字段来记录在某个文件当中的当前读写位置，并更新维护它，完事了之后在loader中使用即可。
 } Finfo;//"文件记录表"其实是一个数组, 数组的每个元素都是一个结构体:
+// 其中ReadFn和WriteFn分别是两种函数指针, 它们用于指向真正进行读写的函数, 并返回成功读写的字节数. 
+// 有了这两个函数指针, 我们只需要在文件记录表中对不同的文件设置不同的读写函数, 就可以通过f->read()和f->write()的方式来调用具体的读写函数了.
+// 不过在Nanos-lite中, 由于特殊文件的数量很少, 我们约定, 当上述的函数指针为NULL时, 表示相应文件是一个普通文件, 
+// 通过ramdisk的API来进行文件的读写, 这样我们就不需要为大多数的普通文件显式指定ramdisk的读写函数了.
 
 
 //为了方便用户程序进行标准输入输出, 操作系统准备了三个默认的文件描述符:
@@ -43,8 +47,8 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
-  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, invalid_write},
-  [FD_STDERR] = {"stderr", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},//将FD_STDOUT和FD_STDERR设置为相应的write写入函数
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
 #include "files.h"  //nanos-lite/src/files.h包含进来表文件列表
 };//在Nanos-lite中, 由于sfs的文件数目是固定的, 我们可以简单地把文件记录表的下标作为相应文件的文件描述符返回给用户程序. 在这以后, 所有文件操作都通过文件描述符来标识文件
 //实际上, 操作系统中确实存在不少"没有名字"的文件. 为了统一管理它们, 我们希望通过一个编号来表示文件, 
@@ -80,7 +84,10 @@ int fs_open(const char *pathname, int flags, int mode)
 size_t fs_read(int fd, void *buf, size_t len)
 {
   //先验证文件描述符大于2（不是read、write或error） 
-  if(fd<3){Log("忽略读入文件%s ",file_table[fd].name); return 0;} //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
+  // if(fd<3){Log("忽略本次读入标准输入输出文件%s ",file_table[fd].name); return 0;} //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
+  ReadFn readfun = file_table[fd].read;
+  if(readfun!=NULL)return readfun(buf,0,len);//我们约定, 当上述的函数指针为NULL时, 表示相应文件是一个普通文件
+  //另外Nanos-lite也不打算支持stdin的读入, 因此在文件记录表中设置相应的报错函数即可.
   size_t read_len=len;
   size_t size=file_table[fd].size;
   size_t open_offset=file_table[fd].open_offset;
@@ -94,9 +101,11 @@ size_t fs_read(int fd, void *buf, size_t len)
 }
 size_t fs_write(int fd, const void *buf, size_t len)
 {
-  if(fd==FD_STDIN){Log("忽略此次写入标准输入文件%s", file_table[fd].name);}
+  // if(fd==FD_STDIN){Log("忽略此次写入标准输入文件%s", file_table[fd].name);}
   //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
-  if(fd==FD_STDOUT||fd==FD_STDERR){for(size_t i=0;i<len;i++){putch(*( (char*)buf+i) );}return len;} //如果是标准输出或者标准erroe的话输出buf的缓冲区即可
+  // if(fd==FD_STDOUT||fd==FD_STDERR){for(size_t i=0;i<len;i++){putch(*( (char*)buf+i) );}return len;} //如果是标准输出或者标准erroe的话输出buf的缓冲区即可
+  WriteFn writefun=file_table[fd].write;
+  if(writefun!=NULL)return writefun(buf,0,len);
   size_t write_len=len;//接下来的过程和fs_read几乎一模一样了
   size_t size=file_table[fd].size;
   size_t open_offset=file_table[fd].open_offset;
@@ -121,7 +130,7 @@ size_t fs_lseek(int fd, size_t offset, int whence)
   // 如果新的读写指针位置 new_offset 超出文件范围，需要将它设置为合法的边界位置。例如，如果 new_offset 小于 0，它将被设置为 0（文件开头），如果 new_offset 大于文件大小，它将被设置为文件末尾。
   // 最后，将新的读写指针位置 new_offset 存入文件记录表 file_table 中当前文件对应的项的读写指针字段 file->open_offset 中。
   // 返回值是一个表示新的读写指针位置的无符号整数。根据 man 2 lseek，返回值通常是新的文件读写指针位置（距离文件开头的偏移量）。这是 fs_lseek 函数的返回值，供后续文件读写操作使用。
-  if(fd<3){Log("忽略本次lseek文件%s",file_table[fd].name);return 0;} //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
+  if(fd<3){Log("忽略本次lseek标准输入输出文件%s",file_table[fd].name);return 0;} //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
   Finfo *file=&file_table[fd];
   size_t new_open_offset;
   //接下来根据whence参数计算新的open_offset偏移量并重新赋值和返回
