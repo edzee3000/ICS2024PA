@@ -77,7 +77,7 @@ int _open(const char *path, int flags, mode_t mode) {
 
   _exit(SYS_open);
   return 0;
-}
+} 
 
 int _write(int fd, void *buf, size_t count) {
   assert(fd==1 || fd==2);

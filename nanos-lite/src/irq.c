@@ -8,7 +8,7 @@ static Context* do_event(Event e, Context* c) {
   //重新运行Nanos-lite, 如果你的实现正确, 你会看到识别到自陷事件之后输出的信息, 并且最后仍然触发了main()函数末尾设置的panic().
   
 
-
+  /*
   // printf("上下文c当中的cause原因为:%d\n",c->mcause);
   switch (e.event)
   {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件\t");  break;
@@ -17,7 +17,7 @@ static Context* do_event(Event e, Context* c) {
   case EVENT_IRQ_TIMER:printf("识别到EVENT_IRQ_TIMER定时器中断请求事件\n");  break;
   case EVENT_IRQ_IODEV:printf("识别到EVENT_IRQ_IODEV输入输出设备中断请求事件\n");  break;
   default:printf("识别到EVENT_ERROR未知错误事件\n"); break;}
- 
+  */
 
 
 

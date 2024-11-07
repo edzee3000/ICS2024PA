@@ -57,7 +57,7 @@ void do_syscall(Context *c) {
 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
-  
+   
   // 输出是通过SYS_write系统调用来实现  
   // ssize_t write(int fd, const void buf[.count], size_t count);
   // 需要在do_syscall()中识别出系统调用号是SYS_write之后, 检查fd的值, 
