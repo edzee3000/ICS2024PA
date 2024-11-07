@@ -1,4 +1,8 @@
 HAS_NAVY = 1
+# 然后运行make ARCH=$ISA-nemu update就会自动编译Navy中的程序, 
+# 并把navy-apps/fsimg/目录下的所有内容整合成ramdisk镜像navy-apps/build/ramdisk.img, 
+# 同时生成这个ramdisk镜像的文件记录表navy-apps/build/ramdisk.h, Nanos-lite的Makefile会通过软连接把它们链接到项目中.
+# 如果你修改了Navy中的内容, 请记得通过上述命令来更新镜像文件
 RAMDISK_FILE = build/ramdisk.img
 
 NAME = nanos-lite

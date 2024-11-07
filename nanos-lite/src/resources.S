@@ -11,6 +11,11 @@ logo:
 .byte 0
 
 
+
+
+
+
+//make ARCH=$ISA-nemu
 //会生成Nanos-lite的可执行文件, 编译期间会把ramdisk镜像文件nanos-lite/build/ramdisk.img 
 //包含进Nanos-lite成为其中的一部分(在nanos-lite/src/resources.S中实现). 
 //现在的ramdisk十分简单, 它只有一个文件, 就是我们将要加载的用户程序dummy, 

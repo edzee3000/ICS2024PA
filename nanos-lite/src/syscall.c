@@ -2,6 +2,7 @@
 #include "syscall.h"
 
 #include <fs.h>
+// #include "files.h" //用于strace的翻译文件名
 /*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
 config STRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
@@ -112,7 +113,9 @@ size_t system_write(int fd, intptr_t buf, size_t count)
 
 size_t system_read(int fd, intptr_t buf, size_t count)
 {return fs_read(fd,(void*)buf,count);}
-//这里我还不太确定是用increment还是用program_break去作为参数
+
+
+//############################这里我还不太确定是用increment还是用program_break去作为参数#################################
 intptr_t system_brk(intptr_t increment)
 {return 0;//暂时先返回0
 }
@@ -127,14 +130,25 @@ intptr_t system_brk(intptr_t increment)
 
 
 
+typedef struct {
+  char *name;
+  size_t size;
+  size_t disk_offset;
+} MyFileInfo;
 
-
+static MyFileInfo my_define_file_table[] __attribute__((used)) = {
+  [0]  = {"stdin", 0, 0},
+  [1] = {"stdout", 0, 0},
+  [2] = {"stderr", 0, 0},
+#include "files.h"  //nanos-lite/src/files.h包含进来表文件列表
+};
 //strace代码放在这里好了  因为新开一个新的strace.c文件出问题了最后……
 void System_Trace(Context* c)
 {
   uintptr_t a[4];
   a[0] = c->GPR1;
-  printf("STRACE:\t");
+  a[1] = c->GPR2;
+  printf("STRACE:\n");
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: printf("系统调用编号:%d\t系统调用:SYS_exit\t返回值:c->GPRx=0\n",a[0]);  break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
@@ -147,4 +161,27 @@ void System_Trace(Context* c)
     case SYS_lseek:printf("系统调用编号:%d\t系统调用:SYS_lseek\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
+
+  // 由于sfs的特性, 打开同一个文件总是会返回相同的文件描述符. 这意味着, 我们可以把strace中的文件描述符直接翻译成文件名, 得到可读性更好的trace信息. 
+  // 尝试实现这一功能, 它可以为你将来使用strace提供一些便利.
+  // 观察navy-apps/libs/libos/src/syscall.c当中所有的_syscall_调用函数的第二个参数（a0寄存器 GPR2宏命令）都是fd文件标识符 
+  // 目前而言，只有SYS_read SYS_close SYS_lseek SYS_write SYS_open这些系统调用使用到了sys简易文件系统  因而只有这些需要进行文件描述符翻译成文件名
+  const char *syscall_name="";
+  const char *file_name="";
+  switch (a[0])
+  {
+  case SYS_open:syscall_name="SYS_open";
+  case SYS_read:syscall_name="SYS_read";
+  case SYS_write:syscall_name="SYS_write";
+  case SYS_lseek:syscall_name="SYS_lseek";
+  case SYS_close:syscall_name="SYS_close";
+    if(a[1] > 2 && a[1]<sizeof(my_define_file_table)/sizeof(MyFileInfo))
+    {file_name=my_define_file_table[a[1]].name;
+    printf("对文件%s进行%s文件操作\n",file_name,syscall_name);}
+    break;
+  default:break;
+  }
+
+
+
 }
