@@ -42,18 +42,18 @@ void do_syscall(Context *c) {
   // printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
-    case SYS_exit: c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx); 
+    case SYS_exit: c->GPRx=0;/*printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx);*/ 
                   halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
-    case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
+    case SYS_yield:/*printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);*/
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:  c->GPRx = system_write(a[1],  a[2] , a[3]);
                   /*printf("do_syscall(4)\tSYS_write\tfd=%d\tbuf=%d\tcount=%u\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx);*/ break;//返回值为写入的字节数。
     case SYS_brk: c->GPRx = system_brk(a[1]); //接收一个参数addr, 用于指示新的program break的位置. 
-                  printf("do_syscall(9)\tSYS_brk\t返回值c->GPRx=%d\n",c->GPRx); break;
-    case SYS_open:c->GPRx = system_open((const char *)a[1],  a[2] , a[3]);printf("调用SYS_open\n");break;
-    case SYS_close:c->GPRx = system_close(a[1]);printf("调用SYS_close\n");break;
-    case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);printf("调用SYS_read\n");break;
-    case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);printf("调用SYS_lseek\n");break;
+                  /*printf("do_syscall(9)\tSYS_brk\t返回值c->GPRx=%d\n",c->GPRx);*/ break;
+    case SYS_open:c->GPRx = system_open((const char *)a[1],  a[2] , a[3]);/*printf("调用SYS_open\n");*/break;
+    case SYS_close:c->GPRx = system_close(a[1]);/*printf("调用SYS_close\n");*/break;
+    case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
+    case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
@@ -139,6 +139,12 @@ void System_Trace(Context* c)
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: printf("系统调用编号:%d\t系统调用:SYS_exit\t返回值:c->GPRx=0\n",a[0]);  break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
     case SYS_yield:printf("系统调用编号:%d\t系统调用:SYS_yield\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;  //c->mcause为系统调用SYS_yield的情况
+    case SYS_write:printf("系统调用编号:%d\t系统调用:SYS_write\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
+    case SYS_brk:  printf("系统调用编号:%d\t系统调用:SYS_brk\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
+    case SYS_open: printf("系统调用编号:%d\t系统调用:SYS_open\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
+    case SYS_close:printf("系统调用编号:%d\t系统调用:SYS_close\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
+    case SYS_read: printf("系统调用编号:%d\t系统调用:SYS_read\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
+    case SYS_lseek:printf("系统调用编号:%d\t系统调用:SYS_lseek\t返回值:c->GPRx=%d\n",a[0], c->GPRx); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
