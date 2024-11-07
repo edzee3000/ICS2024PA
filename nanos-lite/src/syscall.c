@@ -177,7 +177,7 @@ void System_Trace(Context* c)
   case SYS_close:syscall_name="SYS_close";
     if(a[1] > 2 && a[1]<sizeof(my_define_file_table)/sizeof(MyFileInfo))
     {file_name=my_define_file_table[a[1]].name;
-    Log("对文件%s进行%s文件操作\n",file_name,syscall_name);}
+    Log("\n对文件%s进行%s文件操作",file_name,syscall_name);}
     break;
   default:break;
   }
