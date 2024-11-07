@@ -148,7 +148,7 @@ void System_Trace(Context* c)
   uintptr_t a[4];
   a[0] = c->GPR1;
   a[1] = c->GPR2;
-  printf("STRACE:\n");
+  printf("STRACE:\t");
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
     case SYS_exit: printf("系统调用编号:%d\t系统调用:SYS_exit\t返回值:c->GPRx=0\n",a[0]);  break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
@@ -177,7 +177,7 @@ void System_Trace(Context* c)
   case SYS_close:syscall_name="SYS_close";
     if(a[1] > 2 && a[1]<sizeof(my_define_file_table)/sizeof(MyFileInfo))
     {file_name=my_define_file_table[a[1]].name;
-    printf("对文件%s进行%s文件操作\n",file_name,syscall_name);}
+    Log("对文件%s进行%s文件操作\n",file_name,syscall_name);}
     break;
   default:break;
   }
