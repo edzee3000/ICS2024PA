@@ -58,7 +58,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 void init_fs() {
   // TODO: initialize the size of /dev/fb
-}
+} 
 
 
 //在文件读写操作中，各个库函数最终会调用read/write/open/close函数进行文件操作。
@@ -87,7 +87,7 @@ size_t fs_read(int fd, void *buf, size_t len)
   // if(fd<3){Log("忽略本次读入标准输入输出文件%s ",file_table[fd].name); return 0;} //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略
   ReadFn readfun = file_table[fd].read;
   if(readfun!=NULL)return readfun(buf,0,len);//我们约定, 当上述的函数指针为NULL时, 表示相应文件是一个普通文件
-  //另外Nanos-lite也不打算支持stdin的读入, 因此在文件记录表中设置相应的报错函数即可.
+  //另外Nanos-lite也不打算支持stdin的读入, 因此在文件记录表中设置相应的报错函数即可.  也就是上面定义好的invalid_read和invalid_write
   size_t read_len=len;
   size_t size=file_table[fd].size;
   size_t open_offset=file_table[fd].open_offset;
