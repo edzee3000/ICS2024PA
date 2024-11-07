@@ -9,11 +9,14 @@ static Context* do_event(Event e, Context* c) {
   
 
 
-  // // printf("上下文c当中的cause原因为:%d\n",c->mcause);
-  // switch (e.event)
-  // {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件\t");  break;
-  // case EVENT_SYSCALL: printf("识别到EVENT_SYSCALL系统调用事件\n");  break;
-  // default:break;}
+  // printf("上下文c当中的cause原因为:%d\n",c->mcause);
+  switch (e.event)
+  {case EVENT_YIELD:  printf("识别到EVENT_YIELD自陷事件\t");  break;
+  case EVENT_SYSCALL: printf("识别到EVENT_SYSCALL系统调用事件\n");  break;
+  case EVENT_PAGEFAULT:printf("识别到EVENT_PAGEFAULT页错误事件\n");  break;
+  case EVENT_IRQ_TIMER:printf("识别到EVENT_IRQ_TIMER定时器中断请求事件\n");  break;
+  case EVENT_IRQ_IODEV:printf("识别到EVENT_IRQ_IODEV输入输出设备中断请求事件\n");  break;
+  default:printf("识别到EVENT_ERROR未知错误事件\n"); break;}
  
 
 

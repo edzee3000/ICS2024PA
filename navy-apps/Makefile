@@ -169,7 +169,9 @@ $(CLEAN_ALL):
 
 ### Build fsimg and ramdisk for Nanos-lite
 APPS =
-TESTS = dummy hello
+# TESTS = dummy hello 
+# 实现fs_write()和fs_lseek(), 然后运行测试程序navy-apps/tests/file-test. 为了编译它, 你需要把它加到navy-apps/Makefile的TESTS变量中, 这样它最终就会被包含在ramdisk镜像中.
+TESTS = dummy hello file-test
 
 fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
 	-for t in $^; do $(MAKE) -s -C $(NAVY_HOME)/$$t install; done

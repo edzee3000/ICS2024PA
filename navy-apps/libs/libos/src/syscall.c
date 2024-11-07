@@ -66,12 +66,15 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   // 代码最后会从相应寄存器中取出系统调用的返回值, 并返回给_syscall_()的调用者, 告知其系统调用执行的情况(如是否成功等).
 }
 
-void _exit(int status) {
+void _exit(int status) { 
   _syscall_(SYS_exit, status, 0, 0);
   while (1);
 }
 
 int _open(const char *path, int flags, mode_t mode) {
+  // assert(flags==0||mode==0);
+  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
+
   _exit(SYS_open);
   return 0;
 }
@@ -81,6 +84,7 @@ int _write(int fd, void *buf, size_t count) {
   // _syscall_(SYS_write, (intptr_t)buf, count, 0);  //fd给a0寄存器  buf给a1寄存器  count给a2寄存器
   // return _syscall_(SYS_write, fd,(intptr_t)buf, count);//如果fd是1或2(分别代表stdout和stderr), 则将buf为首地址的len字节输出到串口(使用putch()即可). 
   return _syscall_(SYS_write, fd,  (intptr_t)buf,  count);
+
   _exit(SYS_write);  //在这里如果_syscall_之后就直接退出的话就只会write一次就退出了  需要把这两行都注释掉
   return 0;
 }
@@ -90,7 +94,9 @@ int _write(int fd, void *buf, size_t count) {
 //难道又是我电脑出bug了（因为debug的时候发现printf ramdisk里面的RAMDISK_SIZE会为0  但是如果我修改_end为end之后重新makeisa在运行就可以通过了）
 //然后还有如果在_end的情况下我printf一会正确一会错误  难道是因为printf改变了程序的状态？  太奇怪了……
 extern char end;//我们知道可执行文件里面有代码段和数据段, 链接的时候ld会默认添加一个名为_end的符号, 来指示程序的数据段结束的位置. 
-
+// 使用 man 3 end 可以看到相关符号的解释
+// 这些符号不是在 C 语言文件和头文件中定义的，它们是 ld 在链接所有 .o 文件的时候自己添加的。
+// end 和 _end 的地址，就是最终程序的堆的起始地址
 //调整堆区大小是通过sbrk()库函数来实现的
 void *_sbrk(intptr_t increment) {
   //用于将用户程序的program break增长increment字节, 其中increment可为负数. 
@@ -109,24 +115,28 @@ void *_sbrk(intptr_t increment) {
    }
   return (void *)-1;
   //若SYS_brk系统调用成功, 该系统调用会返回0, 此时更新之前记录的program break的位置, 并将旧program break的位置作为_sbrk()的返回值返回
-
   //由于目前Nanos-lite还是一个单任务操作系统, 空闲的内存都可以让用户程序自由使用, 
   // 因此我们只需要让SYS_brk系统调用总是返回0即可, 表示堆区大小的调整总是成功. 
   // 在PA4中, 我们会对这一系统调用进行修改, 实现真正的内存分配.
-
 }
 
 int _read(int fd, void *buf, size_t count) {
+  return _syscall_(SYS_read, fd,  (intptr_t)buf,  count); 
+
   _exit(SYS_read);
   return 0;
 }
 
 int _close(int fd) {
+  return _syscall_(SYS_close, fd,  0,  0); 
+
   _exit(SYS_close);
   return 0;
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
+  return _syscall_(SYS_lseek, fd,  offset,  whence); 
+
   _exit(SYS_lseek);
   return 0;
 }

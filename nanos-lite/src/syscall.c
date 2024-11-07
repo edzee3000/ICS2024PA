@@ -1,7 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 
-
+#include <fs.h>
 /*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
 config STRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
@@ -14,9 +14,14 @@ config STRACE_COND
 */
 // #define CONFIG_STRACE
 void System_Trace(Context* c);
+
 size_t system_write(int fd, intptr_t buf, size_t count);
 intptr_t system_brk(intptr_t increment);  //这里先暂定参数###########
 
+int system_open(const char *pathname, int flags, int mode);
+int system_close(int fd);
+size_t system_lseek(int fd, size_t offset, int whence);
+size_t system_read(int fd, intptr_t buf, size_t count);
 
 void do_syscall(Context *c) {
   // Nanos-lite收到系统调用事件之后, 就会调出系统调用处理函数do_syscall()进行处理. 
@@ -41,11 +46,15 @@ void do_syscall(Context *c) {
                   halt(c->GPRx); break;//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
     case SYS_yield:printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
-    case SYS_write:c->GPRx = system_write(a[1],  a[2] , a[3]);
+    case SYS_write:  c->GPRx = system_write(a[1],  a[2] , a[3]);
                   /*printf("do_syscall(4)\tSYS_write\tfd=%d\tbuf=%d\tcount=%u\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx);*/ break;//返回值为写入的字节数。
     case SYS_brk: c->GPRx = system_brk(a[1]); //接收一个参数addr, 用于指示新的program break的位置. 
                   printf("do_syscall(9)\tSYS_brk\t返回值c->GPRx=%d\n",c->GPRx); break;
-                 
+    case SYS_open:c->GPRx = system_open((const char *)a[1],  a[2] , a[3]);printf("调用SYS_open\n");break;
+    case SYS_close:c->GPRx = system_close(a[1]);printf("调用SYS_close\n");break;
+    case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);printf("调用SYS_read\n");break;
+    case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);printf("调用SYS_lseek\n");break;
+
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   
@@ -70,34 +79,40 @@ void do_syscall(Context *c) {
   // 但如果堆区总是不可用, Newlib中很多库函数的功能将无法使用, 因此现在你需要实现_sbrk()了. 
   // 为了实现_sbrk()的功能, 我们还需要提供一个用于设置堆区大小的系统调用. 
   // 在GNU/Linux中, 这个系统调用是SYS_brk, 它接收一个参数addr, 用于指示新的program break的位置. _sbrk()通过记录的方式来对用户程序的program break位置进行管理, 其工作方式如下:
-  // program break一开始的位置位于_end
-  // 被调用时, 根据记录的program break位置和参数increment, 计算出新program break
-  // 通过SYS_brk系统调用来让操作系统设置新program break
-  // 若SYS_brk系统调用成功, 该系统调用会返回0, 此时更新之前记录的program break的位置, 并将旧program break的位置作为_sbrk()的返回值返回
-  // 若该系统调用失败, _sbrk()会返回-1
+  // 1. program break一开始的位置位于_end
+  // 2. 被调用时, 根据记录的program break位置和参数increment, 计算出新program break
+  // 3. 通过SYS_brk系统调用来让操作系统设置新program break
+  // 4. 若SYS_brk系统调用成功, 该系统调用会返回0, 此时更新之前记录的program break的位置, 并将旧program break的位置作为_sbrk()的返回值返回
+  // 5. 若该系统调用失败, _sbrk()会返回-1
 
 
 }
 
 
+int system_open(const char *pathname, int flags, int mode)
+{ return fs_open(pathname,flags,mode);}
 
+int system_close(int fd)
+{return fs_close(fd);}
 
+size_t system_lseek(int fd, size_t offset, int whence)
+{return fs_lseek(fd,offset,whence);}
 
 size_t system_write(int fd, intptr_t buf, size_t count)
 {//这里会出一个问题  就是这个buf在调试的时候显示的是0  ？？？？？？？
   // if(fd!=1&&fd!=2) return -1;
   assert(fd==1||fd==2);
-  char* ptr=(char *)buf;
-  for(int i=0;i<count;i++){putch(ptr[i]);}
-  return count;
+  // char* ptr=(char *)buf;
+  // for(int i=0;i<count;i++){putch(ptr[i]);}
+  // return count;
+  return fs_write(fd,(const void*)buf,count);
 }
 
-
-
+size_t system_read(int fd, intptr_t buf, size_t count)
+{return fs_read(fd,(void*)buf,count);}
 //这里我还不太确定是用increment还是用program_break去作为参数
 intptr_t system_brk(intptr_t increment)
-{
-  return 0;//暂时先返回0
+{return 0;//暂时先返回0
 }
 
 
