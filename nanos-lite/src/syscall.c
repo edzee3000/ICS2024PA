@@ -102,7 +102,7 @@ size_t system_write(int fd, intptr_t buf, size_t count)
 {//这里会出一个问题  就是这个buf在调试的时候显示的是0  ？？？？？？？
   // if(fd!=1&&fd!=2) return -1;
   
-  // assert(fd==1||fd==2);
+  // assert(fd==1||fd==2); //这里后来也出了问题  如果有了fs_write了之后就不需要assert了，因为有一个忽略标准输入的判断语句在fs_write当中
   
   // char* ptr=(char *)buf;
   // for(int i=0;i<count;i++){putch(ptr[i]);}
