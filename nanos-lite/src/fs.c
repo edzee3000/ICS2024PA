@@ -57,7 +57,7 @@ int fs_open(const char *pathname, int flags, int mode)
 {//遍历寻找文件返回文件标识符
   printf("NR_FILES值为:%d\n",NR_FILES);
   for(int i=3;i<NR_FILES;i++)
-  {if(strcmp(file_table[i].name,pathname)==0)
+  {if(strcmp(file_table[i].name, pathname)==0)
     {file_table[i].open_offset=0; return i;}//如果找到对应的文件名就返回文件标识符  并更新其offset
     }
   panic("路径为%s的文件没有找到\n",pathname);
