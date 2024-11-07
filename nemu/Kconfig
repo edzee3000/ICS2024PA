@@ -276,6 +276,14 @@ config ETRACE_COND
   default "true"
 
 
+config STRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable System Call tracer"
+  default y
+config STRACE_COND
+  depends on STRACE
+  string "Only trace System Call when the condition is true"
+  default "true"
 
 
 endmenu
