@@ -53,6 +53,8 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   int y = offset / screen_width;  //确认行数
   int x = offset % screen_width;//确认列数
   io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len, 1, true);//这里1表示高为1，也就是说只输出一行
+  // draw_rect((uint32_t*)buf, x,y, len/4, 1);
+  printf("screen_width:%u\toffset:%u\tlen:%u\tx:%u\ty:%u\n",screen_width,offset,len,x,y);
   //每次只能写一行的原因是文件系统的接口限制了我们无法将画布宽高也同时传进write中，fb的写操作只会根据屏幕大小，行优先地写入帧缓冲中
   return len;
 }
