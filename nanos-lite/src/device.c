@@ -33,8 +33,8 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   // 其中按键名已经在字符串数组names中定义好了, 你需要借助IOE的API来获得设备的输入. 另外, 若当前没有有效按键, 则返回0即可.
   AM_INPUT_KEYBRD_T key = io_read(AM_INPUT_KEYBRD);//按键信息对系统来说本质上就是到来了一个事件
   if (key.keycode == AM_KEY_NONE) {*(char*)buf = '\0';return 0;}
-  int buflen=snprintf(buf, len, "%s %s\0", key.keydown ? "kd":"ku", keyname[key.keycode]);//按键名称与AM中的定义的按键名相同, 均为大写. 此外, 一个事件以换行符\n结束.
-  printf("buf内容为:%s\n",buf);
+  int buflen=snprintf(buf, len, "%s %s\n", key.keydown ? "kd":"ku", keyname[key.keycode]);//按键名称与AM中的定义的按键名相同, 均为大写. 此外, 一个事件以换行符\n结束.
+  printf("buf内容为:%s",buf);
   return buflen;
 }
 
