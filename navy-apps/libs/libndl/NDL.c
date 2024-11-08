@@ -90,8 +90,8 @@ void NDL_OpenCanvas(int *w, int *h) {
   if(*w==0&&*h==0){*w=screen_w;*h=screen_h;}//如果*w和*h都为0的话就赋值
   canvas_w = *w; canvas_h = *h;
   //保持画布在屏幕中央
-  canvas_x=(screen_w - canvas_w) / 2;
-  canvas_y=(screen_h - canvas_h) / 2;
+  canvas_x=(screen_w + canvas_w) / 2;
+  canvas_y=(screen_h + canvas_h) / 2;
   printf("canvas_x:%d, canvas_y:%d\n",canvas_x,canvas_y);
 }
 
