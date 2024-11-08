@@ -49,14 +49,14 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   //fb_write()(在nanos-lite/src/device.c中定义), 用于把buf中的len字节写到屏幕上offset处. 你需要先从offset计算出屏幕上的坐标, 然后调用IOE来进行绘图. 另外我们约定每次绘图后总是马上将frame buffer中的内容同步到屏幕上.
   AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
   int screen_width=gpu.width;
-  offset/=4;len/=4;//因为按照一个像素就是4个字节的存储
+  offset/=sizeof(uint32_t);len/=sizeof(uint32_t);//因为按照一个像素就是4个字节的存储
   int y = offset / screen_width;  //确认行数
   int x = offset % screen_width;//确认列数
   io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len, 1, true);//这里1表示高为1，也就是说只输出一行
   // draw_rect((uint32_t*)buf, x,y, len/4, 1);
   printf("screen_width:%u\toffset:%u\tlen:%u\tx:%u\ty:%u\n",screen_width,offset,len,x,y);
   //每次只能写一行的原因是文件系统的接口限制了我们无法将画布宽高也同时传进write中，fb的写操作只会根据屏幕大小，行优先地写入帧缓冲中
-  return len;
+  return len*sizeof(uint32_t);
 }
 
 void init_device() {

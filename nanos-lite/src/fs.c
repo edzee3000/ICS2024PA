@@ -51,8 +51,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
   [FD_FB]     = {"/dev/fb",0, 0, invalid_read, fb_write},// Nanos-lite和Navy约定, 把显存抽象成文件/dev/fb(fb为frame buffer之意), 它需要支持写操作和lseek, 以便于把像素更新到屏幕的指定位置上.
                 //这里VGA一开始忘记要写系统调用了……
-                {"/proc/dispinfo",0,0,dispinfo_read,invalid_write},
-                {"/dev/events",0,0,events_read,invalid_write},//上述事件抽象成一个特殊文件/dev/events, 它需要支持读操作, 用户程序可以从中读出按键事件, 但它不必支持lseek, 因为它是一个字符设备.
+                {"/proc/dispinfo",0,0,dispinfo_read, invalid_write},
+                {"/dev/events",0,0,events_read, invalid_write},//上述事件抽象成一个特殊文件/dev/events, 它需要支持读操作, 用户程序可以从中读出按键事件, 但它不必支持lseek, 因为它是一个字符设备.
 #include "files.h"  //nanos-lite/src/files.h包含进来表文件列表
 };//在Nanos-lite中, 由于sfs的文件数目是固定的, 我们可以简单地把文件记录表的下标作为相应文件的文件描述符返回给用户程序. 在这以后, 所有文件操作都通过文件描述符来标识文件
 //实际上, 操作系统中确实存在不少"没有名字"的文件. 为了统一管理它们, 我们希望通过一个编号来表示文件, 
@@ -64,6 +64,7 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb 初始化/dev/fb帧缓冲区大小
   AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
   file_table[FD_FB].size=gpu.width * gpu.height * sizeof(uint32_t);//每个像素用32位整数以`00RRGGBB`的方式描述颜色
+  printf("size:%u\n",file_table[FD_FB].size);
 } 
 
 
