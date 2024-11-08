@@ -2,6 +2,9 @@
 #include "syscall.h"
 
 #include <fs.h>
+
+#include <sys/time.h>
+#include <time.h>
 // #include "files.h" //用于strace的翻译文件名
 /*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
 config STRACE
@@ -23,6 +26,7 @@ int system_open(const char *pathname, int flags, int mode);
 int system_close(int fd);
 size_t system_lseek(int fd, size_t offset, int whence);
 size_t system_read(int fd, intptr_t buf, size_t count);
+int system_gettimeofday(struct timeval *tv, struct timezone *tz);
 
 void do_syscall(Context *c) {
   // Nanos-lite收到系统调用事件之后, 就会调出系统调用处理函数do_syscall()进行处理. 
@@ -55,6 +59,8 @@ void do_syscall(Context *c) {
     case SYS_close:c->GPRx = system_close(a[1]);/*printf("调用SYS_close\n");*/break;
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
+    case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);
+
 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
@@ -119,6 +125,34 @@ size_t system_read(int fd, intptr_t buf, size_t count)
 intptr_t system_brk(intptr_t increment)
 {return 0;//暂时先返回0
 }
+
+int system_gettimeofday(struct timeval *tv, struct timezone *tz) 
+{
+  // // tv：对于gettimeofday，指向存放返回的时间信息的缓冲区；对于settimeofday，指向需要设置的时间信息缓冲区。原型如下
+  // struct timeval {
+  //     time_t      tv_sec;     /* 秒 */
+  //     suseconds_t tv_usec;    /* 微妙 */
+  // };
+  // // tz：时区信息，一般不会被使用。原型如下
+  // struct timezone {
+  //     int tz_minuteswest;     /* minutes west of Greenwich */
+  //     int tz_dsttime;         /* type of DST correction */
+  // };
+  // 返回说明：
+  // 成功执行时，返回0。失败返回-1，errno被设为以下的某个值
+  // EFAULT：tv或tz其中某一项指向的空间不可访问
+  // EINVAL：时区格式无效
+  // EPERM：权限不足，调用进程不允许使用settimeofday设置当前时间和时区值。
+  uint64_t us = io_read(AM_TIMER_UPTIME).us;
+  if(tv!=NULL){
+  tv->tv_sec = us / (1000*1000);//秒
+  tv->tv_usec = us %(1000*1000);}//微秒
+  if(tz!=NULL){}//时区信息一般不会被使用  因此这里先暂时不实现了吧
+  return 0;
+}
+
+
+
 
 
 
