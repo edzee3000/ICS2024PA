@@ -12,7 +12,7 @@ int main() {
     while ((tv.tv_sec * 1000 + tv.tv_usec / 1000) < ms) {
       gettimeofday(&tv, NULL);
     }
-    printf("time = %f\n", ((float)ms)/1000);
+    printf("ms = %d\n", ms);
     ms += 500;
   }
   printf("执行完timer-test\n");
