@@ -49,6 +49,7 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},//将FD_STDOUT和FD_STDERR设置为相应的write写入函数
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+  [FD_FB]={"/dev/events",0,0},
 #include "files.h"  //nanos-lite/src/files.h包含进来表文件列表
 };//在Nanos-lite中, 由于sfs的文件数目是固定的, 我们可以简单地把文件记录表的下标作为相应文件的文件描述符返回给用户程序. 在这以后, 所有文件操作都通过文件描述符来标识文件
 //实际上, 操作系统中确实存在不少"没有名字"的文件. 为了统一管理它们, 我们希望通过一个编号来表示文件, 

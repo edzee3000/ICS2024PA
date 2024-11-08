@@ -24,6 +24,8 @@ uint32_t NDL_GetTicks() {
 }
 
 
+int open (const char *file, int flags, ...);
+
 // 读出一条事件信息, 将其写入`buf`中, 最长写入`len`字节
 // 若读出了有效的事件, 函数返回1, 否则返回0
 int NDL_PollEvent(char *buf, int len) {
@@ -35,7 +37,10 @@ int NDL_PollEvent(char *buf, int len) {
   // 此外文本方式使得用户程序可以容易可读地解析事件的内容. Nanos-lite和Navy约定, 
   // 上述事件抽象成一个特殊文件/dev/events, 它需要支持读操作, 用户程序可以从中读出按键事件, 
   // 但它不必支持lseek, 因为它是一个字符设备.
-  return read(evtdev, buf, len);
+  int fd = open("/dev/events", 0 , 0);//第一个区别在于fopen属于缓冲文件系统，fopen, fclose, fread, fwrite, fseek等都有缓冲区，而open属于非缓冲文件系统，相关文件操作的函数有open, close, read, write, lseek，由于键盘是字符设备，而且写入速度（用户键盘输入）十分慢，不需要缓冲区，因此选择后者
+  int readlen=read(fd,buf,len);
+  assert(close(fd)==0);
+  return readlen==0 ? 0:1  ;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
