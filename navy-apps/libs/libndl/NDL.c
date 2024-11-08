@@ -10,7 +10,12 @@
 
 static int evtdev = -1;
 static int fbdev = -1;
+//屏幕大小
 static int screen_w = 0, screen_h = 0;
+//画布大小
+static int canvas_w=0,canvas_h=0;
+//相对于屏幕左上角的画布位置坐标
+static int canvas_x=0,canvas_y=0;
 
 enum{SDL_INIT_TIMER,SDL_INIT_AUDIO,SDL_INIT_VIDEO,
 SDL_INIT_JOYSTICK,SDL_INIT_HAPTIC,SDL_INIT_GAMECONTROLLER,
@@ -43,6 +48,8 @@ int NDL_PollEvent(char *buf, int len) {
   return readlen ==0 ? 0:1 ;
 }
 
+// 打开一张(*w) X (*h)的画布
+// 如果*w和*h均为0, 则将系统全屏幕作为画布, 并将*w和*h分别设为系统屏幕的大小
 void NDL_OpenCanvas(int *w, int *h) {
   if (getenv("NWM_APP")) {
     int fbctl = 4;
@@ -61,9 +68,48 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   }
+  //这里从/proc/dispinfo 中解析出屏幕的宽和高，然后赋值， 根据屏幕的值和画布的宽高算出画布的原点(相对于屏幕左上角的位置坐标)
+  int buf_size = 128;
+  char * buf = (char *)malloc(buf_size * sizeof(char));
+  int fd = open("/proc/dispinfo", 0, 0);
+  int readlen=read(fd,buf,buf_size);
+  assert(readlen < buf_size);//为了要保证读取的长度要小于buf缓冲区的大小
+  assert(close(fd)==0);
+  int i=0,width=0,height=0;
+  for(int j=0;j<2;j++){//循环2次分别读取buf中的宽度与高度
+    for (; i < buf_size; i++) {if (buf[i] == ':') { i++; break;}}
+    for (; i < buf_size; i++) {if (buf[i] >= '0' && buf[i] <= '9'){break;} printf("冒号后面不是数字\n");assert(0);} //检查当前字符是否是数字字符。如果是，它跳出循环以开始解析宽度值。
+    for (; i < buf_size; i++) 
+    {if (buf[i] >= '0' && buf[i] <= '9') {switch (j)
+    {case 0:  width = width * 10 + buf[i] - '0'; break;
+     case 1:  height = height * 10 + buf[i] - '0';break;
+     default:break;}} //检查当前字符是否是数字字符。如果是，它将当前字符的数字值添加到 width 变量中。
+    else{break;}}
+  }
+  free(buf);screen_w=width;screen_h=height;
+  if(*w==0&&*h==0){*w=screen_w;*h=screen_h;}//如果*w和*h都为0的话就赋值
+  canvas_w = *w; canvas_h = *h;
+  //保持画布在屏幕中央
+  canvas_x=(screen_w - canvas_w) / 2;
+  canvas_y=(screen_h - canvas_h) / 2;
 }
 
+// 向画布`(x, y)`坐标处绘制`w*h`的矩形图像, 并将该绘制区域同步到屏幕上
+// 图像像素按行优先方式存储在`pixels`中, 每个像素用32位整数以`00RRGGBB`的方式描述颜色
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+//NDL_DrawRect()的功能和PA2中介绍的绘图接口是非常类似的. 但为了实现它, NDL还需要知道屏幕大小的信息. 
+// Nanos-lite和Navy约定, 屏幕大小的信息通过/proc/dispinfo文件来获得, 它需要支持读操作. 
+// navy-apps/README.md中对这个文件内容的格式进行了约定, 你需要阅读它. 至于具体的屏幕大小, 你需要通过IOE的相应API来获取.
+  int fd = open("/dev/fb", 0, 0);
+  for (int i = 0; i < h && y + i < canvas_h; i++) { //i<h&&y+i<canvas_h是为了保证即使有部分显示不出来也好比越界访问出错好
+    int now_line_in_buf = y + canvas_y + i;//确认现在在buf当中第几行
+    int now_column_in_buf = x + canvas_x;//确认现在在buf当中的第几列
+    lseek(fd, (now_column_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t), SEEK_SET);
+    write(fd, pixels + i * w,  (w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));//倘若w大于画布宽度减去当前x的话宁愿少贴一点图也不要访问越界
+  }
+  assert(close(fd) == 0);
+
+
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {

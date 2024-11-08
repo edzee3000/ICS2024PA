@@ -34,16 +34,25 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   AM_INPUT_KEYBRD_T key = io_read(AM_INPUT_KEYBRD);//按键信息对系统来说本质上就是到来了一个事件
   if (key.keycode == AM_KEY_NONE) {*(char*)buf = '\0';return 0;}
   int buflen=snprintf(buf, len, "%s %s\n", key.keydown ? "kd":"ku", keyname[key.keycode]);//按键名称与AM中的定义的按键名相同, 均为大写. 此外, 一个事件以换行符\n结束.
-  printf("buf内容为:%s",buf);
+  printf("buf内容为:%s",buf);//这里就不用多加一个\n了因为上一条代码已经用\n分隔开来了
   return buflen;
 }
 
+//显存屏幕大小信息读取
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+  //实现dispinfo_read()(在nanos-lite/src/device.c中定义), 按照约定将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).
+  AM_GPU_CONFIG_T gpu=io_read(AM_GPU_CONFIG);
+  return snprintf((char*)buf,len,"屏幕宽度:%d 屏幕高度:%d\n",gpu.width, gpu.height);
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  return 0;
+  AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
+  int screen_width=gpu.width;
+  offset/=4;len/=4;//因为按照一个像素就是4个字节的存储
+  int y = offset / screen_width;  //确认行数
+  int x = offset - y * screen_width;//确认列数
+  io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len, 1, true);//这里1表示高为1，也就是说只输出一行
+  return len;
 }
 
 void init_device() {
