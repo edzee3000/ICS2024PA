@@ -59,7 +59,7 @@ void do_syscall(Context *c) {
     case SYS_close:c->GPRx = system_close(a[1]);/*printf("调用SYS_close\n");*/break;
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
-    case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);
+    case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
 
 
     default: panic("Unhandled syscall ID = %d", a[0]);
