@@ -1,4 +1,4 @@
-// #include <stdio.h>
+#include <stdio.h>
 #include "assert.h"
 #include <sys/time.h>
 #include <time.h>
@@ -15,5 +15,6 @@ int main() {
     ms += 500;
     printf("ms = %lld\n", ms);
   }
+  printf("执行完timer-test\n");
   return 0;
 }
