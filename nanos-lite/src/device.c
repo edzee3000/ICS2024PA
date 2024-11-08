@@ -43,8 +43,9 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   //实现dispinfo_read()(在nanos-lite/src/device.c中定义), 按照约定将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).
   AM_GPU_CONFIG_T gpu=io_read(AM_GPU_CONFIG);
+   printf("offset:%u\n",offset);
   return snprintf((char*)buf,len,"屏幕宽度:%d 屏幕高度:%d\n",gpu.width, gpu.height);
-  printf("offset:%u\n",offset);
+ 
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
