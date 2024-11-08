@@ -94,7 +94,7 @@ size_t fs_read(int fd, void *buf, size_t len)
   size_t disk_offset = file_table[fd].disk_offset;
   //由于文件的大小是固定的, 在实现fs_read(), fs_write()和fs_lseek()的时候, 注意偏移量不要越过文件的边界.
   if(open_offset>size){Log("文件%s当前文件指针越界，此次不可读",file_table[fd].name);return 0;}//注意如果目前文件读写位置超出了文件的大小的话就选择不读写
-  if(open_offset + len > size){read_len = size - open_offset;Log("由于本次读取长度超出文件范围，实际输出长度为:%d",read_len);}
+  if(open_offset + len > size){read_len = size - open_offset;/*Log("由于本次读取长度超出文件范围，实际输出长度为:%d",read_len)*/;}
   ramdisk_read(buf, disk_offset+open_offset, read_len);//使用ramdisk_read()和ramdisk_write()来进行文件的真正读写.
   file_table[fd].open_offset+=read_len;
   return read_len;
