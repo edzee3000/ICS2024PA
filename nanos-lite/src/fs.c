@@ -64,7 +64,7 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb 初始化/dev/fb帧缓冲区大小
   AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
   file_table[FD_FB].size=gpu.width * gpu.height * sizeof(uint32_t);//每个像素用32位整数以`00RRGGBB`的方式描述颜色
-  printf("size:%u\n",file_table[FD_FB].size);
+  // printf("size:%u\n",file_table[FD_FB].size);
 } 
 
 
