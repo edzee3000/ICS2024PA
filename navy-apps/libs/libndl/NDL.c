@@ -75,6 +75,8 @@ void NDL_OpenCanvas(int *w, int *h) {
   int readlen=read(fd,buf,buf_size);
   assert(readlen < buf_size);//为了要保证读取的长度要小于buf缓冲区的大小
   assert(close(fd)==0);
+  // sscanf(buf, "屏幕宽度:%d 屏幕高度:%d\n", &screen_w, &screen_h);
+
   int i=0,width=0,height=0;
   for(int j=0;j<2;j++){//循环2次分别读取buf中的宽度与高度
     for (; i < buf_size; i++) {if (buf[i] == ':') { i++; break;}}
@@ -146,7 +148,7 @@ int NDL_Init(uint32_t flags) {
   // SDL_INIT_EVERYTHING：包含上述所有选项
 
   //这里之后可能需要进行一些改动  但是还没有想好  因此先不管了
-
+  
 
   if (getenv("NWM_APP")) {
     evtdev = 3;
