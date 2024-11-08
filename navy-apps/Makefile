@@ -46,8 +46,9 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 
 
 ### Add default libraries for ISA != native
+### navy-apps的make在编译链接的时候，没有加入libndl这个库，我们得打开Makefile把这个库加进去!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ifneq ($(ISA), native)
-LIBS += libc libos
+LIBS += libc libos libndl
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
 WL = -Wl,
@@ -119,7 +120,7 @@ $(DST_DIR)/%.o: %.S
 ### Rule (recursive make): build dependent libraries (libc, libos, ...)
 $(LIBS):
 	$(MAKE) -s -C $(NAVY_HOME)/libs/$@ archive
-
+	
 ### Rule (link): objects (`*.o`) and libraries (`*.a`) -> `$(APP)`, the final ELF binary to be packed into application (ld)
 $(APP): $(LINKAGE)
 	@echo + LD "->" $(shell realpath $@ --relative-to .)
