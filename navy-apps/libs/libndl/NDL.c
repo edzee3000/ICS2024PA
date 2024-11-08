@@ -74,7 +74,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   int fd = open("/proc/dispinfo", 0, 0);
   int readlen=read(fd,buf,buf_size);
   assert(readlen < buf_size);//为了要保证读取的长度要小于buf缓冲区的大小
-  assert(close(fd)==0);
+  assert(close(fd)==0); 
   // sscanf(buf, "屏幕宽度:%d 屏幕高度:%d\n", &screen_w, &screen_h);
 
   int i=0,width=0,height=0;
