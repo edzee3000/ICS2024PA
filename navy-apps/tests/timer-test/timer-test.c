@@ -8,12 +8,12 @@
 int main() {
   // struct timeval tv;
   // struct timezone tz;
-  uint32_t ms = NDL_GetTicks()+500;
+  uint32_t ms = NDL_GetTicks();
   while (1) {
     uint32_t now_ms = NDL_GetTicks();
     do{
       now_ms = NDL_GetTicks();
-    }while(now_ms < ms); 
+    }while(now_ms < ms+500); 
     printf("ms = %u\n", ms);
     ms += 500;
   }
