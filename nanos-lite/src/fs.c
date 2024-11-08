@@ -49,7 +49,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},//将FD_STDOUT和FD_STDERR设置为相应的write写入函数
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
-  [FD_FB]     = {"/dev/fb",0, 0},// Nanos-lite和Navy约定, 把显存抽象成文件/dev/fb(fb为frame buffer之意), 它需要支持写操作和lseek, 以便于把像素更新到屏幕的指定位置上.
+  [FD_FB]     = {"/dev/fb",0, 0, invalid_read,fb_write},// Nanos-lite和Navy约定, 把显存抽象成文件/dev/fb(fb为frame buffer之意), 它需要支持写操作和lseek, 以便于把像素更新到屏幕的指定位置上.
+                //这里VGA一开始忘记要写系统调用了……
                 {"/proc/dispinfo",0,0,dispinfo_read},
                 {"/dev/events",0,0,events_read},//上述事件抽象成一个特殊文件/dev/events, 它需要支持读操作, 用户程序可以从中读出按键事件, 但它不必支持lseek, 因为它是一个字符设备.
 #include "files.h"  //nanos-lite/src/files.h包含进来表文件列表
