@@ -23,8 +23,19 @@ uint32_t NDL_GetTicks() {
   return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
+
+// 读出一条事件信息, 将其写入`buf`中, 最长写入`len`字节
+// 若读出了有效的事件, 函数返回1, 否则返回0
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+  // 另一个输入设备是键盘, 按键信息对系统来说本质上就是到来了一个事件. 一种简单的方式是把事件以文本的形式表现出来, 我们定义以下两种事件,
+  // 按下按键事件, 如kd RETURN表示按下回车键
+  // 松开按键事件, 如ku A表示松开A键
+  // 按键名称与AM中的定义的按键名相同, 均为大写. 此外, 一个事件以换行符\n结束.
+  // 我们采用文本形式来描述事件有两个好处, 首先文本显然是一种字节序列, 这使得事件很容易抽象成文件; 
+  // 此外文本方式使得用户程序可以容易可读地解析事件的内容. Nanos-lite和Navy约定, 
+  // 上述事件抽象成一个特殊文件/dev/events, 它需要支持读操作, 用户程序可以从中读出按键事件, 
+  // 但它不必支持lseek, 因为它是一个字符设备.
+  return read(evtdev, buf, len);
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -80,6 +91,9 @@ int NDL_Init(uint32_t flags) {
   // SDL_INIT_EVENTS：事件
   // SDL_INIT_NOPARACHUTE：不捕获关键信号（这个不理解）
   // SDL_INIT_EVERYTHING：包含上述所有选项
+
+  //这里之后可能需要进行一些改动  但是还没有想好  因此先不管了
+
 
   if (getenv("NWM_APP")) {
     evtdev = 3;

@@ -49,6 +49,7 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 ### navy-apps的make在编译链接的时候，没有加入libndl这个库，我们得打开Makefile把这个库加进去!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ifneq ($(ISA), native)
 LIBS += libc libos libndl
+###############################################################################
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
 WL = -Wl,
@@ -173,7 +174,7 @@ APPS =
 # TESTS = dummy hello 
 # 实现fs_write()和fs_lseek(), 然后运行测试程序navy-apps/tests/file-test. 为了编译它, 你需要把它加到navy-apps/Makefile的TESTS变量中, 这样它最终就会被包含在ramdisk镜像中.
 # TESTS = dummy hello file-test
-TESTS = dummy hello file-test timer-test
+TESTS = dummy hello file-test timer-test event-test
 # 如果你希望在镜像中添加一个应用程序, 请记得将它加入到上述Makefile文件的应用程序列表中.
 
 fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
