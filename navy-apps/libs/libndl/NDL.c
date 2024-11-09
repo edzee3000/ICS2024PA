@@ -89,7 +89,7 @@ void NDL_OpenCanvas(int *w, int *h) {
     else{break;}}
   }
   free(buf);screen_w=width;screen_h=height;
-  if(*w==0&&*h==0){*w=screen_w;*h=screen_h;}//如果*w和*h都为0的话就赋值
+  if(*w==0&&*h==0){*w=screen_w;*h=screen_h;}//如果*w和*h都为0的话就赋值  将画布大小赋值为屏幕大小
   canvas_w = *w; canvas_h = *h;
   //保持画布在屏幕中央
   canvas_x=(screen_w - canvas_w) / 2;
