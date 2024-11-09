@@ -127,7 +127,7 @@ HEIGHT:480
 [stb]: https://github.com/nothings/stb
 
 ## 应用程序列表
-
+ 
 Navy目前收录的应用程序位于`apps/`目录下, 包括
 * `nslider`: NJU幻灯片播放器, 可以播放4:3的幻灯片
 * `menu`: 启动菜单, 可以选择需要运行的应用程序

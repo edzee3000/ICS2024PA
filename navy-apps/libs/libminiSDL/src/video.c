@@ -4,15 +4,45 @@
 #include <string.h>
 #include <stdlib.h>
 
+//SDL的绘图模块引入了一个Surface的概念, 它可以看成一张具有多种属性的画布, 具体可以通过RTFM查阅Surface结构体中的成员含义. 
+
+#define WINDOW_W 800  //定义当前窗口宽度和高度  但是这个是在其他地方哪里有的？？？？？？？？好奇怪……
+#define WINDOW_H 600
+
+//SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  SDL_Rect src_rect = { .x = 0, .y = 0, .w = src->w, .h = src->h };//初始化两个空的矩形分别为src和dst的大小
+  SDL_Rect dst_rect = { .x = 0, .y = 0, .w = dst->w, .h = dst->h };
+  if(srcrect)src_rect=*srcrect;
+  if(dstrect)src_rect=*dstrect;
+  uint32_t Pixel_Bit=dst->format->BitsPerPixel;
+  uint8_t* Src_Pixel_Data = src->pixels;
+  uint8_t* Dst_Pixel_Data = dst->pixels;
+  //将对应的矩形区域复制到dst的矩形区域  但是在这里我并没有考虑到边界情况  暂时先不管
+  switch (Pixel_Bit){//BitsPerPixel每个像素的bit不同也是有影响的
+  case 8:for (uint32_t i = 0; i < src_rect.h; i ++){for (uint32_t j = 0; j < src_rect.w; j ++) 
+    {dst->pixels[(i + dst_rect.y) * dst->w + j + dst_rect.x] = src->pixels[(i + src_rect.y) * src->w + j + src_rect.x];}}break;
+  case 32:for (uint32_t i = 0; i < src_rect.h; i ++){for (uint32_t j = 0; j < src_rect.w; j ++) 
+    {((uint32_t *)dst->pixels)[(i + dst_rect.y) * dst->w + j + dst_rect.x] = ((uint32_t *)src->pixels)[(i + src_rect.y) * src->w + j + src_rect.x];}} break;
+  default:break;}
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
+//SDL_UpdateRect(): 将画布中的指定矩形区域同步到屏幕上
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  if(w==0||s==0){w=s->w;h=s->h;}
+  uint32_t local_pixels[WINDOW_W * WINDOW_H];
+  uint32_t Pixel_Bit=s->format->BitsPerPixel;//根据每个像素所占bit位数不同需要进行分类讨论
+  SDL_Color* colors = s->format->palette->colors; 
+  switch (Pixel_Bit)
+  {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
+    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; local_pixels[i * w + j]=colors[pixel_index].val;}}break;
+  case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
+  default:break;}
 }
 
 // APIs below are already implemented.

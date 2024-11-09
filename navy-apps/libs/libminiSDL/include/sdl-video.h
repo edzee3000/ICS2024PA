@@ -27,25 +27,33 @@ typedef union {
 } SDL_Color;
 
 typedef struct {
-	int ncolors;
-	SDL_Color *colors;
-} SDL_Palette;
+	int ncolors;//指出调色板里面有多少颜色
+	SDL_Color *colors;//颜色数组
+} SDL_Palette;//调色板，也是一个结构体类型
+// 调色板有什么用呢？这里还得说一下位图的存储方式。
+// 需要注意的是：SDL_Surface本身只能存储位图数据（因为其官方只给了SDL_LoadBMP()函数来加载位图，而没有函数去加载其他格式的图片），
+// 虽然有SDL_Image库，但那是第三方的不算在讨论范围内，所以我们首先得搞清楚调色板在位图中的用途。
+// 调色板中记录了这个图片中所有要用到的颜色（对于256色位图，就会记录256色），这也就是ncolors属性的作用。
+// 然后会将所有属性以RGBxxx(例子里面是RGB888)的方式存储在colors属性中。 然后原本的像素就不再以RGB888方式存储了，
+// 其会存储一个索引，这个索引指向colors属性中的颜色
+
+
 
 typedef struct {
-	SDL_Palette *palette;
-	uint8_t BitsPerPixel;
-	uint8_t BytesPerPixel;
-	uint8_t Rloss, Gloss, Bloss, Aloss;
+	SDL_Palette *palette;//调色板（如果没有是NULL）
+	uint8_t BitsPerPixel;//每一个像素使用多少个Bit存储
+	uint8_t BytesPerPixel; //每个像素使用多少个Byte存储
+	uint8_t Rloss, Gloss, Bloss, Aloss; //R G B A分量的掩码
 	uint8_t Rshift, Gshift, Bshift, Ashift;
 	uint32_t Rmask, Gmask, Bmask, Amask;
 } SDL_PixelFormat;
 
 typedef struct {
 	uint32_t flags;
-	SDL_PixelFormat *format;
-	int w, h;
-	uint16_t pitch;
-	uint8_t *pixels;
+	SDL_PixelFormat *format; //存储着和像素有关的格式                read-only
+	int w, h;				//图像宽度和高度                   read-only
+	uint16_t pitch;   //pixels中一行有多少个像素（以Bytes计） read-only
+	uint8_t *pixels; //实际的像素数据                        read-write
 } SDL_Surface;
 
 SDL_Surface* SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth,

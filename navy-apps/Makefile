@@ -48,7 +48,7 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 ### Add default libraries for ISA != native
 ### navy-apps的make在编译链接的时候，没有加入libndl这个库，我们得打开Makefile把这个库加进去!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ifneq ($(ISA), native)
-LIBS += libc libos libndl
+LIBS += libc libos libndl libfixedptc libminiSDL
 ###############################################################################
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
@@ -170,7 +170,8 @@ $(CLEAN_ALL):
 .PHONY: clean-all $(CLEAN_ALL)
 
 ### Build fsimg and ramdisk for Nanos-lite
-APPS =
+APPS = nslider
+# APPS的内容是在这里添加的！！###########################################################
 # TESTS = dummy hello 
 # 实现fs_write()和fs_lseek(), 然后运行测试程序navy-apps/tests/file-test. 为了编译它, 你需要把它加到navy-apps/Makefile的TESTS变量中, 这样它最终就会被包含在ramdisk镜像中.
 # TESTS = dummy hello file-test
