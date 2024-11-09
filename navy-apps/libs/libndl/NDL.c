@@ -94,9 +94,9 @@ void NDL_OpenCanvas(int *w, int *h) {
   //保持画布在屏幕中央
   canvas_x=(screen_w - canvas_w) / 2;
   canvas_y=(screen_h - canvas_h) / 2;
-  printf("screen_w:%d, screen_h:%d\n",screen_w,screen_h);
-  printf("canvas_w:%d, canvas_h:%d\n",canvas_w,canvas_h);
-  printf("canvas_x:%d, canvas_y:%d\n",canvas_x,canvas_y);
+  // printf("screen_w:%d, screen_h:%d\n",screen_w,screen_h);
+  // printf("canvas_w:%d, canvas_h:%d\n",canvas_w,canvas_h);
+  // printf("canvas_x:%d, canvas_y:%d\n",canvas_x,canvas_y);
 }
 
 // 向画布`(x, y)`坐标处绘制`w*h`的矩形图像, 并将该绘制区域同步到屏幕上

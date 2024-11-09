@@ -117,7 +117,9 @@ size_t system_write(int fd, intptr_t buf, size_t count)
   // char* ptr=(char *)buf;
   // for(int i=0;i<count;i++){putch(ptr[i]);}
   // return count;
-  if(fd==3){printf("insert fd==3\n");}
+  // if(fd==3){printf("insert fd==3\n");}
+
+  
   return fs_write(fd,(const void*)buf,count);
 }
 
