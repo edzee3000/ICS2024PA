@@ -29,7 +29,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
-size_t events_read(void *buf, size_t offset, size_t len) {
+size_t events_read(void *buf, size_t offset, size_t len) {//默认offset为0！！！！！！！！！
   // 实现events_read()(在nanos-lite/src/device.c中定义), 把事件写入到buf中, 最长写入len字节, 然后返回写入的实际长度. 
   // 其中按键名已经在字符串数组names中定义好了, 你需要借助IOE的API来获得设备的输入. 另外, 若当前没有有效按键, 则返回0即可.
   AM_INPUT_KEYBRD_T key = io_read(AM_INPUT_KEYBRD);//按键信息对系统来说本质上就是到来了一个事件

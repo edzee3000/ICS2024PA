@@ -9,7 +9,7 @@
 #define WINDOW_W 800  //定义当前窗口宽度和高度  但是这个是在其他地方哪里有的？？？？？？？？好奇怪……
 #define WINDOW_H 600
 
-//SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置
+//SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置  在NJU Slider中要实现的
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
@@ -29,10 +29,23 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   default:break;}
 }
 
-void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+
+//在MENU开机菜单中要实现的
+void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {//用color来填充整个矩形
+  SDL_Rect dst_rect = { .x = 0, .y = 0, .w = dst->w, .h = dst->h };//初始化矩形为整个目标屏幕大小
+  if (dstrect) {dst_rect = *dstrect;}
+  uint32_t Pixel_Bit=dst->format->BitsPerPixel;
+  for (int i = 0; i < dst_rect.h; i ++) {for (int j = 0; j < dst_rect.w; j ++) 
+  {
+    uint32_t pixel_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
+    switch (Pixel_Bit)
+      {case 32: ((uint32_t *)dst->pixels)[pixel_index]=color;break;
+       case 8: (dst->pixels)[pixel_index]=color;break;
+      default:break;}
+  }}
 }
 
-//SDL_UpdateRect(): 将画布中的指定矩形区域同步到屏幕上
+//SDL_UpdateRect(): 将画布中的指定矩形区域同步到屏幕上  在NJU Slider中要实现的
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   if(w==0||s==0){w=s->w;h=s->h;}
   uint32_t local_pixels[WINDOW_W * WINDOW_H];
