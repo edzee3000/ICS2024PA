@@ -5,6 +5,8 @@
 
 #include <sys/time.h>
 #include <time.h>
+
+#include <declaration.h>
 // #include "files.h" //用于strace的翻译文件名
 /*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
 config STRACE
@@ -60,7 +62,7 @@ void do_syscall(Context *c) {
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
     case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
-
+    // case SYS_fb_write:c->GPRx = FB_write(a[1],  a[2] , a[3]);break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
@@ -96,6 +98,7 @@ void do_syscall(Context *c) {
 }
 
 
+
 int system_open(const char *pathname, int flags, int mode)
 { return fs_open(pathname,flags,mode);}
 
@@ -116,6 +119,7 @@ size_t system_write(int fd, intptr_t buf, size_t count)
   // return count;
   return fs_write(fd,(const void*)buf,count);
 }
+
 
 size_t system_read(int fd, intptr_t buf, size_t count)
 {return fs_read(fd,(void*)buf,count);}

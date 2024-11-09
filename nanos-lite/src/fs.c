@@ -150,7 +150,7 @@ size_t fs_lseek(int fd, size_t offset, int whence)
   }
   if(new_open_offset<0||new_open_offset > file->size){Log("lseek指针寻址超出范围");return -1;}//检查新的指针位置是否在文件范围之内
   file->open_offset=new_open_offset;//更新文件读写指针偏移量
-  // printf("new_open_offset:%u\n",new_open_offset);
+  printf("new_open_offset:%u\n",new_open_offset);
   return new_open_offset;
 }
 int fs_close(int fd)
