@@ -23,12 +23,11 @@ int SDL_PollEvent(SDL_Event *ev) {
   char buf[64];
   if (NDL_PollEvent(buf, sizeof(buf)))//调用NDL_PollEvent的函数接口
   {if(buf[0]=='k')
-  {
+  { 
     char key_type;char key_buf[32]; //32个字节应该足足够了
     assert(sscanf(buf, "k%c %s\n", &key_type, key_buf) == 2);//从buf当中读取key_type以及key的名字keyname  对于key_type而言d表示down u表示up
     switch (key_type)
-    {
-    case 'd':ev->type=SDL_KEYDOWN; break;
+    {case 'd':ev->type=SDL_KEYDOWN; break;
     case 'u':ev->type=SDL_KEYUP; break;
     default:printf("key_type出错\n");assert(0);break;}
     for(int i=0;i<KEYNUM;i++){if(strcmp(keyname[i], key_buf) == 0){
