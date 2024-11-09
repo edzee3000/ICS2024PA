@@ -80,7 +80,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   int i=0,width=0,height=0;
   for(int j=0;j<2;j++){//循环2次分别读取buf中的宽度与高度
     for (; i < buf_size; i++) {if (buf[i] == ':') { i++; break;}}
-    for (; i < buf_size; i++) {if (buf[i] >= '0' && buf[i] <= '9'){break;} printf("冒号后面不是数字\n");assert(0);} //检查当前字符是否是数字字符。如果是，它跳出循环以开始解析宽度值。
+    for (; i < buf_size; i++) {if(buf[i]==' ') continue; if (buf[i] >= '0' && buf[i] <= '9'){break;} printf("冒号后面不是数字\n");assert(0);} //检查当前字符是否是数字字符。如果是，它跳出循环以开始解析宽度值。
     for (; i < buf_size; i++) 
     {if (buf[i] >= '0' && buf[i] <= '9') {switch (j)
     {case 0:  width = width * 10 + buf[i] - '0'; break;

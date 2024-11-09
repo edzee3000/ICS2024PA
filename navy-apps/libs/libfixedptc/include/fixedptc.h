@@ -102,8 +102,8 @@ typedef	__uint128_t fixedptud;
 
 #define FIXEDPT_VCSID "$Id$"
 
-#define FIXEDPT_FBITS	(FIXEDPT_BITS - FIXEDPT_WBITS)
-#define FIXEDPT_FMASK	(((fixedpt)1 << FIXEDPT_FBITS) - 1)
+#define FIXEDPT_FBITS	(FIXEDPT_BITS - FIXEDPT_WBITS)  //32 - 24 = 8
+#define FIXEDPT_FMASK	(((fixedpt)1 << FIXEDPT_FBITS) - 1) //0x000000ff
 
 #define fixedpt_rconst(R) ((fixedpt)((R) * FIXEDPT_ONE + ((R) >= 0 ? 0.5 : -0.5)))
 #define fixedpt_fromint(I) ((fixedptd)(I) << FIXEDPT_FBITS)
@@ -125,37 +125,66 @@ typedef	__uint128_t fixedptud;
  * Putting them only in macros will effectively make them optional. */
 #define fixedpt_tofloat(T) ((float) ((T)*((float)(1)/(float)(1L << FIXEDPT_FBITS))))
 
+
+
+// 为了让大家更好地理解定点数的表示, 我们在fixedptc.h中去掉了一些API的实现, 你需要实现它们. 
 /* Multiplies a fixedpt number with an integer, returns the result. */
 static inline fixedpt fixedpt_muli(fixedpt A, int B) {
-	return 0;
+	return A*B;
 }
 
 /* Divides a fixedpt number with an integer, returns the result. */
 static inline fixedpt fixedpt_divi(fixedpt A, int B) {
-	return 0;
+	return A/B;
 }
 
 /* Multiplies two fixedpt numbers, returns the result. */
 static inline fixedpt fixedpt_mul(fixedpt A, fixedpt B) {
-	return 0;
+	int64_t A1=A; int64_t B1=B;
+	int64_t temp = A1 * B1;
+	temp>>=FIXEDPT_FBITS;
+	return (fixedpt)temp;
 }
 
 
 /* Divides two fixedpt numbers, returns the result. */
 static inline fixedpt fixedpt_div(fixedpt A, fixedpt B) {
-	return 0;
+	int64_t A1=A; int64_t B1=B;
+	int64_t temp=A1<<FIXEDPT_FBITS;
+	temp/=B1;
+	return (fixedpt)temp;
 }
 
 static inline fixedpt fixedpt_abs(fixedpt A) {
-	return 0;
+	return A < 0 ? 0-A : A ;
 }
 
+
+// 关于fixedpt_floor()和fixedpt_ceil(), 你需要严格按照man中floor()和ceil()的语义来实现它们, 
+// 否则在程序中用fixedpt_floor()代替floor()之后行为会产生差异, 在类似仙剑奇侠传这种规模较大的程序中,
+// 这种差异导致的现象是非常难以理解的. 因此你也最好自己编写一些测试用例来测试你的实现.
 static inline fixedpt fixedpt_floor(fixedpt A) {
-	return 0;
+	return A>>FIXEDPT_FBITS;
 }
 
 static inline fixedpt fixedpt_ceil(fixedpt A) {
-	return 0;
+	//注意对于ceil来说需要判断小数部分是否为零, 不是的话清零小数部分后加1  但是对于floor可以直接清零小数部分
+	return ((A<<FIXEDPT_WBITS)==0)? A>>FIXEDPT_FBITS : (A>>FIXEDPT_FBITS)+1;
+}
+
+//如果要用的话需要经过测试  因为这个函数我还没有测试过
+static inline fixedpt fixedpt_fromfloat(void *p)
+{	
+	//假设有一个void *p的指针变量, 它指向了一个32位变量, 这个变量的本质是float类型, 它的真值落在fixedpt类型可表示的范围中. 
+	// 如果我们定义一个新的函数fixedpt fixedpt_fromfloat(void *p), 如何在不引入浮点指令的情况下实现它?
+	//下面的都是针对于32位机器  根据KISS法则先不要弄得那么复杂
+	fixedpt real_value=*(fixedpt*)p;  //取出真值
+	fixedpt flag=real_value>>31;//计算正负
+	fixedpt order= ((uint32_t)(real_value<<1))>>24 - 127 ; //对阶码进行操作，这里表示应该是2^xx次方
+	fixedpt tail= real_value&0x007fffff | 0x00800000;  //这里是1.xxxxxxxx  取尾数  记得最高位要多一个1  一共是24位
+	int right_shift_bit=24-9-order;//计算要右移多少位 当然也有可能是左移，取负即可
+	tail = right_shift_bit>=0 ? tail>>right_shift_bit : tail<<(0-right_shift_bit); 
+	return flag < 0 ? 0-tail : tail;//如果原来的小数为负的话取负，如果为正直接返回
 }
 
 /*
