@@ -97,7 +97,7 @@ size_t fs_read(int fd, void *buf, size_t len)
   if(readfun!=NULL)
   {if(readfun==events_read) return events_read(buf,0,len);
     else if(readfun==dispinfo_read) return dispinfo_read(buf,0,len);
-    else return readfun(buf,0,len);}//我们约定, 当上述的函数指针为NULL时, 表示相应文件是一个普通文件}
+    else return invalid_read(buf,0,len);}//我们约定, 当上述的函数指针为NULL时, 表示相应文件是一个普通文件}
   //##########################################################################################################
   //另外Nanos-lite也不打算支持stdin的读入, 因此在文件记录表中设置相应的报错函数即可.  也就是上面定义好的invalid_read和invalid_write
   size_t read_len=len;
@@ -122,7 +122,7 @@ size_t fs_write(int fd, const void *buf, size_t len)
   if(writefun!=NULL){ if(writefun==serial_write) return serial_write(buf,0,len);
     else if (writefun==fb_write) return fb_write(buf,file_table[fd].disk_offset+file_table[fd].open_offset,len);
     //啊啊啊啊啊这个地方一开始卡了好久  因为默认非NULL的时候offset为0……无语死了……
-    else return writefun(buf,0,len);}
+    else return invalid_write(buf,0,len);}
   //################################################################################################################
   size_t write_len=len;//接下来的过程和fs_read几乎一模一样了
   size_t size=file_table[fd].size;
