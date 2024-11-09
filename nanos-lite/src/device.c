@@ -45,7 +45,6 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T gpu=io_read(AM_GPU_CONFIG);
    printf("offset:%u\n",offset);
   return snprintf((char*)buf,len,"屏幕宽度:%d 屏幕高度:%d\n",gpu.width, gpu.height);
- 
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
