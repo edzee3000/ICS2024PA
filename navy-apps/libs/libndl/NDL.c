@@ -94,9 +94,9 @@ void NDL_OpenCanvas(int *w, int *h) {
   //保持画布在屏幕中央
   canvas_x=(screen_w - canvas_w) / 2;
   canvas_y=(screen_h - canvas_h) / 2;
-  // printf("screen_w:%d, screen_h:%d\n",screen_w,screen_h);
-  // printf("canvas_w:%d, canvas_h:%d\n",canvas_w,canvas_h);
-  // printf("canvas_x:%d, canvas_y:%d\n",canvas_x,canvas_y);
+  printf("screen_w:%d, screen_h:%d\n",screen_w,screen_h);
+  printf("canvas_w:%d, canvas_h:%d\n",canvas_w,canvas_h);
+  printf("canvas_x:%d, canvas_y:%d\n",canvas_x,canvas_y);
 }
 
 // 向画布`(x, y)`坐标处绘制`w*h`的矩形图像, 并将该绘制区域同步到屏幕上
@@ -109,9 +109,10 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   for (int i = 0; i < h && y + i < canvas_h; i++) { //i<h&&y+i<canvas_h是为了保证即使有部分显示不出来也好比越界访问出错好
     int now_line_in_buf = y + canvas_y + i;//确认现在在buf当中第几行
     int now_column_in_buf = x + canvas_x;//确认现在在buf当中的第几列
-    lseek(fd, (now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t), SEEK_SET);
+    // lseek(fd, (now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t), SEEK_SET);
+    lseek(fd, 0, SEEK_SET);
     write(fd, pixels + i * w,  (w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));//倘若w大于画布宽度减去当前x的话宁愿少贴一点图也不要访问越界
-    // printf("now_column_in_buf:%u\tnow_line_in_buf:%u\tw:%u\th:%u\tfd:%u\tbuf:%u\tlen:%u\n",now_column_in_buf,now_line_in_buf,w,h,fd,pixels + i * w,(w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));
+    printf("now_column_in_buf:%u\tnow_line_in_buf:%u\tw:%u\th:%u\tfd:%u\tbuf:%u\tlen:%u\n",now_column_in_buf,now_line_in_buf,w,h,fd,pixels + i * w,(w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));
   }
   assert(close(fd) == 0); 
 }
