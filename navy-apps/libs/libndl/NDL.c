@@ -109,7 +109,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   for (int i = 0; i < h && y + i < canvas_h; i++) { //i<h&&y+i<canvas_h是为了保证即使有部分显示不出来也好比越界访问出错好
     int now_line_in_buf = y + canvas_y + i;//确认现在在buf当中第几行
     int now_column_in_buf = x + canvas_x;//确认现在在buf当中的第几列
-    // printf("offset:%u\n",(now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t));
+    printf("offset:%u\n",(now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t));
     lseek(fd, (now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t), SEEK_SET);
     // lseek(fd, 0, SEEK_SET);
     write(fd, pixels + i * w,  (w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));//倘若w大于画布宽度减去当前x的话宁愿少贴一点图也不要访问越界
