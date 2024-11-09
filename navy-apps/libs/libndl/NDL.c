@@ -111,7 +111,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
     int now_column_in_buf = x + canvas_x;//确认现在在buf当中的第几列
     
     size_t ret_offset = lseek(fd, (now_line_in_buf* screen_w + now_column_in_buf) * sizeof(uint32_t), SEEK_SET);
-    printf("offset:%u\n",ret_offset);
+    printf("return offset:%u\n",ret_offset);
 
     write(fd, pixels + i * w,  (w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));//倘若w大于画布宽度减去当前x的话宁愿少贴一点图也不要访问越界
     printf("now_column_in_buf:%u\tnow_line_in_buf:%u\tw:%u\th:%u\tfd:%u\tbuf:%u\tlen:%u\n",now_column_in_buf,now_line_in_buf,w,h,fd,pixels + i * w,(w < canvas_w - x ? w : canvas_w - x) *sizeof(uint32_t));
