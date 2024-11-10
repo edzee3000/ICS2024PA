@@ -63,7 +63,7 @@ static void my_echo(const char *cmd)
   printf("cmd_len:%u\n",cmd_len);
   const char *output_str=&cmd[5];
   uint32_t index=5;while(*output_str==' ') {output_str++;output_strlen--;index++;}//除去多余空格的情况
-  if(cmd[index] == cmd[cmd_len-1]=='\"' || cmd[index]== cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
+  if(cmd[index] == cmd[cmd_len-1]=='\"' || cmd[index]== cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;printf("insert\n");}//除去第一对引号
   char arr[256]={0};
   strncpy(arr,output_str,output_strlen);
   arr[output_strlen]='\0';
