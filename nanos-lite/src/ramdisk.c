@@ -32,7 +32,7 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len) {
   assert(offset + len <= RAMDISK_SIZE);
   memcpy(&ramdisk_start + offset, buf, len);
   return len;
-}
+} 
 
 void init_ramdisk() {
   Log("ramdisk info: start = %p, end = %p, size = 0x%x bytes",
