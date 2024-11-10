@@ -23,13 +23,12 @@ static int cur = 0;
 void render() {
   char fname[256];
   sprintf(fname, path, cur);
-    printf("insert\n");
-  SDL_Surface *slide = SDL_LoadBMP(fname);
-
+    // printf("insert\n");
+  SDL_Surface *slide = SDL_LoadBMP(fname);//这个函数非常耗费时间
   assert(slide);
-   printf("insert\n");
-  SDL_BlitSurface(slide, NULL, screen, NULL); //这里srcrect和dstrect指针都是NULL说明是按照屏幕原封不动移动过来的
-  printf("insert\n");
+  //  printf("insert\n");
+  SDL_BlitSurface(slide, NULL, screen, NULL); //这里srcrect和dstrect指针都是NULL说明是按照屏幕原封不动移动过来的  这个函数还好但是也挺费时间的
+  // printf("insert\n");
   SDL_UpdateRect(screen, 0, 0, 0, 0);
   SDL_FreeSurface(slide);
 }
