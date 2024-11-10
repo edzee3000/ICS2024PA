@@ -173,7 +173,7 @@ $(CLEAN_ALL):
 ### Build fsimg and ramdisk for Nanos-lite
 APPS = nslider menu nterm bird
 # APPS的内容是在这里添加的！！###########################################################  
-# 注意bird游戏因为是移植过来的 如果直接添加到APPS的话会链接失败  ln: failed to create symbolic link '/home/edzee3000/ICS2024/ICS2024PA/navy-apps/fsimg/share/games/bird': No such file or directory  make[2]: *** [Makefile:16: install-file] Error 1
+# 注意bird游戏因为是移植过来的  要注意它对应的makefile文件发生了一些变化 如果直接添加到APPS的话会链接失败 解决方法就是手动添加一个mkdir命令 ln: failed to create symbolic link '/home/edzee3000/ICS2024/ICS2024PA/navy-apps/fsimg/share/games/bird': No such file or directory  make[2]: *** [Makefile:16: install-file] Error 1
 # TESTS = dummy hello 
 # 实现fs_write()和fs_lseek(), 然后运行测试程序navy-apps/tests/file-test. 为了编译它, 你需要把它加到navy-apps/Makefile的TESTS变量中, 这样它最终就会被包含在ramdisk镜像中.
 # TESTS = dummy hello file-test
