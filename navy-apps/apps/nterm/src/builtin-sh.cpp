@@ -58,7 +58,7 @@ static void my_echo(const char *cmd)
 {
   if(strncmp(cmd,"echo",4)!=0) return;
   uint32_t cmd_len=strlen(cmd);
-  while(cmd[cmd_len]==' '){cmd_len--;}//除去末尾多余空格的情况
+  while(cmd[cmd_len-1]==' '){cmd_len--;}//除去末尾多余空格的情况
   uint32_t output_strlen=cmd_len-5;//注意strlen长度是不包含'\0'的
   printf("cmd_len:%u\n",cmd_len);
   const char *output_str=&cmd[5];
