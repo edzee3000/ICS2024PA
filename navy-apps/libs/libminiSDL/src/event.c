@@ -32,7 +32,7 @@ int SDL_PollEvent(SDL_Event *ev) {
     default:printf("key_type出错\n");assert(0);break;}
     for(int i=0;i<KEYNUM;i++){if(strcmp(keyname[i], key_buf) == 0){
       ev->key.keysym.sym=i; key_status[i] = !ev->type;//注意SDL_KEYDOWN为1 SDL_KEYUP为0   但是key_status表示的是0为up 1为down
-      return 1;}}
+      printf("insert\n");return 1;}}
   }}
   return 0;
 }
