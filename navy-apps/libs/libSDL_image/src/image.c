@@ -32,7 +32,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   unsigned char *buf = (unsigned char *)malloc(size*sizeof(unsigned char));
   if(buf == NULL) {perror("动态内存分配失败\n");fclose(file);return NULL;}
   //将整个文件读取到buf中
-  if(fread(buf, 1, size, file)!=1){printf("读取%s文件失败\n",filename);free(buf);fclose(file);return NULL;}
+  if(fread(buf, size, 1, file)!=1){printf("读取%s文件失败\n",filename);free(buf);fclose(file);return NULL;}//我靠看来还是不能完全相信AI  它写的fread把size和nmemb搞反了
   //将buf和size作为参数, 调用STBIMG_LoadFromMemory(), 它会返回一个SDL_Surface结构的指针
   SDL_Surface *surface = STBIMG_LoadFromMemory(buf, size);
   if(surface == NULL) {fprintf(stderr, "从内存中读取图片失败\n");free(buf);fclose(file);return NULL;}
