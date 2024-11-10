@@ -12,9 +12,9 @@ include $(NAVY_HOME)/Makefile
 install: install-file
 init:;
 
-#mkdir -p $(NAVY_HOME)/fsimg/share/games/这行代码是我自己添加的  不然会报链接错误
+#mkdir -p $(NAVY_HOME)/fsimg/share/games/这行代码是我自己添加的  不然会报链接错误  要创建出新的文件夹存放bird相关图片等等
 install-file:
-	mkdir -p $(NAVY_HOME)/fsimg/share/games/
+	@mkdir -p $(NAVY_HOME)/fsimg/share/games/
 	ln -sf -T $(abspath $(REPO_PATH)/res) $(NAVY_HOME)/fsimg/share/games/bird
 
 

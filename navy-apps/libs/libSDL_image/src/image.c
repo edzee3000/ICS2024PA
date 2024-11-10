@@ -24,7 +24,7 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
 SDL_Surface* IMG_Load(const char *filename) {
   //用libc中的文件操作打开文件, 并获取文件大小size
   FILE *file = fopen(filename, "rb");
-  if(file == NULL) {perror("打开文件失败\n");return NULL;}
+  if(file == NULL) {printf("打开%s文件失败\n",filename);return NULL;}
   fseek(file, 0, SEEK_END);//移动到文件末尾
   uint32_t size = ftell(file);//调用ftell函数返回文件指针相对于文件开头的当前位置  在调用fseek之后文件指针位于文件的末尾 所以ftell返回的是从文件开头到文件末尾的字节数即文件的大小。
   rewind(file);  //然后调用rewind函数将文件指针重新定位到文件的开始位置  这通常在获取文件大小之后执行，以便后续的文件操作可以从文件的开头开始
