@@ -58,13 +58,15 @@ static void my_echo(const char *cmd)
 {
   if(strncmp(cmd,"echo",4)!=0) return;
   uint32_t cmd_len=strlen(cmd);
+  while(cmd[cmd_len]==' '){cmd_len--;}//除去末尾多余空格的情况
   uint32_t output_strlen=cmd_len-5;//注意strlen长度是不包含'\0'的
-  printf("%u\n",cmd_len);
+  printf("cmd_len:%u\n",cmd_len);
   const char *output_str=&cmd[5];
-  while(*output_str==' ') output_str++;
-  if(cmd[5] == cmd[cmd_len-1]=='\"' || cmd[5]== cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
+  uint32_t index=5;while(*output_str==' ') {output_str++;output_strlen--;index++;}//除去多余空格的情况
+  if(cmd[index] == cmd[cmd_len-2]=='\"' || cmd[5]== cmd[cmd_len-2]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
   char arr[256]={0};
   strncpy(arr,output_str,output_strlen);
   arr[output_strlen]='\0';
+  printf("output_strlen:%u\n",output_strlen);
   sh_printf(arr);
 }
