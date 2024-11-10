@@ -172,7 +172,7 @@ static inline fixedpt fixedpt_ceil(fixedpt A) {
 	return ((A<<FIXEDPT_WBITS)==0)? A>>FIXEDPT_FBITS : (A>>FIXEDPT_FBITS)+1;
 }
 
-//如果要用的话需要经过测试  因为这个函数我还没有测试过
+//如果要用的话需要先经过测试!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  因为这个函数我还没有测试过
 static inline fixedpt fixedpt_fromfloat(void *p)
 {	
 	//假设有一个void *p的指针变量, 它指向了一个32位变量, 这个变量的本质是float类型, 它的真值落在fixedpt类型可表示的范围中. 
@@ -180,7 +180,7 @@ static inline fixedpt fixedpt_fromfloat(void *p)
 	//下面的都是针对于32位机器  根据KISS法则先不要弄得那么复杂
 	fixedpt real_value=*(fixedpt*)p;  //取出真值
 	fixedpt flag=real_value>>31;//计算正负
-	fixedpt order= ((uint32_t)(real_value<<1))>>24 - 127 ; //对阶码进行操作，这里表示应该是2^xx次方
+	fixedpt order= ( ( (uint32_t)(real_value<<1) )>>24 ) - 127 ; //对阶码进行操作，这里表示应该是2^xx次方
 	fixedpt tail= real_value&0x007fffff | 0x00800000;  //这里是1.xxxxxxxx  取尾数  记得最高位要多一个1  一共是24位
 	int right_shift_bit=24-9-order;//计算要右移多少位 当然也有可能是左移，取负即可
 	tail = right_shift_bit>=0 ? tail>>right_shift_bit : tail<<(0-right_shift_bit); 
