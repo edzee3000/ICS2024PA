@@ -56,18 +56,18 @@ void builtin_sh_run() {
 
 static void my_echo(const char *cmd)
 {
-  if(strncmp(cmd,"echo",4)!=0) return;
+  if(strncmp(cmd,"echo ",5)!=0) return;//这里需要将空格也要考虑进来
   uint32_t cmd_len=strlen(cmd)-1;
   while(cmd[cmd_len-1]==' '){cmd_len--;}//除去末尾多余空格的情况
   uint32_t output_strlen=cmd_len-5;//注意cmd_len长度是不包含'\0'的
-  printf("cmd_len:%u\n",cmd_len);
+  // printf("cmd_len:%u\n",cmd_len);
   const char *output_str=&cmd[5];
   uint32_t index=5;while(*output_str==' ') {output_str++;output_strlen--;index++;}//除去多余空格的情况
   //这里出了问题是因为cmd[index] =='\"'&& cmd[cmd_len-1]=='\"'写成了cmd[index] ==  cmd[cmd_len-1]=='\"'  这个是有问题的！！！！！！！
-  if(cmd[index] =='\"'&& cmd[cmd_len-1]=='\"' || cmd[index]=='\''&& cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;printf("insert\n");}//除去第一对引号
+  if(cmd[index] =='\"'&& cmd[cmd_len-1]=='\"' || cmd[index]=='\''&& cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
   char arr[256]={0};
   strncpy(arr,output_str,output_strlen);
   arr[output_strlen]='\0';
-  printf("output_strlen:%u\n",output_strlen);
+  // printf("output_strlen:%u\n",output_strlen);
   sh_printf("%s\n",arr);
 }
