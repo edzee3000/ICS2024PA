@@ -10,6 +10,7 @@ int SDL_RemoveTimer(SDL_TimerID id) {
   return 1;
 }
 
+//在NTerm中要实现的
 uint32_t SDL_GetTicks() {
   return NDL_GetTicks();
 }

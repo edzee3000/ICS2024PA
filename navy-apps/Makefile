@@ -170,7 +170,7 @@ $(CLEAN_ALL):
 .PHONY: clean-all $(CLEAN_ALL)
 
 ### Build fsimg and ramdisk for Nanos-lite
-APPS = nslider menu
+APPS = nslider menu nterm
 # APPS的内容是在这里添加的！！###########################################################
 # TESTS = dummy hello 
 # 实现fs_write()和fs_lseek(), 然后运行测试程序navy-apps/tests/file-test. 为了编译它, 你需要把它加到navy-apps/Makefile的TESTS变量中, 这样它最终就会被包含在ramdisk镜像中.

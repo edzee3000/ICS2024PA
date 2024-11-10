@@ -18,9 +18,9 @@ int SDL_PushEvent(SDL_Event *ev) {
   return 0;
 }
 
-//轮询当前挂起的事件
+//轮询当前挂起的事件  在NTerm当中要求实现
 int SDL_PollEvent(SDL_Event *ev) {
-  char buf[64];
+  char buf[64]={0};
   if (NDL_PollEvent(buf, sizeof(buf)))//调用NDL_PollEvent的函数接口
   {if(buf[0]=='k')
   { 
@@ -37,6 +37,7 @@ int SDL_PollEvent(SDL_Event *ev) {
   return 0;
 }
 
+//SDL_WaitEvent在menu.cpp当中出现过  SDL_WaitEvent->SDL_PollEvent->NDL_PollEvent
 int SDL_WaitEvent(SDL_Event *event) {
   while (true) { if (SDL_PollEvent(event)) return 1;}//一直等待Event事件直到有按键按下/弹起
   return 0;

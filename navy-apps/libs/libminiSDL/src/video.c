@@ -16,7 +16,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   SDL_Rect src_rect = { .x = 0, .y = 0, .w = src->w, .h = src->h };//初始化两个空的矩形分别为src和dst的大小
   SDL_Rect dst_rect = { .x = 0, .y = 0, .w = dst->w, .h = dst->h };
   if(srcrect)src_rect=*srcrect;
-  if(dstrect)dst_rect=*dstrect;
+  if(dstrect)dst_rect=*dstrect;//这里一开始写错了 将*dstrect赋值给了srcrect  导致在menu菜单apps当中上下翻页的过程中一直显示是fillrect的白色  最后在menu.cpp当中RTFSC才修改过来
   uint32_t Pixel_Bit=dst->format->BitsPerPixel;
   uint8_t* Src_Pixel_Data = src->pixels;
   uint8_t* Dst_Pixel_Data = dst->pixels;
@@ -43,6 +43,10 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {//用col
        case 8: (dst->pixels)[pixel_index]=color;break;
       default:break;}
   }}
+  //开机菜单是另一个行为比较简单的程序, 它会展示一个菜单, 用户可以选择运行哪一个程序. 为了运行它, 
+  // 你还需要在miniSDL中实现SDL_FillRect(), 它用于往画布的指定矩形区域中填充指定的颜色.
+  //正确实现上述API后, 你将会看到一个可以翻页的开机菜单. 但你尝试选择菜单项的时候将会出现错误, 
+  // 这是因为开机菜单的运行还需要一些系统调用的支持. 我们会在下文进行介绍, 目前通过开机菜单来测试miniSDL即可.
 }
 
 //SDL_UpdateRect(): 将画布中的指定矩形区域同步到屏幕上  在NJU Slider中要实现的
