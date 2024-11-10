@@ -53,7 +53,7 @@ void builtin_sh_run() {
 }
 
  
-
+//实现一个內建的echo命令
 static void my_echo(const char *cmd)
 {
   if(strncmp(cmd,"echo ",5)!=0) return;//这里需要将空格也要考虑进来
