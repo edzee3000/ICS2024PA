@@ -64,6 +64,8 @@ bool     ioe_init    (void);  //初始化输出输入设备
 void     ioe_read    (int reg, void *buf);//读取输入输出设备   从编号为reg的寄存器中读出内容到缓冲区buf中
 void     ioe_write   (int reg, void *buf);//往编号为reg寄存器中写入缓冲区buf中的内容
 #include "amdev.h" //将输入输出设备的相关定义声明引入  比如AM_##reg##_T这些输入输出设备寄存器结构体的相关定义
+//这些定义是架构无关的, 每个架构在实现各自的IOE API时, 都需要遵循这些定义(约定). 为了方便地对这些抽象寄存器进行访问, 
+// klib中提供了io_read()和io_write()这两个宏, 它们分别对ioe_read()和ioe_write()这两个API进行了进一步的封装
 
 // ---------- CTE: Interrupt Handling and Context Switching 上下文扩展 中断处理和上下文切换----------
 bool     cte_init    (Context *(*handler)(Event ev, Context *ctx));

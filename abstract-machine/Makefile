@@ -9,12 +9,14 @@ html:
 ## 1. Basic Setup and Checks  基本设置和检查
 
 ### Default to create a bare-metal kernel image  默认目标：如果没有指定目标，make 将使用 image 作为默认目标。
+# 创建裸机内核映像。MAKECMDGOALS为空时，设置为image
 ifeq ($(MAKECMDGOALS),)
   MAKECMDGOALS  = image
   .DEFAULT_GOAL = image
 endif
 
 ### Override checks when `make clean/clean-all/html`  当执行 make clean/clean-all/html 时覆盖检查  这句话通常出现在条件判断语句之前，意味着在执行 make clean、make clean-all 或 make html 这些目标时，将忽略后续的一些检查步骤。
+# 利用findstring函数检查参数MAKECMDGOALS中是否包含clean，clean-all，html，如果则返回值不为空，ifeq为假，后续内容不执行。
 ifeq ($(findstring $(MAKECMDGOALS),clean|clean-all|html),)
 
 ### Print build info message 打印构建信息：在构建开始时打印构建信息。
@@ -26,6 +28,9 @@ ifeq ($(wildcard $(AM_HOME)/am/include/am.h),)
 endif
 
 ### Check: environment variable `$ARCH` must be in the supported list 检查 $ARCH 是否在支持的架构列表中  为下一步从$ARCH变量中提取ISA和PLATFORM做准备
+# 通过shell指令获得$(AM_HOME)/scripts/目录下所有[.mk]文件，用notdir函数去掉目录部分，用basename函数去掉后缀，
+# 环境变量ARCHS即为所有mk文件的文件名合集。再利用filter函数，如果ARCH变量不在ARCHS列表中，将报error。
+# （ARCH即为编译时所使用的指令集架构，包含了native,spike,(x86/mips32/riscv32/riscv64)-nemu,riscv64-npc,(x86/x86_64)-qemu
 ARCHS = $(basename $(notdir $(shell ls $(AM_HOME)/scripts/*.mk)))
 ifeq ($(filter $(ARCHS), $(ARCH)), )
   $(error Expected $$ARCH in {$(ARCHS)}, Got "$(ARCH)")
@@ -33,6 +38,7 @@ endif
 
 ### Extract instruction set architecture (`ISA`) and platform from `$ARCH`. Example: `ARCH=x86_64-qemu -> ISA=x86_64; PLATFORM=qemu`
 ### 从$ARCH变量中提取ISA和PLATFORM。例如，如果ARCH=x86_64-qemu，则ISA=x86_64，PLATFORM=qemu。   使用ARCH_SPLIT参数与subst去检查判断-与空格
+# 提取出ARCH中的各个关键字。首先用subst函数将ARCH中所有 '-' 替换成空格。再使用word函数，将架构和平台分别给到变量ISA和PLATFORM。（根据注释中给出的例子可以很直观了解）
 ARCH_SPLIT = $(subst -, ,$(ARCH))
 ISA        = $(word 1,$(ARCH_SPLIT))
 PLATFORM   = $(word 2,$(ARCH_SPLIT))
@@ -48,11 +54,13 @@ endif
 ## 2. General Compilation Targets  通用编译目标
 
 ### Create the destination directory (`build/$ARCH`)   创建目标文件夹build/$ARCH
+# shell命令pwd为打印当前目录，将目录传入参数WORK_DIR，在当前目录下创建build/$(ARCH)作为目标目录，再调用shell命令mkdir创建名为DST_DIR的目录。
 WORK_DIR  = $(shell pwd)
 DST_DIR   = $(WORK_DIR)/build/$(ARCH)
 $(shell mkdir -p $(DST_DIR))
 
 ### Compilation targets (a binary image or archive)   定义编译目标，如二进制镜像或归档文件    最终的可执行文件（即镜像image）的路径被定义在变量 IMAGE 中
+# abspath函数将IMAGE_REL中的各路径转换成绝对路径，并将转换后的结果返回。
 IMAGE_REL = build/$(NAME)-$(ARCH)
 IMAGE     = $(abspath $(IMAGE_REL))
 ARCHIVE   = $(WORK_DIR)/build/$(NAME)-$(ARCH).a
@@ -60,6 +68,8 @@ ARCHIVE   = $(WORK_DIR)/build/$(NAME)-$(ARCH).a
 # 打包成一个归档文件abstract-machine/am/build/am-$ISA-nemu.a
 
 ### Collect the files to be linked: object files (`.o`) and libraries (`.a`)   选择链接文件  这里SRC就起作用了
+# 将变量SRCS里所有文件后缀去掉，使用addsuffix函数添加[.d]后缀。sort函数将LIBS内容重新排序。
+# 在变量LINKAGE中，首先用addprefix、addsuffix函数为变量LIBS添加前后缀。再用join函数将两个字串连接，再添加后缀ARCH.a
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recursions
 LINKAGE   = $(OBJS) \
@@ -80,6 +90,7 @@ OBJCOPY   = $(CROSS_COMPILE)objcopy
 READELF   = $(CROSS_COMPILE)readelf
  
 ### Compilation flags   定义编译标志，如优化级别、警告级别、宏定义等。        比如说CFLAGS就是在这里定义的(?)
+# tr函数为shell命令行中字符串替换函数，"tr a-z A-Z"即为将所有小写替换为大写字符。
 INC_PATH += $(WORK_DIR)/include $(addsuffix /include/, $(addprefix $(AM_HOME)/, $(LIBS)))
 INCFLAGS += $(addprefix -I, $(INC_PATH))
 
@@ -98,11 +109,14 @@ LDFLAGS  += -z noexecstack $(addprefix -T, $(LDSCRIPTS))
 ## 4. Arch-Specific Configurations 架构特定配置
 
 ### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)  包含架构特定的配置文件，例如scripts/x86_64-qemu.mk。   又比如说scripts/riscv32-nemu.mk文件
+# 引用scripts中的makefile文件，‘-’的作用是，当所要包含的文件不存在时不提示错误同时make也不会退出继续进行。
 -include $(AM_HOME)/scripts/$(ARCH).mk
 ### 这里markdown文件的逻辑应该是(<-表示的包含进)   abstract-machine/am/Makefile   <-   abstract-machine/Makefile  <-  abstract-machine/scripts/riscv32-nemu.mk   <-  abstract-machine/scripts/isa/riscv.mk  &&  abstract-machine/scripts/platform/nemu.mk
 
 ## 5. Compilation Rules  编译规则
 # gcc把应用程序源文件(如am-kernels/tests/cpu-tests/tests/dummy.c)编译成目标文件
+# &&是左边返回0（执行成功）再执行右边，和编程语言的逻辑且比较像。
+# ||是左边返回非0（执行失败）再执行右边，和编程语言的逻辑或比较像。
 ### Rule (compile): a single `.c` -> `.o` (gcc)      定义了如何从.c、.cc、.cpp和.S文件编译成.o对象文件。
 $(DST_DIR)/%.o: %.c
 	@mkdir -p $(dir $@) && echo + CC $<
