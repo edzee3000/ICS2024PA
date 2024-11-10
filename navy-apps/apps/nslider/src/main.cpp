@@ -24,6 +24,7 @@ void render() {
   char fname[256];
   sprintf(fname, path, cur);
   SDL_Surface *slide = SDL_LoadBMP(fname);
+  printf("insert\n");
   assert(slide);
    printf("insert\n");
   SDL_BlitSurface(slide, NULL, screen, NULL); //这里srcrect和dstrect指针都是NULL说明是按照屏幕原封不动移动过来的

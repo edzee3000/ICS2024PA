@@ -48,7 +48,7 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 ### Add default libraries for ISA != native
 ### navy-apps的make在编译链接的时候，没有加入libndl这个库，我们得打开Makefile把这个库加进去!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ifneq ($(ISA), native)
-LIBS += libc libos libndl libfixedptc libminiSDL
+LIBS += libc libos libndl libfixedptc libminiSDL libbmp
 ###############################################################################
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
