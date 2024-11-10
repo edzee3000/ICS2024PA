@@ -6,6 +6,11 @@
 #include ISA_H // the macro `ISA_H` is defined in CFLAGS
                // it will be expanded as "x86/x86.h", "mips/mips32.h", ...
 
+//halt()里面调用了nemu_trap()宏 (在abstract-machine/am/src/platform/nemu/include/nemu.h中定义), 这个宏展开之后是一条内联汇编语句. 内联汇编语句允许我们在C代码中嵌入汇编语句
+//显然, 这个宏的定义是和ISA相关的, 如果你查看nemu/src/isa/$ISA/inst.c, 你会发现这条指令正是那条特殊的nemu_trap! 
+// nemu_trap()宏还会把一个标识结束的结束码移动到通用寄存器中, 这样, 这段汇编代码的功能就
+// 和nemu/src/isa/$ISA/inst.c中nemu_trap的行为对应起来了: 通用寄存器中的值将会作为参数传给set_nemu_state(), 
+// 将halt()中的结束码设置到NEMU的monitor中, monitor将会根据结束码来报告程序结束的原因. 
 #if defined(__ISA_X86__)
 # define nemu_trap(code) asm volatile ("int3" : :"a"(code))
 #elif defined(__ISA_MIPS32__)

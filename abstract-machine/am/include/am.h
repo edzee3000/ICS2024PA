@@ -15,7 +15,7 @@
 // Memory area for [@start, @end)
 typedef struct {
   void *start, *end;
-} Area;
+} Area;//创建一块区域Area 可以用于堆的实现
 
 // Arch-dependent processor context   架构依赖的处理器上下文
 typedef struct Context Context;
@@ -60,10 +60,10 @@ void     putch       (char ch);
 void     halt        (int code) __attribute__((__noreturn__));
 
 // -------------------- IOE: Input/Output Devices 输入输出设备--------------------
-bool     ioe_init    (void);
-void     ioe_read    (int reg, void *buf);
-void     ioe_write   (int reg, void *buf);
-#include "amdev.h"
+bool     ioe_init    (void);  //初始化输出输入设备
+void     ioe_read    (int reg, void *buf);//读取输入输出设备   从编号为reg的寄存器中读出内容到缓冲区buf中
+void     ioe_write   (int reg, void *buf);//往编号为reg寄存器中写入缓冲区buf中的内容
+#include "amdev.h" //将输入输出设备的相关定义声明引入  比如AM_##reg##_T这些输入输出设备寄存器结构体的相关定义
 
 // ---------- CTE: Interrupt Handling and Context Switching 上下文扩展 中断处理和上下文切换----------
 bool     cte_init    (Context *(*handler)(Event ev, Context *ctx));

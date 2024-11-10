@@ -225,8 +225,8 @@ void __am_pmem_unprotect() {
 //  assert(ret == 0);
 }
 
-// This dummy function will be called in trm.c.
-// The purpose of this dummy function is to let linker add this file to the object
-// file set. Without it, the constructor of @_init_platform will not be linked.
+// This dummy function will be called in trm.c.   这个虚拟函数将在trm.c中被调用。
+// The purpose of this dummy function is to let linker add this file to the object  此虚拟函数的目的是让链接器将此文件添加到目标文件集中。
+// file set. Without it, the constructor of @_init_platform will not be linked.  如果没有它，@ _init_platform的构造函数将不会被链接。
 void __am_platform_dummy() {
 }

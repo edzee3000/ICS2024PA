@@ -1,3 +1,8 @@
+# 我们需要在GNU/Linux下根据AM的运行时环境编译出能够在$ISA-nemu这个新环境中运行的可执行文件. 
+# 为了不让链接器ld使用默认的方式链接, 我们还需要提供描述$ISA-nemu的运行时环境的链接脚本.
+# AM的框架代码已经把相应的配置准备好了, 上述编译和链接选项主要位于abstract-machine/Makefile 
+# 以及abstract-machine/scripts/目录下的相关.mk文件中
+
 #nemu的地位应当是和qemu、spike等等是一样的
 #这里的AM_SRCS是在nemu模拟机中运行的时候要传进来的一些src资源    路径在abstract-machine/am/src/platform/nemu当中
 AM_SRCS := platform/nemu/trm.c \
