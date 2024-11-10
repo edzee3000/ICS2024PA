@@ -26,7 +26,7 @@ static void sh_prompt() {
 
 static void sh_handle_cmd(const char *cmd) {
   printf("%s\n",cmd);
-  if(*cmd=='0'){printf("NONE\n");}
+  printf("NONE\n");
 }
 
 void builtin_sh_run() {
