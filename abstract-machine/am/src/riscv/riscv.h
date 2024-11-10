@@ -10,6 +10,8 @@ static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; 
 static inline void outb(uintptr_t addr, uint8_t  data) { *(volatile uint8_t  *)addr = data; }//写入一个字节的数据
 static inline void outw(uintptr_t addr, uint16_t data) { *(volatile uint16_t *)addr = data; }//写入一个字的数据
 static inline void outl(uintptr_t addr, uint32_t data) { *(volatile uint32_t *)addr = data; }//写入一个字长的数据
+//如果你选择了x86, 你需要实现in, out指令. 具体地, 你需要RTFSC, 然后在in指令和out指令的实现中正确调用pio_read()和pio_write(). 
+// 如果你选择的是mips32和riscv32, 你不需要实现额外的代码, 因为NEMU的框架代码已经支持MMIO了.
 
 #define PTE_V 0x01
 #define PTE_R 0x02

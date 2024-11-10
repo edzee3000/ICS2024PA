@@ -55,6 +55,12 @@ void init_map() {
   assert(io_space);
   p_space = io_space;
 }
+
+
+
+//其中map_read()和map_write()用于将地址addr映射到map所指示的目标空间, 并进行访问. 访问时, 可能会触发相应的回调函数, 
+// 对设备和目标空间的状态进行更新. 由于NEMU是单线程程序, 因此只能串行模拟整个计算机系统的工作, 每次进行I/O读写的时候, 
+// 才会调用设备提供的回调函数(callback). 基于这两个API, 我们就可以很容易实现端口映射I/O和内存映射I/O的模拟了.
 //map_read 函数用于从指定的内存映射区域读取数据。
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);//检查len的长度要在[1,8]之内
@@ -65,6 +71,9 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   //事实上真正的物理地址不是addr，addr只是一个虚拟地址，真正的物理地址应该是 addr - (map->low) + (map->space)  
   return ret;
 }
+//内存映射I/O的模拟是类似的, paddr_read()和paddr_write()会判断地址addr落在物理内存空间还是设备空间, 若落在物理内存空间, 
+// 就会通过pmem_read()和pmem_write()来访问真正的物理内存; 否则就通过map_read()和map_write()来访问相应的设备. 
+// 从这个角度来看, 内存和外设在CPU来看并没有什么不同, 只不过都是一个字节编址的对象而已.
 //map_write 函数用于向指定的内存映射区域写入数据
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   assert(len >= 1 && len <= 8);

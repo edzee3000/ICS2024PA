@@ -24,10 +24,11 @@ NEMUFLAGS += -b #注意这里添加了-b作为批处理参数
 NEMUFLAGS += -e $(IMAGE).elf
 #这里的$(IMGAE)其实是二进制可执行文件的镜像  比如riscv32-nemu-interpreter这个可执行文件
 
-MAINARGS_MAX_LEN = 64
+# 请你通过RTFSC理解这个参数是如何从make命令中传递到hello程序中的, $ISA-nemu和native采用了不同的传递方法, 都值得你去了解一下.
+MAINARGS_MAX_LEN = 64    #在这里定义了mainargs的最大长度为64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
-CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
-
+CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"  
+#给出一个宏定义MAINARGS, 其值为$(mainargs)
 insert-arg: image
 	@python $(AM_HOME)/tools/insert-arg.py $(IMAGE).bin $(MAINARGS_MAX_LEN) "$(MAINARGS_PLACEHOLDER)" "$(mainargs)"
 

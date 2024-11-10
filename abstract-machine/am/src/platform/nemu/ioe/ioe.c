@@ -47,6 +47,11 @@ static void *lut[128] = { //lut的意思是 "lookup table"（查找表)
 
 static void fail(void *buf) { panic("access nonexist register"); }
 
+
+
+//设备访问的具体实现是架构相关的, 比如NEMU的VGA显存位于物理地址区间[0xa1000000, 0xa1080000), 但对native的程序来说, 这是一个不可访问的非法区间, 
+// 因此native程序需要通过别的方式来实现类似的功能. 自然地, 设备访问这一架构相关的功能, 应该归入AM中. 与TRM不同, 
+// 设备访问是为计算机提供输入输出的功能, 因此我们把它们划入一类新的API, 名字叫IOE(I/O Extension).
 //用于进行IOE相关的初始化操作
 bool ioe_init() {
   for (int i = 0; i < LENGTH(lut); i++)
@@ -82,7 +87,9 @@ io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);  <-
 <- void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); } 
 */
 
-
+//特别地, NEMU作为一个平台, 设备的行为是与ISA无关的, 因此我们只需要在abstract-machine/am/src/platform/nemu/ioe/目录下实现一份IOE, 来供NEMU平台的架构共享. 
+// 其中, abstract-machine/am/src/platform/nemu/ioe/ioe.c中实现了上述的三个IOE API, ioe_read()和ioe_write()都是通过抽象寄存器的编号索引到一个处理函数, 
+// 然后调用它. 处理函数的具体功能和寄存器编号相关, 下面我们来逐一介绍NEMU中每个设备的功能.
 
 
 
