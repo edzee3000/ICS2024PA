@@ -61,5 +61,8 @@ static void my_echo(const char *cmd)
   uint32_t output_strlen=cmd_len-5;//注意strlen长度是不包含'\0'的
   const char *output_str=&cmd[5];
   if(cmd[5] == cmd[cmd_len-1]=='\"' || cmd[5]== cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
-
+  char arr[256]={0};
+  strncpy(arr,output_str,output_strlen);
+  arr[output_strlen]='\0';
+  sh_printf(arr);
 }
