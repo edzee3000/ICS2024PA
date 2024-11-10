@@ -33,7 +33,7 @@ void init_proc() {
   // naive_uload(NULL,"/bin/nslider");
   // naive_uload(NULL,"/bin/menu");
   // naive_uload(NULL,"/bin/nterm");
-  naive_uload(NULL,"/share/games/bird");//注意这个时候就不在bin目录下面了  而是在navy-apps/fsimg/share/games里面了  因为
+  naive_uload(NULL,"/bin/bird");
 
 }
 
