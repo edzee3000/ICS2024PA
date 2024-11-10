@@ -170,7 +170,7 @@ $(CLEAN_ALL):
 .PHONY: clean-all $(CLEAN_ALL)
 
 ### Build fsimg and ramdisk for Nanos-lite
-APPS = nslider menu nterm bird/repo
+APPS = nslider menu nterm bird
 # APPS的内容是在这里添加的！！###########################################################  
 # 注意bird游戏因为是移植过来的 如果直接添加到APPS的话会链接失败  ln: failed to create symbolic link '/home/edzee3000/ICS2024/ICS2024PA/navy-apps/fsimg/share/games/bird': No such file or directory  make[2]: *** [Makefile:16: install-file] Error 1
 # TESTS = dummy hello 
