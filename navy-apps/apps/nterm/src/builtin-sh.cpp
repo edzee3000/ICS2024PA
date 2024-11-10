@@ -4,8 +4,12 @@
 #include <SDL.h>
 
 #include <stdio.h>
+#include <string.h>
 
 char handle_key(SDL_Event *ev);
+
+static void my_echo(const char *cmd);
+
 
 static void sh_printf(const char *format, ...) {
   static char buf[256] = {};
@@ -25,8 +29,8 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-  printf("%s\n",cmd);
-  printf("NONE\n");
+  if(!cmd) return;
+  my_echo(cmd);
 }
 
 void builtin_sh_run() {
@@ -46,4 +50,16 @@ void builtin_sh_run() {
     }
     refresh_terminal();
   }
+}
+
+
+
+static void my_echo(const char *cmd)
+{
+  if(strncmp(cmd,"echo",4)!=0) return;
+  uint32_t cmd_len=strlen(cmd);
+  uint32_t output_strlen=cmd_len-5;//注意strlen长度是不包含'\0'的
+  const char *output_str=&cmd[5];
+  if(cmd[5] == cmd[cmd_len-1]=='\"' || cmd[5]== cmd[cmd_len-1]=='\''){output_strlen-=2; output_str++;}//除去第一对引号
+
 }
