@@ -39,7 +39,7 @@ SDL_Surface* IMG_Load(const char *filename) {
   //关闭文件, 释放申请的内存
   fclose(file);free(buf);
   //返回SDL_Surface结构指针
-  printf("insert\n");
+  // printf("insert\n");
   return surface;
 }
 
