@@ -21,12 +21,15 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   uint8_t* Src_Pixel_Data = src->pixels;
   uint8_t* Dst_Pixel_Data = dst->pixels;
   //将对应的矩形区域复制到dst的矩形区域  但是在这里我并没有考虑到边界情况  暂时先不管
-  switch (Pixel_Bit){//BitsPerPixel每个像素的bit不同也是有影响的
-  case 8:for (uint32_t i = 0; i < src_rect.h; i ++){for (uint32_t j = 0; j < src_rect.w; j ++) 
-    {dst->pixels[(i + dst_rect.y) * dst->w + j + dst_rect.x] = src->pixels[(i + src_rect.y) * src->w + j + src_rect.x];}}break;
-  case 32:for (uint32_t i = 0; i < src_rect.h; i ++){for (uint32_t j = 0; j < src_rect.w; j ++) 
-    {((uint32_t *)dst->pixels)[(i + dst_rect.y) * dst->w + j + dst_rect.x] = ((uint32_t *)src->pixels)[(i + src_rect.y) * src->w + j + src_rect.x];}} break;
-  default:break;}
+  for (uint32_t i = 0; i < src_rect.h; i ++){for (uint32_t j = 0; j < src_rect.w; j ++){
+    uint32_t pixel_dst_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
+    uint32_t pixel_src_index=(i + src_rect.y) * src->w + j + src_rect.x;
+    switch (Pixel_Bit){
+      case 8:dst->pixels[pixel_dst_index]=src->pixels[pixel_src_index];break;
+      case 32: ((uint32_t*)dst->pixels)[pixel_dst_index]=((uint32_t*)src->pixels)[pixel_src_index];break;
+      default:break;}
+  }}
+  
 }
 
 
