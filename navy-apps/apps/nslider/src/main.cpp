@@ -27,9 +27,9 @@ void render() {
   SDL_Surface *slide = SDL_LoadBMP(fname);//这个函数非常耗费时间
   assert(slide);
   static uint32_t count=1;
-  printf("SDL_LoadBMP调用第%u次\n",count);count++;
+  printf("SDL_LoadBMP调用第%u次\n",count);
   SDL_BlitSurface(slide, NULL, screen, NULL); //这里srcrect和dstrect指针都是NULL说明是按照屏幕原封不动移动过来的  这个函数还好但是也挺费时间的
-  printf("SDL_BlitSurface调用第%u次\n",count);
+  printf("SDL_BlitSurface调用第%u次\n",count);count++;
   SDL_UpdateRect(screen, 0, 0, 0, 0);
   SDL_FreeSurface(slide);
 }
