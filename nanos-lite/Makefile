@@ -1,3 +1,4 @@
+MAKEFLAGS+= -j 16
 HAS_NAVY = 1
 # 然后运行make ARCH=$ISA-nemu update就会自动编译Navy中的程序, 
 # 并把navy-apps/fsimg/目录下的所有内容整合成ramdisk镜像navy-apps/build/ramdisk.img, 
