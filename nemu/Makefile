@@ -16,6 +16,7 @@
 # Sanity check  
 # 这两行代码用于检查 NEMU_HOME 变量是否为有效的 NEMU 项目目录。具体来说，通过 wildcard 命令查找 
 # $(NEMU_HOME)/src/nemu-main.c 文件是否存在，如果不存在，则通过 error 命令打印错误信息。
+MAKEFLAGS+= -j 32
 ifeq ($(wildcard $(NEMU_HOME)/src/nemu-main.c),)
   $(error NEMU_HOME=$(NEMU_HOME) is not a NEMU repo)
 endif
