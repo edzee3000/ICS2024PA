@@ -37,25 +37,27 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
   stat->count = inl(AUDIO_COUNT_ADDR);
 }
 
-
+//由NEMU完成SDL音频初始化, 然后软件一直向缓冲区写数据, SDL则会定时调用audio_callback读数据.
+//软件向缓冲区写数据的话会导致count流缓冲区已经使用的大小逐渐增大
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-  int data_len = ctl->buf.end - ctl->buf.start;
-  int sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
-  assert(data_len < sbuf_size);//要求ctrl的STREAMBUF长度一定要小于sbuf的长度0x10000
+  uint32_t data_len = ctl->buf.end - ctl->buf.start;
+  uint32_t sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
+  assert(data_len < sbuf_size);//要求ctrl的数据长度一定要小于流缓冲区sbuf的长度0x10000    否则就assert报错
 
   while (data_len > sbuf_size - inl(AUDIO_COUNT_ADDR)) {printf("数据长度大于所剩余流缓冲区的大小\n");};
-  uint8_t *buf = (uint8_t *) AUDIO_SBUF_ADDR;
+  uint8_t *sbuf = (uint8_t *) AUDIO_SBUF_ADDR;//将AUDIO_SBUF_ADDR视为地址
   if (data_len + location < sbuf_size) {
-    memcpy(buf + location, ctl->buf.start, data_len);
+    memcpy(sbuf + location, ctl->buf.start, data_len);
     location += data_len;
   } else {
-    memcpy(buf + location, ctl->buf.start, sbuf_size - location);
-    memcpy(buf, ctl->buf.start + (sbuf_size - location), data_len - (sbuf_size - location));
-    location = data_len - (sbuf_size - location);
+    uint32_t temp_len = sbuf_size - location;
+    memcpy(sbuf + location, ctl->buf.start, temp_len);
+    uint32_t remain_len=  data_len-temp_len;
+    memcpy(sbuf, ctl->buf.start + temp_len, remain_len);
+    location = remain_len;
   }
-  uint32_t count = inl(AUDIO_COUNT_ADDR);
-  count += data_len;
-  outl(AUDIO_COUNT_ADDR, count);
+  uint32_t count = inl(AUDIO_COUNT_ADDR);//读取count的值并且进行修改
+  outl(AUDIO_COUNT_ADDR, count+data_len);//更新/增加缓冲区已经使用的大小
 }
 
 

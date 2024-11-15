@@ -93,13 +93,16 @@ static void nemu_audio_init()
   s.samples = audio_base[reg_samples]; // 采样率
   s.callback = nemu_audio_callback ; // 播放回调函数    从/usr/include/SDL/SDL_audio.h中的定义可得void (SDLCALL *callback)(void *userdata, Uint8 *stream, int len);
   //这里有一个名为callback的参数, 即SDL用于定期读取音频数据的函数, 由我们定义. 其函数原型为void audio_callback(void *userdata, uint8_t *stream, int len). 若存在新的音频数据, 就将其写入stream内.
-  audio_base[reg_count] = 0;//这里是不是有bug？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？、、
+  audio_base[reg_count] = 0;//初始化的时候已经用的count为0，因为流缓冲区sbuf还没有被使用
   audio_base[reg_sbuf_size] = CONFIG_SB_SIZE;
   SDL_InitSubSystem(SDL_INIT_AUDIO);
   SDL_OpenAudio(&s, NULL);
   SDL_PauseAudio(0);
 }
 
+
+//由NEMU完成SDL音频初始化, 然后软件一直向缓冲区写数据, SDL则会定时调用audio_callback读数据.
+//SDL播放音乐调用audio_callback读数据  这样的话count相当于被释放出了一部分  就减少了
 static int location=0;
 static void nemu_audio_callback(void *userdata, Uint8 *stream, int len)
 {
@@ -110,20 +113,19 @@ static void nemu_audio_callback(void *userdata, Uint8 *stream, int len)
   // 以避免把一些垃圾数据当做音频, 从而产生噪音.
   uint32_t stream_len = audio_base[reg_count];
   uint32_t real_len = stream_len < len ? stream_len : len;  //取有效长度
-  SDL_LockAudio();//这个是干嘛的？？？？？？？？？？？？？？？？？？？
-  //考虑是否超过CONFIG_SB_SIZE最大范围
+  SDL_LockAudio();//这个是干嘛的？？？？？？？？？？？？？？？？？？？  难道这一段为了锁住不让其他的按键产生影响？？？
+  //考虑是否超过sbuf的最大范围CONFIG_SB_SIZE
   if(real_len + location < CONFIG_SB_SIZE) { //如果没有超过最大的范围那就正常copy
     memcpy(stream, sbuf + location, real_len);
     location += real_len;//更新已经到达的新的位置
-  } 
-  else{//如果超出范围的话那就使用iringbuf的方式copy
-    memcpy(stream, sbuf + location, CONFIG_SB_SIZE - location);
-    location +=real_len - CONFIG_SB_SIZE;
-    memcpy(stream, sbuf, location);
+  } else{//如果超出范围的话那就使用iringbuf的方式copy
+    uint32_t temp_len1=CONFIG_SB_SIZE - location;
+    memcpy(stream, sbuf + location, temp_len1 );
+    uint32_t remain_len= real_len - temp_len1;
+    memcpy(stream + temp_len1, sbuf, remain_len);
+    location = remain_len;//更新在streambuffer当中location的位置
   }
-  if (real_len < len) { // 长度不足, 清除后续数据, 避免杂音
-    memset(stream + real_len, 0, len - real_len);
-  }
-  SDL_UnlockAudio();
+  if (real_len < len) { memset(stream + real_len, 0, len - real_len); }// 长度不足, 清除后续数据, 避免杂音  注意这里清零的是stream而不是sbuf
+  SDL_UnlockAudio();//解锁
   audio_base[reg_count]-=real_len;// 更新有效数据长度
 }
