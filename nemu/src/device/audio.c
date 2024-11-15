@@ -93,7 +93,7 @@ static void nemu_audio_init()
   s.samples = audio_base[reg_samples]; // 采样率
   s.callback = nemu_audio_callback ; // 播放回调函数    从/usr/include/SDL/SDL_audio.h中的定义可得void (SDLCALL *callback)(void *userdata, Uint8 *stream, int len);
   //这里有一个名为callback的参数, 即SDL用于定期读取音频数据的函数, 由我们定义. 其函数原型为void audio_callback(void *userdata, uint8_t *stream, int len). 若存在新的音频数据, 就将其写入stream内.
-  audio_base[reg_count] = 0;//这里是不是有bug？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？、、
+  audio_base[reg_count] = CONFIG_SB_SIZE;//这里是不是有bug？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？、、
   audio_base[reg_sbuf_size] = CONFIG_SB_SIZE;
   SDL_InitSubSystem(SDL_INIT_AUDIO);
   SDL_OpenAudio(&s, NULL);
