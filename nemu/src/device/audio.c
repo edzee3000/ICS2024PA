@@ -119,6 +119,7 @@ static void nemu_audio_callback(void *userdata, Uint8 *stream, int len)
     memcpy(stream, sbuf + location, real_len);
     location += real_len;//更新已经到达的新的位置
   } else{//如果超出范围的话那就使用iringbuf的方式copy
+    printf("超出范围采用环形数组从头再来\n");
     uint32_t temp_len1=CONFIG_SB_SIZE - location;
     memcpy(stream, sbuf + location, temp_len1 );
     uint32_t remain_len= real_len - temp_len1;
