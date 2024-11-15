@@ -44,7 +44,7 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   uint32_t sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
   assert(data_len < sbuf_size);//要求ctrl的数据长度一定要小于流缓冲区sbuf的长度0x10000    否则就assert报错
 
-  while (data_len > sbuf_size - inl(AUDIO_COUNT_ADDR)) {printf("数据长度大于所剩余流缓冲区的大小\n");};
+  while (data_len > sbuf_size - inl(AUDIO_COUNT_ADDR)) {/*printf("数据长度大于所剩余流缓冲区的大小\n");*/}
   uint8_t *sbuf = (uint8_t *) AUDIO_SBUF_ADDR;//将AUDIO_SBUF_ADDR视为地址
   if (data_len + location < sbuf_size) {
     memcpy(sbuf + location, ctl->buf.start, data_len);
