@@ -114,19 +114,19 @@ static void nemu_audio_callback(void *userdata, Uint8 *stream, int len)
   uint32_t stream_len = audio_base[reg_count];
   uint32_t real_len = stream_len < len ? stream_len : len;  //取有效长度
   SDL_LockAudio();//这个是干嘛的？？？？？？？？？？？？？？？？？？？  难道这一段为了锁住不让其他的按键产生影响？？？
+  if (real_len < len) { memset(stream + real_len, 0, len - real_len); }// 长度不足, 清除后续数据, 避免杂音  注意这里清零的是stream而不是sbuf
   //考虑是否超过sbuf的最大范围CONFIG_SB_SIZE
   if(real_len + location < CONFIG_SB_SIZE) { //如果没有超过最大的范围那就正常copy
     memcpy(stream, sbuf + location, real_len);
     location += real_len;//更新已经到达的新的位置
   } else{//如果超出范围的话那就使用iringbuf的方式copy
-    printf("超出范围采用环形数组从头再来\n");
+    printf("超出范围采用环形数组从头继续\n");
     uint32_t temp_len1=CONFIG_SB_SIZE - location;
     memcpy(stream, sbuf + location, temp_len1 );
     uint32_t remain_len= real_len - temp_len1;
     memcpy(stream + temp_len1, sbuf, remain_len);
     location = remain_len;//更新在streambuffer当中location的位置
   }
-  if (real_len < len) { memset(stream + real_len, 0, len - real_len); }// 长度不足, 清除后续数据, 避免杂音  注意这里清零的是stream而不是sbuf
   SDL_UnlockAudio();//解锁
   audio_base[reg_count]-=real_len;// 更新有效数据长度
 }
