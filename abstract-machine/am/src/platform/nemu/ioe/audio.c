@@ -12,7 +12,7 @@
 #define AUDIO_COUNT_ADDR     (AUDIO_ADDR + 0x14)
  
 
-static int audio_sbuf_flag=0;
+static int location=0;
 
 void __am_audio_init() {
   
@@ -30,7 +30,7 @@ void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
   outl(AUDIO_CHANNELS_ADDR, ctrl->channels);//将channels声道数传给((0xa0000000 + 0x0000200) + 0x04)
   outl(AUDIO_SAMPLES_ADDR, ctrl->samples);//将samples采样率传给((0xa0000000 + 0x0000200) + 0x08)  刚好都差4字节
   outl(AUDIO_INIT_ADDR, 1);
-  audio_sbuf_flag = 0;
+  location = 0;
 }
 
 void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
@@ -41,19 +41,19 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   int data_len = ctl->buf.end - ctl->buf.start;
   int sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
-  assert(data_len < sbuf_size);
+  assert(data_len < sbuf_size);//要求ctrl的STREAMBUF长度一定要小于sbuf的长度0x10000
 
-  while (data_len > sbuf_size - inl(AUDIO_COUNT_ADDR)) {printf("assert\n");};
+  while (data_len > sbuf_size - inl(AUDIO_COUNT_ADDR)) {printf("数据长度大于所剩余流缓冲区的大小\n");};
   uint8_t *buf = (uint8_t *) AUDIO_SBUF_ADDR;
-  if (data_len + audio_sbuf_flag < sbuf_size) {
-    memcpy(buf + audio_sbuf_flag, ctl->buf.start, data_len);
-    audio_sbuf_flag += data_len;
+  if (data_len + location < sbuf_size) {
+    memcpy(buf + location, ctl->buf.start, data_len);
+    location += data_len;
   } else {
-    memcpy(buf + audio_sbuf_flag, ctl->buf.start, sbuf_size - audio_sbuf_flag);
-    memcpy(buf, ctl->buf.start + (sbuf_size - audio_sbuf_flag), data_len - (sbuf_size - audio_sbuf_flag));
-    audio_sbuf_flag = data_len - (sbuf_size - audio_sbuf_flag);
+    memcpy(buf + location, ctl->buf.start, sbuf_size - location);
+    memcpy(buf, ctl->buf.start + (sbuf_size - location), data_len - (sbuf_size - location));
+    location = data_len - (sbuf_size - location);
   }
-  int count = inl(AUDIO_COUNT_ADDR);
+  uint32_t count = inl(AUDIO_COUNT_ADDR);
   count += data_len;
   outl(AUDIO_COUNT_ADDR, count);
 }
