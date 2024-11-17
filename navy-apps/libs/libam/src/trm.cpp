@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern char _heap_start;
+// extern char _heap_start;
 // int main(const char *args);
 
 Area heap;
