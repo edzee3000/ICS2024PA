@@ -45,7 +45,7 @@ void do_syscall(Context *c) {
   //c->GPRx 表示的是 gpr[4]在nemu里面也就是a0寄存器
   #ifdef CONFIG_STRACE
   System_Trace(c);
-  #endif
+  #endif 
   // printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
