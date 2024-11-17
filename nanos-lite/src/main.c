@@ -28,7 +28,7 @@ int main() {//简单梳理一下Nanos-lite目前的行为
 
   
   init_proc();
-  printf("assert\n");
+ 
   Log("Finish initialization");
 
 #ifdef HAS_CTE
