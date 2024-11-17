@@ -47,7 +47,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd=fs_open(filename,0,0);//不考虑各种mode等等
   if(fd<0){panic("should not reach here");}
 
-
+  printf("filename:%s\tfd:%d\n",filename,fd);
   //Ehdr 是 ELF Header 的缩写，它代表 ELF 文件的头部信息。ELF Header 包含了描述 ELF 文件如何被分析的信息，例如文件类型、机器类型、版本、入口点地址、程序头表和节头表的偏移量等重要信息。
   Elf_Ehdr elf_header;
   Elf_Ehdr* elf=&elf_header;
