@@ -82,6 +82,7 @@ int fs_open(const char *pathname, int flags, int mode)
   {if(strcmp(file_table[i].name, pathname)==0)
     {file_table[i].open_offset=0; return i;}//如果找到对应的文件名就返回文件标识符  并更新其offset
   }
+  printf("assert\n");
   //由于sfs中每一个文件都是固定的, 不会产生新文件, 因此"fs_open()没有找到pathname所指示的文件"属于异常情况, 你需要使用assertion终止程序运行.
   panic("路径为%s的文件没有找到\n",pathname);//这里我直接用panic了  因为我感觉panic和assert(0)没啥区别
   return -1;
