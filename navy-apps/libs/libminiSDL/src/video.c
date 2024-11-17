@@ -18,6 +18,9 @@
 // // 仙剑奇侠传中的像素阵列存放的是8位的调色板下标,
 // // 用这个下标在调色板中进行索引, 得到的才是32位的颜色信息
 // uint32_t pal_color_xy = palette[pixels[x][y]];
+static uint32_t trans_color_from_8_to_32(SDL_Color *c)
+{return (c->a << 24) | (c->r << 16) | (c->g << 8) | c->b;//将8位color转换成32位color
+}
 
 //SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置  在NJU Slider中要实现的
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
@@ -70,7 +73,12 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   SDL_Color* colors = s->format->palette->colors; 
   switch (Pixel_Bit)
   {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
-    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; local_pixels[i * w + j]=colors[pixel_index].val;}}
+    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
+    // local_pixels[i * w + j]=colors[pixel_index].val;
+    local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);
+    //SDL_UpdateRect()在最后调用NDL_DrawRect()，传入的参数pixels必须是32位格式的，不然会显示错误颜色。
+    //因此需要现将8位颜色转为32位的，再填入pixels
+    }}
     NDL_DrawRect(local_pixels, x, y, w, h);break;
   case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}

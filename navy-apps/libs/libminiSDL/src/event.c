@@ -48,5 +48,6 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {
+  if(numkeys)*numkeys=KEYNUM; //另外还要往参数numkeys指向位置写入按键的数量
   return key_status;//这里是key_status还是key_status+*numkeys？？？########################################
 }
