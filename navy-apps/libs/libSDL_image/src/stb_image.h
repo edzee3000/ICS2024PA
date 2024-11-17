@@ -784,7 +784,7 @@ static void *stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int re
    if (stbi__pnm_test(s))  return stbi__pnm_load(s,x,y,comp,req_comp, ri);
    #endif
 
-printf("#ifndef STBI_NO_TGA之前没有问题\n");
+   printf("#ifndef STBI_NO_TGA之前没有问题\n");
    #ifndef STBI_NO_TGA
    // test tga last because it's a crappy test!
    if (stbi__tga_test(s))
@@ -3922,6 +3922,7 @@ static void *stbi__png_load(stbi__context *s, int *x, int *y, int *comp, int req
 
 static int stbi__png_test(stbi__context *s)
 {
+   printf("here\n");
    int r;
    r = stbi__check_png_header(s);
    stbi__rewind(s);
