@@ -1,4 +1,4 @@
-# MAKEFLAGS+= -j 32  #在这里我修改了-j参数让多个cpu同时去跑makefile  编译速度会更快
+MAKEFLAGS+= -j 32  #在这里我修改了-j参数让多个cpu同时去跑makefile  编译速度会更快
 HAS_NAVY = 1
 # 然后运行make ARCH=$ISA-nemu update就会自动编译Navy中的程序, 
 # 并把navy-apps/fsimg/目录下的所有内容整合成ramdisk镜像navy-apps/build/ramdisk.img, 
