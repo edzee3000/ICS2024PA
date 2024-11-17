@@ -25,10 +25,10 @@ int main() {//简单梳理一下Nanos-lite目前的行为
   
   init_fs();//init_fs()和init_proc(), 分别用于初始化文件系统和创建进程, 目前它们均未进行有意义的操作, 可以忽略它们.
 
-printf("assert\n");
+
   
   init_proc();
-
+  printf("assert\n");
   Log("Finish initialization");
 
 #ifdef HAS_CTE
