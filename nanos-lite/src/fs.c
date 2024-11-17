@@ -76,7 +76,7 @@ void init_fs() {
 // 在这里面最终调用fs_read/fs_write/fs_open/fs_close，也就是我们要分别实现的这四个函数
 int fs_open(const char *pathname, int flags, int mode)
 {//遍历寻找文件返回文件标识符
-  printf("NR_FILES值为:%d\n",NR_FILES);
+  // printf("NR_FILES值为:%d\n",NR_FILES);
   //除了写入stdout和stderr之外(用putch()输出到串口), 其余对于stdin, stdout和stderr这三个特殊文件的操作可以直接忽略(但是在这里如果要打开fd==0,1,2的话就直接panic报错了)
   for(int i=3;i<NR_FILES;i++)
   {if(strcmp(file_table[i].name, pathname)==0)

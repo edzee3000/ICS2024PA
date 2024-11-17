@@ -85,8 +85,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     // 只要加载那些与运行时刻相关的内容就可以了, 例如调试信息和符号表就不必加载. 
     // 我们可以通过判断segment的Type属性是否为PT_LOAD来判断一个segment是否需要加载.
   }
-  printf("filename:%s\tfd:%d\n",filename,fd);
-  printf("elf->e_entry:%x\n",elf->e_entry);
+  // printf("filename:%s\tfd:%d\n",filename,fd);
+  // printf("elf->e_entry:%x\n",elf->e_entry);
 
 
   assert(fs_close(fd) == 0);//关闭文件
