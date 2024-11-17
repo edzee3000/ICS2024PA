@@ -69,7 +69,7 @@ void yield() {
   asm volatile("li a7, -1; ecall");//这里手动加入一条ecall内联汇编语句  将-1加载load到a7当中
 #endif
 //asm是手动插入内联汇编语句
-printf("here\n");
+
 
 
 }
