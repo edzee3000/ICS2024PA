@@ -47,7 +47,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd=fs_open(filename,0,0);//不考虑各种mode等等
   if(fd<0){panic("should not reach here");}
 
-  printf("filename:%s\tfd:%d\n",filename,fd);
+ 
   //Ehdr 是 ELF Header 的缩写，它代表 ELF 文件的头部信息。ELF Header 包含了描述 ELF 文件如何被分析的信息，例如文件类型、机器类型、版本、入口点地址、程序头表和节头表的偏移量等重要信息。
   Elf_Ehdr elf_header;
   Elf_Ehdr* elf=&elf_header;
@@ -85,9 +85,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     // 只要加载那些与运行时刻相关的内容就可以了, 例如调试信息和符号表就不必加载. 
     // 我们可以通过判断segment的Type属性是否为PT_LOAD来判断一个segment是否需要加载.
   }
+  printf("filename:%s\tfd:%d\n",filename,fd);
   printf("elf->e_entry:%x\n",elf->e_entry);
 
-  
+
   assert(fs_close(fd) == 0);//关闭文件
   return elf->e_entry;//返回程序的入口地址
   // 在 ELF 文件中，e_entry 是一个非常重要的字段，它表示程序的入口地址。
