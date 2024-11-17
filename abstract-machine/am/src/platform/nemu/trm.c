@@ -15,7 +15,7 @@ void putch(char ch) {
 //用于结束程序的运行
 void halt(int code) {
   nemu_trap(code);
-
+ 
   // should not reach here
   while (1);
 }

@@ -2,7 +2,7 @@
 #include <klib-macros.h>
 
 void __am_timer_init();
-void __am_gpu_init();
+void __am_gpu_init(); 
 void __am_audio_init();
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *);
 void __am_timer_rtc(AM_TIMER_RTC_T *);

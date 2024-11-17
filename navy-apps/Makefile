@@ -49,7 +49,7 @@ ARCHIVE  = $(WORK_DIR)/build/$(NAME)-$(ISA).a
 ### navy-apps的make在编译链接的时候，没有加入libndl这个库，我们得打开Makefile把这个库加进去!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ifneq ($(ISA), native)
 # LIBS += libc libos libndl libfixedptc libminiSDL libbmp libbdf libSDL_image
-LIBS += libc libos libndl libfixedptc libminiSDL
+LIBS += libc libos libndl libfixedptc libminiSDL #libam
 ###############################################################################
 CFLAGS += -U_FORTIFY_SOURCE  # fix compile error in Newlib on ubuntu
 else
@@ -171,7 +171,7 @@ $(CLEAN_ALL):
 .PHONY: clean-all $(CLEAN_ALL)
 
 ### Build fsimg and ramdisk for Nanos-lite
-APPS =  pal # nslider menu nterm bird
+APPS =   pal #am-kernels # nslider menu nterm bird
 # APPS的内容是在这里添加的！！###########################################################  
 # 注意bird游戏因为是移植过来的  要注意它对应的makefile文件发生了一些变化 如果直接添加到APPS的话会链接失败 解决方法就是手动添加一个mkdir命令 ln: failed to create symbolic link '/home/edzee3000/ICS2024/ICS2024PA/navy-apps/fsimg/share/games/bird': No such file or directory  make[2]: *** [Makefile:16: install-file] Error 1
 # TESTS = dummy hello 

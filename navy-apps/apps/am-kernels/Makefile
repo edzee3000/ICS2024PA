@@ -16,7 +16,7 @@ libam:
 else
 libam: ;
 endif
-
+ 
 default $(MAKECMDGOALS): libam
 	-for f in $(ALL_PATH); do AM_HOME=$(NAVY_HOME) LIBS=libam $(MAKE) -C $$f $(MAKECMDGOALS); done
 
