@@ -23,6 +23,7 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
 // 6. 返回SDL_Surface结构指针
 SDL_Surface* IMG_Load(const char *filename) {
   //用libc中的文件操作打开文件, 并获取文件大小size
+  printf("filename:%s\n",filename);
   FILE *file = fopen(filename, "rb");
   if(file == NULL) {printf("打开%s文件失败\n",filename);return NULL;}
   fseek(file, 0, SEEK_END);//移动到文件末尾
