@@ -58,7 +58,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(*(uint32_t *)elf->e_ident ==  0x464c457f); //好吧我承认原来是因为小端模式  e_ident里面有16个字节的内容  读数据的时候是从小到大摆放  强制类型转换为uint32_t *之后一次读取字节为4个字节但是解引用之后高位确实为0x46 低位确实为0x7f
   // 检测ELF文件的ISA类型 避免让native的Nanos-lite来加载运行一个dummy
   if(elf->e_machine!=EXPECT_TYPE) panic("您可能因为疏忽, 让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy.");
-
+ 
   // Elf_Phdr ProgramHeaders[elf->e_phnum];
   Elf_Phdr programheader;//
   // ramdisk_read(ProgramHeaders, elf->e_phoff, sizeof(Elf_Phdr)*elf->e_phnum);//读取程序头表（即段头表）一共要读取Elf_Phdr大小乘以程序头表个数
