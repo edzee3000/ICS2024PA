@@ -27,7 +27,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {  //触发了一个异常/中断 
   etrace_errors(NO, epc);
   #endif
  
-  printf("NO的值为:%d\n",NO);
+  // printf("NO的值为:%d\n",NO);
   switch (NO)
   {case -1:     //表示这个时候是需要加4的  因为是yield自陷  看asm手动插入的那一条汇编语言代码
   case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:
