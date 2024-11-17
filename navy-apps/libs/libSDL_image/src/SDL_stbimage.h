@@ -216,12 +216,12 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	
 	printf("stbi_load_from_memory之前都没有问题\n");
 	img.data = stbi_load_from_memory(buffer, length, &img.w, &img.h, &img.format, bppToUse);
-	
+	printf("stbi_load_from_memory有问题\n");
 	{
 		SDL_SetError("STBIMG_LoadFromMemory(): Couldn't load image: %s!\n", stbi_failure_reason());
 		return NULL;
 	}
-	printf("if(img.data == NULL)都没有问题\n");
+
 	img.format = bppToUse;
 	
 	ret = STBIMG__CreateSurfaceImpl(img, origin_has_alpha, 1);
