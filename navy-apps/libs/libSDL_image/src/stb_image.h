@@ -766,7 +766,7 @@ static void *stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int re
    ri->bits_per_channel = 8; // default is 8 so most paths don't have to be changed
    ri->channel_order = STBI_ORDER_RGB; // all current input & output are this, but this is here so we can add BGR order
    ri->num_channels = 0;
-   printf("ifdef之前没有问题\n");
+   // printf("ifdef之前没有问题\n");
    #ifndef STBI_NO_JPEG
    if (stbi__jpeg_test(s)) return stbi__jpeg_load(s,x,y,comp,req_comp, ri);
    #endif
@@ -784,7 +784,7 @@ static void *stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int re
    if (stbi__pnm_test(s))  return stbi__pnm_load(s,x,y,comp,req_comp, ri);
    #endif
 
-   printf("#ifndef STBI_NO_TGA之前没有问题\n");
+   // printf("#ifndef STBI_NO_TGA之前没有问题\n");
    #ifndef STBI_NO_TGA
    // test tga last because it's a crappy test!
    if (stbi__tga_test(s))
@@ -867,7 +867,7 @@ static void stbi__vertical_flip_slices(void *image, int w, int h, int z, int byt
 static unsigned char *stbi__load_and_postprocess_8bit(stbi__context *s, int *x, int *y, int *comp, int req_comp)
 {
    stbi__result_info ri;
-   printf("stbi__load_main之前没有问题\n");
+   // printf("stbi__load_main之前没有问题\n");
    void *result = stbi__load_main(s, x, y, comp, req_comp, &ri, 8);
 
    if (result == NULL)
@@ -931,7 +931,7 @@ STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, i
 {
    stbi__context s;
    stbi__start_mem(&s,buffer,len);
-   printf("stbi__load_and_postprocess_8bit之前没有问题\n");
+   // printf("stbi__load_and_postprocess_8bit之前没有问题\n");
    return stbi__load_and_postprocess_8bit(&s,x,y,comp,req_comp);
 }
 
