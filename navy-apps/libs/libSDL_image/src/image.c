@@ -37,8 +37,8 @@ SDL_Surface* IMG_Load(const char *filename) {
 
   printf("STBIMG_LoadFromMemory之前都没有问题\n");
   SDL_Surface *surface = STBIMG_LoadFromMemory(buf, size);
+    printf("fclose之前都没有问题\n");
   if(surface == NULL) {fprintf(stderr, "从内存中读取图片失败\n");free(buf);fclose(file);return NULL;}
-  printf("fclose之前都没有问题\n");
   //关闭文件, 释放申请的内存
   fclose(file);free(buf);
   //返回SDL_Surface结构指针
