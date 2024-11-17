@@ -203,6 +203,7 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	}
 	printf("stbi_info_from_memory之前都没有问题\n");
 	inforet = stbi_info_from_memory(buffer, length, &img.w, &img.h, &img.format);
+	printf("stbi_info_from_memory没有问题\n");
 	if(!inforet)
 	{
 		SDL_SetError("STBIMG_LoadFromMemory(): Couldn't get image info: %s!\n", stbi_failure_reason());
