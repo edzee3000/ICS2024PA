@@ -35,8 +35,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     uint32_t pixel_dst_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
     uint32_t pixel_src_index=(i + src_rect.y) * src->w + j + src_rect.x;
     switch (Pixel_Bit){
-      case 8: dst->pixels[pixel_dst_index]=src->pixels[pixel_src_index];printf("Pixel_Bit为8位\n");
-      break;
+      case 8: dst->pixels[pixel_dst_index]=src->pixels[pixel_src_index];break;
       case 32: ((uint32_t*)dst->pixels)[pixel_dst_index]=((uint32_t*)src->pixels)[pixel_src_index];break;
       default:break;}
   }}
@@ -54,8 +53,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {//用col
     uint32_t pixel_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
     switch (Pixel_Bit)
       {case 32: ((uint32_t *)dst->pixels)[pixel_index]=color;break;
-       case 8: (dst->pixels)[pixel_index]=color;printf("Pixel_Bit为8位\n");
-       break;
+       case 8: (dst->pixels)[pixel_index]=color;break;
       default:break;}
   }}
   //开机菜单是另一个行为比较简单的程序, 它会展示一个菜单, 用户可以选择运行哪一个程序. 为了运行它, 
@@ -73,8 +71,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   switch (Pixel_Bit)
   {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; local_pixels[i * w + j]=colors[pixel_index].val;}}
-    printf("Pixel_Bit为8位\n");
-    break;
+    NDL_DrawRect(local_pixels, x, y, w, h);break;
   case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}
 }
@@ -93,14 +90,14 @@ static inline int maskToShift(uint32_t mask) {
 }
 
 SDL_Surface* SDL_CreateRGBSurface(uint32_t flags, int width, int height, int depth,
-    uint32_t Rmask, uint32_t Gmask, uint32_t Bmask, uint32_t Amask) {
+  uint32_t Rmask, uint32_t Gmask, uint32_t Bmask, uint32_t Amask) {
   assert(depth == 8 || depth == 32);
   SDL_Surface *s = malloc(sizeof(SDL_Surface));
   assert(s);
   s->flags = flags;
   s->format = malloc(sizeof(SDL_PixelFormat));
   assert(s->format);
-  if (depth == 8) {
+  if (depth == 8) {//对于位数为8位的情况
     s->format->palette = malloc(sizeof(SDL_Palette));
     assert(s->format->palette);
     s->format->palette->colors = malloc(sizeof(SDL_Color) * 256);
