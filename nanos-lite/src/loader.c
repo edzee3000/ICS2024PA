@@ -85,7 +85,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     // 只要加载那些与运行时刻相关的内容就可以了, 例如调试信息和符号表就不必加载. 
     // 我们可以通过判断segment的Type属性是否为PT_LOAD来判断一个segment是否需要加载.
   }
-  printf("ok\n");
   assert(fs_close(fd) == 0);//关闭文件
   return elf->e_entry;//返回程序的入口地址
   // 在 ELF 文件中，e_entry 是一个非常重要的字段，它表示程序的入口地址。
