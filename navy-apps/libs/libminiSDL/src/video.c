@@ -3,11 +3,21 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 //SDL的绘图模块引入了一个Surface的概念, 它可以看成一张具有多种属性的画布, 具体可以通过RTFM查阅Surface结构体中的成员含义. 
 
 #define WINDOW_W 800  //定义当前窗口宽度和高度  但是这个是在其他地方哪里有的？？？？？？？？好奇怪……
 #define WINDOW_H 600
+
+//为了在Navy中运行仙剑奇侠传, 你还需要对miniSDL中绘图相关的API进行功能的增强. 具体地, 作为一款上世纪90年代的游戏, 
+// 绘图的时候每个像素都是用8位来表示, 而不是目前普遍使用的32位00RRGGBB. 而这8位也并不是真正的颜色, 而
+// 是一个叫"调色板"(palette)的数组的下标索引, 调色板中存放的才是32位的颜色. 用代码的方式来表达, 就是:
+// // 现在像素阵列中直接存放32位的颜色信息
+// uint32_t color_xy = pixels[x][y];
+
+// // 仙剑奇侠传中的像素阵列存放的是8位的调色板下标,
+// // 用这个下标在调色板中进行索引, 得到的才是32位的颜色信息
+// uint32_t pal_color_xy = palette[pixels[x][y]];
 
 //SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置  在NJU Slider中要实现的
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
@@ -25,7 +35,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     uint32_t pixel_dst_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
     uint32_t pixel_src_index=(i + src_rect.y) * src->w + j + src_rect.x;
     switch (Pixel_Bit){
-      case 8:dst->pixels[pixel_dst_index]=src->pixels[pixel_src_index];break;
+      case 8: dst->pixels[pixel_dst_index]=src->pixels[pixel_src_index];printf("Pixel_Bit为8位\n");
+      break;
       case 32: ((uint32_t*)dst->pixels)[pixel_dst_index]=((uint32_t*)src->pixels)[pixel_src_index];break;
       default:break;}
   }}
@@ -43,7 +54,8 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {//用col
     uint32_t pixel_index=(i + dst_rect.y) * dst->w + j + dst_rect.x;
     switch (Pixel_Bit)
       {case 32: ((uint32_t *)dst->pixels)[pixel_index]=color;break;
-       case 8: (dst->pixels)[pixel_index]=color;break;
+       case 8: (dst->pixels)[pixel_index]=color;printf("Pixel_Bit为8位\n");
+       break;
       default:break;}
   }}
   //开机菜单是另一个行为比较简单的程序, 它会展示一个菜单, 用户可以选择运行哪一个程序. 为了运行它, 
@@ -60,7 +72,9 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   SDL_Color* colors = s->format->palette->colors; 
   switch (Pixel_Bit)
   {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
-    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; local_pixels[i * w + j]=colors[pixel_index].val;}}break;
+    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; local_pixels[i * w + j]=colors[pixel_index].val;}}
+    printf("Pixel_Bit为8位\n");
+    break;
   case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}
 }
