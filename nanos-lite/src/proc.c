@@ -38,6 +38,7 @@ void init_proc() {
   // naive_uload(NULL,"/bin/nterm");
   // naive_uload(NULL,"/bin/bird");
   // naive_uload(NULL,"/bin/pal");
+  naive_uload(NULL,"/bin/typing-game");
 }
 
 Context* schedule(Context *prev) {

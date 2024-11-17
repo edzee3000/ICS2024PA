@@ -1,5 +1,7 @@
 #include <am.h>
 
+
+#include <klib-macros.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,6 +9,7 @@ extern char _heap_start;
 // int main(const char *args);
 
 Area heap;
+
 
 void putch(char ch) {
   // outb(SERIAL_PORT, ch);
