@@ -2,9 +2,10 @@
 #include <assert.h>
 
 int main() {
+    printf("目前正常\n");
   FILE *fp = fopen("/share/files/num", "r+");
   assert(fp);
-  printf("目前正常\n");
+
   fseek(fp, 0, SEEK_END);
   long size = ftell(fp);
   assert(size == 5000);
