@@ -1,6 +1,6 @@
 #include <proc.h>
 
-#include<declaration.h>
+#include <declaration.h>
 
 #define MAX_NR_PROC 4
 
