@@ -69,3 +69,5 @@ void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); }
 // void ioe_write(int reg, void *buf) {}
 
 
+//也算是看明白了  好像确实是需要把am当中的所有的函数接口移植过来  只不过现在就不需要自己再用自己的klib了  直接用标准输入输出库就可以了
+//但是这也会带来一个问题  就是这不就相当于把PA2再重新做一遍吗？？  那也太麻烦了吧……我决定了为了不浪费时间，这里将am移植过去我打算暂且搁置
