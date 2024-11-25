@@ -14,6 +14,7 @@ Area heap;
 void putch(char ch) {
   // outb(SERIAL_PORT, ch);
   printf("%c",ch);
+  // write(1, ch, 1);
 }
 
 void halt(int code) {
