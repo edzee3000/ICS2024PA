@@ -185,8 +185,9 @@ static void display_menu(int n) {
   i ++;
 
 
-  assert(0);
+  
   SDL_UpdateRect(screen, 0, 0, 0, 0);
+  assert(0);
 
   printf("========================================\n");
   printf("Please Choose.\n");
