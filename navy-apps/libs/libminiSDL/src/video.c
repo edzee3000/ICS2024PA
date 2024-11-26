@@ -24,7 +24,7 @@ static uint32_t trans_color_from_8_to_32(SDL_Color *c)
 
 //SDL_BlitSurface(): 将一张画布中的指定矩形区域复制到另一张画布的指定位置  在NJU Slider中要实现的
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
-  assert(0);
+  
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
   SDL_Rect src_rect = { .x = 0, .y = 0, .w = src->w, .h = src->h };//初始化两个空的矩形分别为src和dst的大小
