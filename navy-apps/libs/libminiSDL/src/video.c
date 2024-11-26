@@ -69,12 +69,11 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {//用col
 //SDL_UpdateRect(): 将画布中的指定矩形区域同步到屏幕上  在NJU Slider中要实现的
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   if(w==0||s==0){w=s->w;h=s->h;}
-  uint32_t volatile local_pixels[WINDOW_W * WINDOW_H];
   uint32_t Pixel_Bit=s->format->BitsPerPixel;//根据每个像素所占bit位数不同需要进行分类讨论
+  if(Pixel_Bit==8){
+  uint32_t local_pixels[WINDOW_W * WINDOW_H];
   SDL_Color* colors = s->format->palette->colors; //s->format->palette->colors是一个SDL_Color类型的数组，以8位颜色为下标时可以获得其对应的SDL_Color，结构体包含rgba四个8位数字，再写一个函数将4个8位数字转化为一个32位数。
-  
-  switch (Pixel_Bit)
-  {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
+  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
     SDL_Color c=colors[pixel_index];//不知道为什么这里会map出错
     // local_pixels[i * w + j]=colors[pixel_index].val;
@@ -86,8 +85,11 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     //SDL_UpdateRect()在最后调用NDL_DrawRect()，传入的参数pixels必须是32位格式的，不然会显示错误颜色。
     //因此需要现将8位颜色转为32位的，再填入pixels
     }}
-    NDL_DrawRect(local_pixels, x, y, w, h);break;
-  case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
+    NDL_DrawRect(local_pixels, x, y, w, h);
+  }
+  switch (Pixel_Bit)
+  { 
+  case 32:assert(0); NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}
 }
 
