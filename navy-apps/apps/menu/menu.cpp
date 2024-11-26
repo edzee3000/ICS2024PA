@@ -186,7 +186,7 @@ static void display_menu(int n) {
 
 
   
-  SDL_UpdateRect(screen, 0, 0, 0, 0);//这里有问题！！！！！
+  SDL_UpdateRect(screen, 0, 0, 0, 0);//这里有问题！！！！！后来还是想不明白为什么会出现问题  重构了一下代码终于妥协了好了……无语死了
   
 
   printf("========================================\n");
