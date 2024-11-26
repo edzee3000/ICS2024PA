@@ -76,9 +76,11 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   switch (Pixel_Bit)
   {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
+    SDL_Color c=colors[pixel_index];//不知道为什么这里会map出错
     // local_pixels[i * w + j]=colors[pixel_index].val;
     //#############################################################################
     // local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);   //这里会出问题……但是想不明白为什么……
+    (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
     //#############################################################################
     //SDL_UpdateRect()在最后调用NDL_DrawRect()，传入的参数pixels必须是32位格式的，不然会显示错误颜色。
     //因此需要现将8位颜色转为32位的，再填入pixels
