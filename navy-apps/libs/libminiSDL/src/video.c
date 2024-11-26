@@ -72,6 +72,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   uint32_t local_pixels[WINDOW_W * WINDOW_H];
   uint32_t Pixel_Bit=s->format->BitsPerPixel;//根据每个像素所占bit位数不同需要进行分类讨论
   SDL_Color* colors = s->format->palette->colors; //s->format->palette->colors是一个SDL_Color类型的数组，以8位颜色为下标时可以获得其对应的SDL_Color，结构体包含rgba四个8位数字，再写一个函数将4个8位数字转化为一个32位数。
+  printf("Pixel_Bit:%d\n",Pixel_Bit);
   switch (Pixel_Bit)
   {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
