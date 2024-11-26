@@ -18,7 +18,7 @@
 // // 仙剑奇侠传中的像素阵列存放的是8位的调色板下标,
 // // 用这个下标在调色板中进行索引, 得到的才是32位的颜色信息
 // uint32_t pal_color_xy = palette[pixels[x][y]];
-inline uint32_t trans_color_from_8_to_32(SDL_Color *c)
+static uint32_t trans_color_from_8_to_32(SDL_Color *c)
 {return (c->a << 24) | (c->r << 16) | (c->g << 8) | c->b;//将8位color转换成32位color
 }
 
@@ -72,23 +72,20 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   uint32_t local_pixels[WINDOW_W * WINDOW_H];
   uint32_t Pixel_Bit=s->format->BitsPerPixel;//根据每个像素所占bit位数不同需要进行分类讨论
   SDL_Color* colors = s->format->palette->colors; //s->format->palette->colors是一个SDL_Color类型的数组，以8位颜色为下标时可以获得其对应的SDL_Color，结构体包含rgba四个8位数字，再写一个函数将4个8位数字转化为一个32位数。
-  if(Pixel_Bit==32)
-  {NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);return ;}
-
-    for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
-    {
-      uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
+  
+  switch (Pixel_Bit)
+  {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
+    {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
     // local_pixels[i * w + j]=colors[pixel_index].val;
     //#############################################################################
-    // local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);
+    // local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);   //这里会出问题……但是想不明白为什么……
     //#############################################################################
     //SDL_UpdateRect()在最后调用NDL_DrawRect()，传入的参数pixels必须是32位格式的，不然会显示错误颜色。
     //因此需要现将8位颜色转为32位的，再填入pixels
     }}
-    NDL_DrawRect(local_pixels, x, y, w, h);
-
-  
-  
+    NDL_DrawRect(local_pixels, x, y, w, h);break;
+  case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
+  default:break;}
 }
 
 // APIs below are already implemented.
