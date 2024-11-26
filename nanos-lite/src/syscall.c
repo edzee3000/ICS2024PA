@@ -68,7 +68,7 @@ void do_syscall(Context *c) {
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
     case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
-    case SYS_execve:c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);break;
+    // case SYS_execve:c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);break;
     // case SYS_fb_write:c->GPRx = FB_write(a[1],  a[2] , a[3]);break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
