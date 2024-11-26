@@ -18,7 +18,7 @@
 // // 仙剑奇侠传中的像素阵列存放的是8位的调色板下标,
 // // 用这个下标在调色板中进行索引, 得到的才是32位的颜色信息
 // uint32_t pal_color_xy = palette[pixels[x][y]];
-static uint32_t trans_color_from_8_to_32(SDL_Color *c)
+static inline uint32_t trans_color_from_8_to_32(SDL_Color *c)
 {return (c->a << 24) | (c->r << 16) | (c->g << 8) | c->b;//将8位color转换成32位color
 }
 
