@@ -184,10 +184,12 @@ static void display_menu(int n) {
   draw_text_row(buf, i);
   i ++;
 
+
+  assert(0);
   SDL_UpdateRect(screen, 0, 0, 0, 0);
 
   printf("========================================\n");
   printf("Please Choose.\n");
   fflush(stdout);
-  assert(0);
+  
 }
