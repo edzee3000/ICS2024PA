@@ -162,7 +162,7 @@ static void display_menu(int n) {
 
   i = 11;
 
-  assert(0);
+  
   
   sprintf(buf, "  page = %2d, #total apps = %d", page, nitems);
   draw_text_row(buf, i);
@@ -189,4 +189,5 @@ static void display_menu(int n) {
   printf("========================================\n");
   printf("Please Choose.\n");
   fflush(stdout);
+  assert(0);
 }
