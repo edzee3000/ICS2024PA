@@ -89,7 +89,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   }
   switch (Pixel_Bit)
   { 
-  case 32:assert(0); NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
+  case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}
 }
 
