@@ -80,7 +80,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     // local_pixels[i * w + j]=colors[pixel_index].val;
     //#############################################################################
     // local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);   //这里会出问题……但是想不明白为什么……
-    local_pixels[i * w + j]=  (uint32_t)((c.a << 24) | (c.r << 16) | (c.g << 8) | c.b);
+    local_pixels[i]= (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
     //#############################################################################
     //SDL_UpdateRect()在最后调用NDL_DrawRect()，传入的参数pixels必须是32位格式的，不然会显示错误颜色。
     //因此需要现将8位颜色转为32位的，再填入pixels
