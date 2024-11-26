@@ -70,12 +70,15 @@ static void clear_display(void) {
 int main(int argc, char *argv[], char *envp[]) {
   SDL_Init(0);
   screen = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE);
-  // assert(0);
+
   font = new BDF_Font(font_fname);
   logo_sf = SDL_LoadBMP("/share/pictures/projectn.bmp");
   assert(logo_sf);
   set_i_max();
 
+
+  assert(0);
+  
   while (1) {
     display_menu(i_max);
 
@@ -123,7 +126,7 @@ static void draw_ch(BDF_Font *font, int x, int y, char ch, uint32_t fg, uint32_t
   SDL_Rect dstrect = { .x = x, .y = y };
   SDL_BlitSurface(s, NULL, screen, &dstrect);
   SDL_FreeSurface(s);
-  assert(0);
+  
 }
 
 static void draw_str(BDF_Font *font, int x, int y, char *str, uint32_t fp, uint32_t bg) {
