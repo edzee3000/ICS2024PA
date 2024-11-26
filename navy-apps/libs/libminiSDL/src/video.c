@@ -77,7 +77,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 
     for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {
-    //   uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
+      uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
     // // local_pixels[i * w + j]=colors[pixel_index].val;
     // //#############################################################################
     // local_pixels[i * w + j]=trans_color_from_8_to_32(&colors[pixel_index]);
