@@ -83,9 +83,9 @@ int main(int argc, char *argv[], char *envp[]) {
     display_menu(i_max);
 
     
-
+assert(0);
     SDL_Event e;
-    assert(0);
+    
     do {
       SDL_WaitEvent(&e);
     } while (e.type != SDL_KEYDOWN);
