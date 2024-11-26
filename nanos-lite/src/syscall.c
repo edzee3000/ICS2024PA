@@ -2,11 +2,14 @@
 #include "syscall.h"
 
 #include <fs.h>
+#include <proc.h>
 
 #include <sys/time.h>
 #include <time.h>
 
 #include <declaration.h>
+
+void naive_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
 // #include "files.h" //用于strace的翻译文件名
 /*本来想在Kconfig里面设置strace的开关的  结果好像没啥用处  因此在这里我手动添加这个CONFIG_STRACE参数
 config STRACE
@@ -29,6 +32,9 @@ int system_close(int fd);
 size_t system_lseek(int fd, size_t offset, int whence);
 size_t system_read(int fd, intptr_t buf, size_t count);
 int system_gettimeofday(struct timeval *tv, struct timezone *tz);
+int system_execve(const char *pathname, char *const _Nullable argv[],char *const _Nullable envp[]);
+
+
 
 void do_syscall(Context *c) {
   // Nanos-lite收到系统调用事件之后, 就会调出系统调用处理函数do_syscall()进行处理. 
@@ -62,6 +68,7 @@ void do_syscall(Context *c) {
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
     case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
+    case SYS_execve:c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);break;
     // case SYS_fb_write:c->GPRx = FB_write(a[1],  a[2] , a[3]);break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
@@ -95,7 +102,11 @@ void do_syscall(Context *c) {
   // 5. 若该系统调用失败, _sbrk()会返回-1
 
 
+
+
+
 }
+
 
 
 
@@ -159,7 +170,36 @@ int system_gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 
+int system_execve(const char *pathname, char *const _Nullable argv[],char *const _Nullable envp[])
+{
+  //  execve() executes the program referred to by pathname.  This causes the program
+  //  that  is  currently  being run by the calling process to be replaced with a new
+  //  program, with newly initialized stack, heap, and  (initialized  and  uninitial‐
+  //  ized) data segments.
+  
+  //execve() does not return on success, and the text, initialized data, uninitial‐
+      //  ized data (bss), and stack of the calling process are overwritten according  to
+      //  the contents of the newly loaded program.
+  
+  int fd = fs_open(pathname, 0, 0);
+  if (fd == -1)  return -1;
+  else  fs_close(fd);
+  printf("准备运行程序:%s\n",pathname);
+  naive_uload(NULL,pathname);
+  yield();
 
+  return 0;
+  
+  
+  // 在PA3的最后, 你将会向Nanos-lite中添加一些简单的功能, 来展示你的批处理系统.
+  // 你之前已经在Navy上执行了开机菜单和NTerm, 但它们都不支持执行其它程序. 这是因为"执行其它程序"需要一个新的系统调用来支持, 
+  // 这个系统调用就是SYS_execve, 它的作用是结束当前程序的运行, 并启动一个指定的程序. 这个系统调用比较特殊, 如果它执行成功, 
+  // 就不会返回到当前程序中, 具体信息可以参考man execve. 为了实现这个系统调用, 
+  // 你只需要在相应的系统调用处理函数中调用naive_uload()就可以了. 目前我们只需要关心filename即可, 
+  // argv和envp这两个参数可以暂时忽略.
+
+  //你需要实现SYS_execve系统调用, 然后通过开机菜单来运行其它程序. 你已经实现过很多系统调用了, 需要注意哪些细节, 这里就不啰嗦了.
+}
 
 
 
