@@ -75,7 +75,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   printf("Pixel_Bit:%d\n",Pixel_Bit);
   
   switch (Pixel_Bit)
-  {case 8:  for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
+  {case 8: assert(0); for (int i = 0; i < h; i ++) {for (int j = 0; j < w; j ++) //找出pixel对应调色盘索引对应的值
     {uint8_t pixel_index= s->pixels[(i+y)*s->w+j+x]; //注意这里的pixel_index是
     // local_pixels[i * w + j]=colors[pixel_index].val;
     //#############################################################################
@@ -85,7 +85,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     //因此需要现将8位颜色转为32位的，再填入pixels
     }}
     NDL_DrawRect(local_pixels, x, y, w, h);break;
-  case 32: assert(0);NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
+  case 32: NDL_DrawRect((uint32_t*)(s->pixels),x,y,w,h);break;
   default:break;}
 }
 
