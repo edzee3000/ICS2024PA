@@ -27,7 +27,9 @@ void init_proc() {
   switch_boot_pcb();
 
   Log("Initializing processes...");
+  
 
+  
   // load program here 在这里加载程序
   // naive_uload(NULL,"/bin/dummy");
   // naive_uload(NULL,"/bin/hello");
