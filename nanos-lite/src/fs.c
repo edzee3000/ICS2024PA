@@ -99,7 +99,7 @@ int fs_open(const char *pathname, int flags, int mode)
   }
   
   //由于sfs中每一个文件都是固定的, 不会产生新文件, 因此"fs_open()没有找到pathname所指示的文件"属于异常情况, 你需要使用assertion终止程序运行.
-  panic("路径为%s的文件没有找到\n",pathname);//这里我直接用panic了  因为我感觉panic和assert(0)没啥区别
+  // panic("路径为%s的文件没有找到\n",pathname);//这里我直接用panic了  因为我感觉panic和assert(0)没啥区别
   return -1;
   //为了简化实现, 我们允许所有用户程序都可以对所有已存在的文件进行读写, 这样以后, 我们在实现fs_open()的时候就可以忽略flags和mode了.
 }
