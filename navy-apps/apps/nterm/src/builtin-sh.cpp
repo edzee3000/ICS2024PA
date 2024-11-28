@@ -127,9 +127,9 @@ void builtin_sh_run() {
 
 static int my_exit(const char *args)
 {
-  printf("执行到my_exit\n");
-  int exit_num=atoi(args);
-  exit(exit_num);
+  int exit_status=atoi(args);
+  printf("执行到my_exit\t退出状态为:%d\n",exit_status);
+  exit(exit_status);
   // exit(0);
   return 0;
 }
