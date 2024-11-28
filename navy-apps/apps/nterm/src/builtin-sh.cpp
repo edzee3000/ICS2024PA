@@ -98,7 +98,7 @@ static void sh_handle_cmd(const char *cmd) {
   
   // 你只需要通过setenv()函数来设置PATH=/bin, 然后调用execvp()来执行新程序即可. 调用setenv()时需要将overwrite参数设置为0, 这是为了可以在Navy native上实现同样的效果.
   int execve_status=execvp(argv[0], argv);//这里开始运行程序   调用到了相关库中的execvp函数   从而就可以触发navy当中的_syscall函数  然后nanoslite里面就可以触发SYS_execve
-  free(cmd_cpy);
+  free(cmd_cpy);//注意这里的free(cmd_cpy);要放在execvp(argv[0], argv);之后，否则会产生错误指针
   if (execve_status < 0)
     sh_printf("sh: command not found: %s\n", argv[0]);
   return;
