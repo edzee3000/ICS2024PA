@@ -39,11 +39,11 @@ static size_t get_argc(char *str)
 }
 
 static void get_argv(char *cmd, char **argv)
-{ int argc = 0;
-  argv[argc++] = strtok(cmd, " ");
+{ int arg_num = 0;
+  argv[arg_num++] = strtok(cmd, " ");//argv[arg_num++]中的arg_num是先用后自增，但是最好别这样写
   while (true)
-  {argv[argc++] = strtok(NULL, " ");
-  if (argv[argc - 1] == NULL) break;
+  {argv[arg_num++] = strtok(NULL, " ");
+  if (argv[arg_num - 1] == NULL) break;//因为到了最后没有办法分割的时候会返回NULL，因此可以用argnum-1的索引==NULL去判断是否已经分割完毕
   }
   return;
 }
@@ -95,9 +95,10 @@ static void sh_handle_cmd(const char *cmd) {
   char *(argv[argc + 1]) = {NULL};
   extract = strtok(STRCPY, "\n");
   get_argv(extract, argv);
-  // free(cmd_cpy);
+  
   // 你只需要通过setenv()函数来设置PATH=/bin, 然后调用execvp()来执行新程序即可. 调用setenv()时需要将overwrite参数设置为0, 这是为了可以在Navy native上实现同样的效果.
   int execve_status=execvp(argv[0], argv);//这里开始运行程序   调用到了相关库中的execvp函数   从而就可以触发navy当中的_syscall函数  然后nanoslite里面就可以触发SYS_execve
+  free(cmd_cpy);
   if (execve_status < 0)
     sh_printf("sh: command not found: %s\n", argv[0]);
   return;
