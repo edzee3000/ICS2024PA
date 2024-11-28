@@ -73,8 +73,8 @@ static void sh_handle_cmd(const char *cmd) {
   if(!cmd) return;
   if(my_echo(cmd)==0) return ;
 
-  char* cmd_cpy=(char *)malloc((strlen(cmd) + 1)*sizeof(char));
-  // char cmd_cpy[strlen(cmd) + 1];
+  // char* cmd_cpy=(char *)malloc((strlen(cmd) + 1)*sizeof(char));
+  char cmd_cpy[strlen(cmd) + 1];
   char *extract = strtok(STRCPY, "\n");//特别要注意分割处理后原字符串 str 会变，变成第一个子字符串
   char *name = strtok(extract, " ");
   char *args = strtok(NULL, "");
@@ -95,7 +95,7 @@ static void sh_handle_cmd(const char *cmd) {
   char *(argv[argc + 1]) = {NULL};
   extract = strtok(STRCPY, "\n");
   get_argv(extract, argv);
-  free(cmd_cpy);
+  // free(cmd_cpy);
   // 你只需要通过setenv()函数来设置PATH=/bin, 然后调用execvp()来执行新程序即可. 调用setenv()时需要将overwrite参数设置为0, 这是为了可以在Navy native上实现同样的效果.
   int execve_status=execvp(argv[0], argv);//这里开始运行程序   调用到了相关库中的execvp函数   从而就可以触发navy当中的_syscall函数  然后nanoslite里面就可以触发SYS_execve
   if (execve_status < 0)
