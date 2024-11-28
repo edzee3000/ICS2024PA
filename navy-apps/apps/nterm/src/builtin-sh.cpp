@@ -106,7 +106,7 @@ void builtin_sh_run() {
   sh_banner();
   sh_prompt();
   //##########这里会不会有问题？？###########
-  // setenv("PATH", "/bin", 0);//键入命令的完整路径是一件相对繁琐的事情. 回想我们使用ls的时候, 并不需要键入/bin/ls. 这是因为系统中定义了PATH这个环境变量, 你可以通过man execvp来阅读相关的行为. 我们也可以让NTerm中的內建Shell支持这一功能, 你只需要通过setenv()函数来设置PATH=/bin, 然后调用execvp()来执行新程序即可. 调用setenv()时需要将overwrite参数设置为0, 这是为了可以在Navy native上实现同样的效果.
+  setenv("PATH", "/bin", 0);//键入命令的完整路径是一件相对繁琐的事情. 回想我们使用ls的时候, 并不需要键入/bin/ls. 这是因为系统中定义了PATH这个环境变量, 你可以通过man execvp来阅读相关的行为. 我们也可以让NTerm中的內建Shell支持这一功能, 你只需要通过setenv()函数来设置PATH=/bin, 然后调用execvp()来执行新程序即可. 调用setenv()时需要将overwrite参数设置为0, 这是为了可以在Navy native上实现同样的效果.
   while (1) {
     SDL_Event ev;
     if (SDL_PollEvent(&ev)) {
