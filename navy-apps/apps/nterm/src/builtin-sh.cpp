@@ -86,6 +86,7 @@ static void sh_handle_cmd(const char *cmd) {
       return;
     }
   }
+  printf("cmd_name:%s\n",name);
   
   extract = strtok(strcpy(cmd_cpy, cmd), "\n");
   int argc = get_argc(extract);
