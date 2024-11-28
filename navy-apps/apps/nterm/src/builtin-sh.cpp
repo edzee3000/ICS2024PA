@@ -127,7 +127,8 @@ void builtin_sh_run() {
 
 static int my_exit(const char *args)
 {
-  int exit_status=atoi(args);
+  int exit_status=0;
+  if(args!=0)exit_status=atoi(args);
   printf("执行到my_exit\t退出状态为:%d\n",exit_status);
   exit(exit_status);
   // exit(0);
