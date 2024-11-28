@@ -55,7 +55,7 @@ void do_syscall(Context *c) {
   // printf("GPR1:%d\tGPR2:%d\tGPR3:%u\tGPR4:%d\n",a[0],c->GPR2, c->GPR3,c->GPR4);
   switch (a[0]) {
     //你需要实现SYS_exit系统调用（case 0的情况）, 它会接收一个退出状态的参数. 为了方便测试, 我们目前先直接使用这个参数调用halt().    halt(0)表示成功退出 其余均为失败退出
-    case SYS_exit: c->GPRx=0;/*printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx);*/ 
+    case SYS_exit: //c->GPRx=0;/*printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx);*/ 
                   // halt(c->GPRx);break;//注意c->GPRx与c->GPR2使用的都是gpr[10]寄存器，因此这里可能不应该对c->GPRx=0;赋值为0……之后可能需要进行一些修改……##############
                   //#######################################下面可能需要进行修改
                   if(c->GPRx==0){c->GPRx = system_execve("/bin/nterm",NULL,NULL);}//有了开机菜单程序之后, 就可以很容易地实现一个有点样子的批处理系统了. 你只需要修改SYS_exit的实现, 让它调用SYS_execve来再次运行/bin/menu, 而不是直接调用halt()来结束整个系统的运行. 这样以后, 在一个用户程序结束的时候, 操作系统就会自动再次运行开机菜单程序, 让用户选择一个新的程序来运行.
