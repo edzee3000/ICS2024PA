@@ -151,6 +151,8 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
+  //注意这里是需要有一个navy应用程序的系统调用execve的，否则无法与nanoslite操作系统进行交互
+  return  _syscall_((intptr_t)SYS_execve, (intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
   _exit(SYS_execve);
   return 0;
 }
