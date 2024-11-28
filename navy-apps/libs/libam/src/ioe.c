@@ -51,8 +51,8 @@ static void *lut[128] = { //lut的意思是 "lookup table"（查找表)
 static void fail(void *buf) { panic("access nonexist register"); }
 
 bool ioe_init() {
-  for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) lut[i] = fail;
+  // for (int i = 0; i < LENGTH(lut); i++)
+  //   if (!lut[i]) lut[i] = fail;
   //这里ioe_init的实现直接照搬abstract-machine/am/src/platform/nemu/ioe/ioe.c当中的实现会不会有问题？？？
   // __am_gpu_init();  
   __am_timer_init();
