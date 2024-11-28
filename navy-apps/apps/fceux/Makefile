@@ -1,4 +1,5 @@
-FCEUX_PATH = $(AM_HOME)/../fceux
+#为了成功编译, 你可能需要修改Makefile中的FCEUX_PATH变量, 让它指向正确的路径
+FCEUX_PATH = $(AM_HOME)/../fceux-am
 ifeq ($(wildcard $(FCEUX_PATH)/src/x6502.cpp),)
   $(error Please set $$FCEUX_PATH in the Makefile to a valid path of a FCEUX repo)
 else
