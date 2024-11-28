@@ -92,7 +92,7 @@ static void sh_handle_cmd(const char *cmd) {
   char *(argv[argc + 1]) = {NULL};
   extract = strtok(strcpy(cmd_cpy, cmd), "\n");
   get_argv(extract, argv);
-  if (execvp(argv[0], argv) < 0)
+  if (execvp(argv[0], argv) < 0)//这里开始运行程序   调用到了相关库中的execvp函数   从而就可以触发navy当中的_syscall函数  然后nanoslite里面就可以触发SYS_execve
     sh_printf("sh: command not found: %s\n", argv[0]);
   return;
 }
