@@ -32,7 +32,6 @@ int main() {//简单梳理一下Nanos-lite目前的行为
   Log("Finish initialization");
 
 #ifdef HAS_CTE
-  assert(0);
   yield();
 #endif
 

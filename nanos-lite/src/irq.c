@@ -1,6 +1,7 @@
 #include <common.h>
 
 
+#include <proc.h>
 void do_syscall(Context *c);
 
 static Context* do_event(Event e, Context* c) {
@@ -22,7 +23,7 @@ static Context* do_event(Event e, Context* c) {
 
 
   switch (e.event) {
-    case EVENT_YIELD: printf("识别到自陷事件\n");    break;
+    case EVENT_YIELD: c = schedule(c);  printf("识别到自陷事件\n");    break; //在Nanos-lite收到EVENT_YIELD事件后, 调用schedule()并返回新的上下文
     case EVENT_SYSCALL: do_syscall(c);  break;     //表示接收到了一个 系统调用syscall的请求  然后根据c里面的mcause再去分别处理  这里其实是做了一层抽象  将事件event和上下文c分离开来 
     default: panic("Unhandled event ID = %d", e.event);
   }
