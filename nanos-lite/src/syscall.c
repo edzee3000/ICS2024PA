@@ -32,8 +32,8 @@ int system_close(int fd);
 size_t system_lseek(int fd, size_t offset, int whence);
 size_t system_read(int fd, intptr_t buf, size_t count);
 int system_gettimeofday(struct timeval *tv, struct timezone *tz);
-int system_execve(const char *pathname, char *const _Nullable argv[],char *const _Nullable envp[]);
-
+// int system_execve(const char *pathname, char *const _Nullable argv[], char *const _Nullable envp[]);
+int system_execve(const char *pathname,char *const argv[], char *const envp[]);
 
 
 void do_syscall(Context *c) {
@@ -175,7 +175,7 @@ int system_gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 
-int system_execve(const char *pathname, char *const _Nullable argv[],char *const _Nullable envp[])
+int system_execve(const char *pathname,char *const argv[], char *const envp[])
 {
   //  execve() executes the program referred to by pathname.  This causes the program
   //  that  is  currently  being run by the calling process to be replaced with a new
