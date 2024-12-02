@@ -54,9 +54,37 @@ bool cte_init(Context*(*handler)(Event, Context*)) {  //举个例子比如说mai
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
+  Context *cp = (Context *)kstack.end - 1;//先强制类型转换一下然后再-1  所谓的-1  其实是从内存角度来看是将地址的值-sizeof(Context)  使得cp对应的context紧挨着kstack的end
+  // cp->mepc = (uintptr_t)entry - 4;        //kcontext()要求内核线程不能从entry返回, 否则其行为是未定义的. 你需要在kstack的底部创建一个以entry为入口的上下文结构
+  cp->mepc = (uintptr_t)entry;
+  return cp;        
+  //在 RISC-V 架构中，指令是 32 位的，所以减去 4 实际上是将地址回退到调用 entry 函数之前的指令。
+  // 这样做的原因是，当异常处理完毕并从异常返回时，处理器应该继续执行 entry 函数调用之后的指令，而不是重新执行 entry 函数调用本身。
 }
 
+//注意需要手动#define STACK_SIZE (4096 * 8)设置栈的大小为32KB
+/*这个是在native当中实现的kcontext的部分  如果愿意的话可以进行参考
+Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
+  Context *c = (Context*)kstack.end - 1;
+
+  __am_get_example_uc(c);
+  AM_REG_PC(&c->uc) = (uintptr_t)__am_kcontext_start;
+  AM_REG_SP(&c->uc) = (uintptr_t)kstack.end;
+
+  int ret = sigemptyset(&(c->uc.uc_sigmask)); // enable interrupt
+  assert(ret == 0);
+
+  c->vm_head = NULL;
+
+  c->GPR1 = (uintptr_t)arg;
+  c->GPR2 = (uintptr_t)entry;
+  return c;
+}
+
+void yield() {
+  raise(SIGUSR2);
+}
+*/
 
 //用于进行自陷操作, 会触发一个编号为EVENT_YIELD事件. 不同的ISA会使用不同的自陷指令来触发自陷操作
 //在GNU/Linux中, 用户程序通过自陷指令来触发系统调用, Nanos-lite也沿用这个约定. 
