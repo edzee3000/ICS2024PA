@@ -23,6 +23,7 @@ void hello_fun(void *arg) {
     Log("Hello World from Nanos-lite with arg '%x' for the %uth time!", (uintptr_t)arg,  j);
     // Log("Hello World from Nanos-lite with arg '%p' for the %uth time!", (void *)arg,  j);
     // printf("Hello World from Nanos-lite with arg '%x' for the %dth time!", (uintptr_t)arg,  j);
+    // 另外一个很奇怪的点……就是这里竟然不用static也可以实现每一次调用都可以j++自增实现，看来yield还是有点东西的，真正要从汇编角度去理解代码而不是C语言角度
     j ++;
     // printf("j:%d\n",j);
     // assert(0);
