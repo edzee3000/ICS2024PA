@@ -21,6 +21,9 @@ Context* __am_irq_handle(Context *c) {
       ev.event=EVENT_SYSCALL;break;
       default:  ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
+
+
+
     //然后执行user_handler函数   即cte_init中传入的handler函数
     c = user_handler(ev, c);
     
@@ -56,10 +59,36 @@ bool cte_init(Context*(*handler)(Event, Context*)) {  //举个例子比如说mai
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *cp = (Context *)kstack.end - 1;//先强制类型转换一下然后再-1  所谓的-1  其实是从内存角度来看是将地址的值-sizeof(Context)  使得cp对应的context紧挨着kstack的end
   // cp->mepc = (uintptr_t)entry - 4;        //kcontext()要求内核线程不能从entry返回, 否则其行为是未定义的. 你需要在kstack的底部创建一个以entry为入口的上下文结构
-  cp->mepc = (uintptr_t)entry;
+  cp->mepc = (uintptr_t)entry;  
+
+  //配合DiffTest   为了保证DiffTest的正确运行, 根据你选择的ISA, 你还需要进行一些额外的设置
+  cp->mstatus=0x1800;
+  //注意这里跟手册上还是有一点点区别的  手册上面的cp直接是在ksatck的start那个位置的  但是这里我是直接在 (Context *)kstack.end - 1这个位置放了一个cp
+  //注意我上面写的那一条注释是错误的！！！！！！！！！注意kcontext会将cp返回，然后将其地址的值赋值给pcb[0].cp也就是PCB的首地址存放的就是cp的地址，这恰恰好符合手册上面的图示
   return cp;        
   //在 RISC-V 架构中，指令是 32 位的，所以减去 4 实际上是将地址回退到调用 entry 函数之前的指令。
   // 这样做的原因是，当异常处理完毕并从异常返回时，处理器应该继续执行 entry 函数调用之后的指令，而不是重新执行 entry 函数调用本身。
+
+  //我们希望代码将来从__am_asm_trap()返回之后, 就会开始执行f(). 换句话说, 我们需要在kcontext()中构造一个上下文, 
+  // 它指示了一个状态, 从这个状态开始, 可以正确地开始执行f(). 所以你需要思考的是, 为了可以正确地开始执行f(), 这个状态究竟需要满足什么样的条件?
+  // 至于"先将栈顶指针切换到新进程的上下文结构", 很自然的问题就是, 新进程的上下文结构在哪里? 
+  // 怎么找到它? 又应该怎么样把栈顶指针切换过去? 如果你发现代码跑飞了, 不要忘记, 程序是个状态机.
+  /*
+        |               |
+        +---------------+ <---- kstack.end
+        |               |
+        |    context    |
+        |               |
+        +---------------+ <--+
+        |               |    |
+        |               |    |
+        |               |    |
+        |               |    |
+        +---------------+    |
+        |       cp      | ---+
+        +---------------+ <---- kstack.start
+        |               |
+  */
 }
 
 //注意需要手动#define STACK_SIZE (4096 * 8)设置栈的大小为32KB
