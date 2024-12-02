@@ -65,6 +65,9 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   cp->mstatus=0x1800;
   //注意这里跟手册上还是有一点点区别的  手册上面的cp直接是在ksatck的start那个位置的  但是这里我是直接在 (Context *)kstack.end - 1这个位置放了一个cp
   //注意我上面写的那一条注释是错误的！！！！！！！！！注意kcontext会将cp返回，然后将其地址的值赋值给pcb[0].cp也就是PCB的首地址存放的就是cp的地址，这恰恰好符合手册上面的图示
+  
+  
+  cp->GPR2 = (uintptr_t)arg;//注意在这里根据abstract-machine/am/include/arch/riscv.h中的内容  #define GPR2 gpr[10]  GPR2为a0即gpr[10]  通过a0进行传参（因为只有一个void*参数  根据ABI约定）
   return cp;        
   //在 RISC-V 架构中，指令是 32 位的，所以减去 4 实际上是将地址回退到调用 entry 函数之前的指令。
   // 这样做的原因是，当异常处理完毕并从异常返回时，处理器应该继续执行 entry 函数调用之后的指令，而不是重新执行 entry 函数调用本身。
