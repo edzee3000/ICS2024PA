@@ -24,8 +24,8 @@ void hello_fun(void *arg) {
     // Log("Hello World from Nanos-lite with arg '%p' for the %uth time!", (uintptr_t)arg,  j);
     printf("Hello World from Nanos-lite with arg '%p' for the %dth time!", j);
     j ++;
-    printf("j:%d\n",j);
-    assert(0);
+    // printf("j:%d\n",j);
+    // assert(0);
     yield();
   }
 }
