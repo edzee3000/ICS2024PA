@@ -14,5 +14,8 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len);
 size_t fb_write(const void *buf, size_t offset, size_t len);
 void init_device() ;
 
+//定义在nanos-lite/src/proc.c当中
+// void context_kload(PCB *pcb, void (*entry)(void *), void *arg) ;
+// Context* schedule(Context *prev);
 
 #endif

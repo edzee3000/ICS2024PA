@@ -62,6 +62,7 @@ void do_syscall(Context *c) {
                   else{halt(c->GPRx);}//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
                   break;
     case SYS_yield:/*printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);*/
+                  schedule(current->cp);//这里姑且先不创建一个新的sys_yield函数 因为我自己不太确定返回值填什么
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况
     case SYS_write:  c->GPRx = system_write(a[1],  a[2] , a[3]);
                   /*printf("do_syscall(4)\tSYS_write\tfd=%d\tbuf=%d\tcount=%u\t返回值c->GPRx=%d\n",a[1],a[2],a[3],c->GPRx);*/ break;//返回值为写入的字节数。
