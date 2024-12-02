@@ -21,8 +21,8 @@ void hello_fun(void *arg) {
     // if(current==&pcb[0]) printf("目前执行的线程为:pcb[0]\n"); else if(current==&pcb[1]) printf("目前执行的线程为:pcb[1]\n");
     // for(int i=0;i<MAX_NR_PROC;i++){if(current==&pcb[i])printf("目前执行的线程为:pcb[%d]",i); }
     
-    // Log("Hello World from Nanos-lite with arg '%p' for the %uth time!", (uintptr_t)arg,  j);
-    printf("Hello World from Nanos-lite with arg '%x' for the %dth time!", (uintptr_t)arg,  j);
+    Log("Hello World from Nanos-lite with arg '%p' for the %uth time!", (uintptr_t *)arg,  j);
+    // printf("Hello World from Nanos-lite with arg '%x' for the %dth time!", (uintptr_t)arg,  j);
     j ++;
     // printf("j:%d\n",j);
     // assert(0);
