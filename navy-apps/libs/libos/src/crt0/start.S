@@ -36,7 +36,7 @@ _start:
 
 #elif defined(__riscv)
   // 在navy的start.S当中设置正确的栈指针  由于Nanos-lite和Navy作了一项约定把栈顶位置设置到GPRx即a0当中，因而将a0赋值给sp即可
-  // mv sp, a0
+  mv sp, a0
 
   mv s0, zero
   jal call_main
