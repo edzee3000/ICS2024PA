@@ -15,10 +15,11 @@ void switch_boot_pcb() {
 }
 
 void hello_fun(void *arg) {
-  int j = 1;
+  // int j = 1;
+  static int j = 1;
   while (1) {
     // if(current==&pcb[0]) printf("目前执行的线程为:pcb[0]\n"); else if(current==&pcb[1]) printf("目前执行的线程为:pcb[1]\n");
-    for(int i=0;i<MAX_NR_PROC;i++){if(current==&pcb[i])printf("目前执行的线程为:pcb[%d]\n",i); }
+    for(int i=0;i<MAX_NR_PROC;i++){if(current==&pcb[i])printf("目前执行的线程为:pcb[%d]",i); }
     
     Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
     j ++;
