@@ -1,6 +1,7 @@
 .globl  _start
 _start:
 
+
 // 用户程序的入口位于navy-apps/libs/libos/src/crt0/start.S中的_start()函数,
 // 这里的crt是C RunTime的缩写, 0的含义表示最开始. 
 // _start()函数会调用navy-apps/libs/libos/src/crt0/crt0.c中的call_main()函数, 
@@ -29,11 +30,14 @@ _start:
   call call_main
 
 #elif defined(__ISA_MIPS32__)
-
+  
   move $fp, $zero
   jal call_main
 
 #elif defined(__riscv)
+  // 在navy的start.S当中设置正确的栈指针  由于Nanos-lite和Navy作了一项约定把栈顶位置设置到GPRx即a0当中，因而将a0赋值给sp即可
+  mv sp, a0
+  
   mv s0, zero
   jal call_main
 
@@ -45,3 +49,11 @@ _start:
 #else
 #error Unsupported ISA
 #endif
+
+
+
+
+
+//
+//哎呀, 栈指针寄存器可是ISA相关的, 在Nanos-lite里面不方便处理. 别着急, 还记得用户进程的那个_start吗? 在那里可以进行一些ISA相关的操作. 
+//于是Nanos-lite和Navy作了一项约定: Nanos-lite把栈顶位置设置到GPRx中, 然后由Navy里面的_start来把栈顶位置真正设置到栈指针寄存器中.

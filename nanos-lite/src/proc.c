@@ -9,6 +9,9 @@ static PCB pcb_boot = {};
 PCB *current = NULL;
 
 void naive_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
+void context_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
+
+
 
 void switch_boot_pcb() {
   current = &pcb_boot;
@@ -33,12 +36,12 @@ void hello_fun(void *arg) {
 
 void init_proc() {
   context_kload(&pcb[0], hello_fun, &pcb[0]);
-  context_kload(&pcb[1], hello_fun, &pcb[1]);
+  // context_kload(&pcb[1], hello_fun, &pcb[1]);
+  context_uload(&pcb[1], "/bin/pal");
   switch_boot_pcb();
   
   Log("Initializing processes...");
   
-
   
   // load program here 在这里加载程序
   // naive_uload(NULL,"/bin/dummy");
@@ -54,6 +57,13 @@ void init_proc() {
   //  naive_uload(NULL,"/bin/dhrystone");
   // naive_uload(NULL,"/bin/fceux");
 }
+//总体来说，通过 context_uload()加载进程到系统中，当nanos-lite执行到yield()后，就会执行__am_asm_trap()，
+// 在__am_asm_trap()中的__am_irq_handle()就会把 context_uload()创造的用户进程上下文返回，
+// __am_asm_trap()会根据这个上下文的cp指针通过crsw指令解析出我们设置好的mepc和GPRx，
+// 然后根据mepc也就是设置的用户程序入口entry就会走到navy的_srart，并根据GPRx的值赋值给sp栈指针寄存器，然后就可以执行用户程序了
+  
+
+
 
 //Nanos-lite的schedule()函数
 Context* schedule(Context *prev) {

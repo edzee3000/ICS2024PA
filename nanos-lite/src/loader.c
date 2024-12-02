@@ -35,6 +35,11 @@
 # error Unsupported ISA
 #endif
 
+
+Context *ucontext(AddrSpace *as, Area kstack, void *entry);
+
+
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
   // TODO();
   // 你需要在Nanos-lite中实现loader的功能, 来把用户程序加载到正确的内存位置, 然后执行用户程序.
@@ -107,4 +112,22 @@ void naive_uload(PCB *pcb, const char *filename) {
   Log("Jump to entry = %p", entry);
   ((void(*)())entry) ();//跳转到程序的入口地址  开始执行程序
 }
+
+
+void context_uload(PCB *pcb, const char *filename)
+{
+  uintptr_t entry = loader(pcb, filename);
+  pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
+  pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
+  // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
+  //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
+}
+//事实上, 用户栈的分配是ISA无关的, 所以用户栈相关的部分就交给Nanos-lite来进行, ucontext()无需处理. 
+// 目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
+
+// 栈指针寄存器可是ISA相关的, 在Nanos-lite里面不方便处理. 别着急, 还记得用户进程的那个_start吗? 
+// 在那里可以进行一些ISA相关的操作. 于是Nanos-lite和Navy作了一项约定: Nanos-lite把栈顶位置设置到GPRx中, 
+// 然后由Navy里面的_start来把栈顶位置真正设置到栈指针寄存器中.
+
+
 
