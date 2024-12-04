@@ -9,10 +9,17 @@ _start:
 
 #if defined(__ISA_AM_NATIVE__)
 
+  // 初始化基指针（rbp）为0
   movq $0, %rbp
   // (rsp + 8) should be multiple of 16 when
   // control is transfered to the function entry point.
   // See amd64 ABI manual for more details
+  // 为了让AM native正确运行, 你也需要在Navy的_start中设置正确的栈指针.
+  // 假设%rax寄存器已经包含了栈顶地址
+  // 将%rax的值赋给栈指针%rsp
+  movq %rax, %rsp
+  // 确保栈指针16字节对齐
+  // 在AMD64 ABI中，函数调用前rsp需要16字节对齐
   andq $0xfffffffffffffff0, %rsp
   movq %rax, %rdi
   call call_main
