@@ -23,7 +23,7 @@ void hello_fun(void *arg) {
   while (1) {
     // if(current==&pcb[0]) printf("目前执行的线程为:pcb[0]\n"); else if(current==&pcb[1]) printf("目前执行的线程为:pcb[1]\n");
     // for(int i=0;i<MAX_NR_PROC;i++){if(current==&pcb[i])printf("目前执行的线程为:pcb[%d]\n",i); }
-    Log("Hello World from Nanos-lite with arg '%x' for the %uth time!", (uintptr_t)arg,  j);
+    // Log("Hello World from Nanos-lite with arg '%x' for the %uth time!", (uintptr_t)arg,  j);
     // Log("Hello World from Nanos-lite with arg '%p' for the %uth time!", (void *)arg,  j);
     // printf("Hello World from Nanos-lite with arg '%x' for the %dth time!", (uintptr_t)arg,  j);
     // 另外一个很奇怪的点……就是这里竟然不用static也可以实现每一次调用都可以j++自增实现，看来yield还是有点东西的，真正要从汇编角度去理解代码而不是C语言角度
