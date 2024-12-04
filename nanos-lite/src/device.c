@@ -25,7 +25,7 @@ static const char *keyname[256] __attribute__((used)) = {
 // 另外Nanos-lite也不打算支持stdin的读入, 因此在文件记录表中设置相应的报错函数即可.
 size_t serial_write(const void *buf, size_t offset, size_t len) {
   //然后我们还需要在serial_write(), events_read() 和fb_write()的开头调用yield(), 来模拟设备访问缓慢的情况. 添加之后, 访问设备时就要进行上下文切换, 从而实现多道程序系统的功能.
-  yield();
+  // yield();
   
   //这里我们可以默认串口写函数得到offset为0
   for(size_t i=0;i<len;i++){putch(*( (char*)buf+i) );}
@@ -34,7 +34,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 
 size_t events_read(void *buf, size_t offset, size_t len) {//默认offset为0！！！！！！！！！
   // 然后我们还需要在serial_write(), events_read() 和fb_write()的开头调用yield(), 来模拟设备访问缓慢的情况. 添加之后, 访问设备时就要进行上下文切换, 从而实现多道程序系统的功能.
-  yield();
+  // yield();
   // 实现events_read()(在nanos-lite/src/device.c中定义), 把事件写入到buf中, 最长写入len字节, 然后返回写入的实际长度. 
   // 其中按键名已经在字符串数组names中定义好了, 你需要借助IOE的API来获得设备的输入. 另外, 若当前没有有效按键, 则返回0即可.
   AM_INPUT_KEYBRD_T key = io_read(AM_INPUT_KEYBRD);//按键信息对系统来说本质上就是到来了一个事件
@@ -56,7 +56,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
   //然后我们还需要在serial_write(), events_read() 和fb_write()的开头调用yield(), 来模拟设备访问缓慢的情况. 添加之后, 访问设备时就要进行上下文切换, 从而实现多道程序系统的功能.
-  yield();
+  // yield();
   //fb_write()(在nanos-lite/src/device.c中定义), 用于把buf中的len字节写到屏幕上offset处. 你需要先从offset计算出屏幕上的坐标, 然后调用IOE来进行绘图. 另外我们约定每次绘图后总是马上将frame buffer中的内容同步到屏幕上.
   AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
   int screen_width=gpu.width;
