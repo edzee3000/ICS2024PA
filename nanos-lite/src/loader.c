@@ -122,8 +122,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 你需要观察到仙剑奇侠传确实跳过了商标动画. 目前我们的测试程序中不会用到环境变量, 所以不必传递真实的环境变量字符串. 
 至于实参应该写什么, 这又是一个指针相关的问题, 就交给你来解决吧.
 */
-// void context_uload(PCB *pcb, const char *filename)
-void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
+void context_uload(PCB *pcb, const char *filename)
+// void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
   uintptr_t entry = loader(pcb, filename);
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
