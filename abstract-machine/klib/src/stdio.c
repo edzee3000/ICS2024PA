@@ -24,8 +24,8 @@ int printf(const char *fmt, ...) {
   va_list args;
   va_start(args,fmt);
   // 这里的out应该是在栈中分配好还是在堆中分配好？？？？？？？？？？？？#######################
-  // char out[4096]="";//这里一开始出了bug因为我一开始只给它分配了256的空间  结果就数据溢出了……shit……
-  char* out=(char *)malloc(sizeof(char)*4096);
+  char out[4096]="";//这里一开始出了bug因为我一开始只给它分配了256的空间  结果就数据溢出了……shit……
+  // char* out=(char *)malloc(sizeof(char)*4096);
   int len=vsprintf(out,fmt,args);
   for(int i=0;i<len;i++)
     putch(out[i]);
