@@ -9,7 +9,8 @@ static PCB pcb_boot = {};
 PCB *current = NULL;
 
 void naive_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
-void context_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
+// void context_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 
 
 
@@ -35,11 +36,17 @@ void hello_fun(void *arg) {
   }
 }
 
+
+
+static char *args_pal[] = {"/bin/pal", "--skip", NULL};
+
+
 void init_proc() {
   context_kload(&pcb[0], hello_fun, &pcb[0]);
   // context_kload(&pcb[1], hello_fun, &pcb[1]);
-  context_uload(&pcb[1], "/bin/hello");
+  // context_uload(&pcb[1], "/bin/hello");
   // context_uload(&pcb[1], "/bin/pal");
+  context_uload(&pcb[1], "/bin/pal", args_pal ,NULL);
   switch_boot_pcb();
   
   Log("Initializing processes...");
