@@ -134,6 +134,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   //计算对应的argc与argv的值
   int argc = 0; while (argv[argc] != NULL) argc++;
   int envc = 0; while (envp[envc] != NULL) envc++;
+  printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
@@ -142,7 +143,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
   // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 envp 字符串逆序拷贝到用户栈
-     assert(0);  printf("envc的值为:%d\n",envc);    assert(0);
+       assert(0);
   for (int i = envc - 1; i >= 0; i--) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
   // 对齐到 uintptr_t 边界
