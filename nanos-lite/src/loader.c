@@ -137,12 +137,13 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
-    assert(0);
+ 
   for (int i = argc - 1; i >= 0; i--) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
   // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 envp 字符串逆序拷贝到用户栈
+     assert(0);
   for (int i = envc - 1; i >= 0; i--) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
   // 对齐到 uintptr_t 边界
