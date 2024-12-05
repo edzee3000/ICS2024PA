@@ -38,7 +38,7 @@ void hello_fun(void *arg) {
 
 
 
-static char *args_pal[] = {"/bin/pal", "--skip", NULL};
+// static char *args_pal[] = {"/bin/pal", "--skip", NULL};
 
 
 void init_proc() {
@@ -46,6 +46,7 @@ void init_proc() {
   // context_kload(&pcb[1], hello_fun, &pcb[1]);
   // context_uload(&pcb[1], "/bin/hello");
   // context_uload(&pcb[1], "/bin/pal");
+  char *args_pal[] = {"/bin/pal", "--skip", NULL};
   context_uload(&pcb[1], "/bin/pal", args_pal ,NULL);
   switch_boot_pcb();
   
