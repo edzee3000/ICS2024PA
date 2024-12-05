@@ -167,7 +167,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; i++) {
     // user_stack[i + 1] = (uintptr_t)heap.end - (argc - i - 1) * sizeof(uintptr_t);
     user_stack-= (strlen(argv[i]) + 1);  *((char **)us1) =user_stack;  us1++;
-    printf("argv[%d]内容为:%s\targv[%d]指针值为:%x\targv[%d]指针存放的位置为:%x\n",i,argv[i], i,user_stack, i, (us1-1));
+    printf("argv[%d]内容为:%s\targv[%d]指针值为:%x\targv[%d]指针存放的位置为:%x\n",i,user_stack, i,user_stack, i, (us1-1));
   }
   // 设置 argv 的 NULL 终止符
   // us2[argc + 1] = 0; 
@@ -178,7 +178,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < envc; i++) {
     // user_stack[argc + 3 + i] = (uintptr_t)heap.end - (argc + 3 + envc - i - 1) * sizeof(uintptr_t);
     user_stack-= (strlen(envp[i]) + 1);  *((char **)us1) =user_stack;  us1++; 
-    printf("envp[%d]内容为:%s\tenvp[%d]指针值为:%x\tenvp[%d]指针存放的位置为:%x\n",i,envp[i], i,user_stack, i, (us1-1));  
+    printf("envp[%d]内容为:%s\tenvp[%d]指针值为:%x\tenvp[%d]指针存放的位置为:%x\n",i,user_stack, i,user_stack, i, (us1-1));  
   }
   // 设置 envp 的 NULL 终止符
   // user_stack[argc + 3 + envc] = 0;
