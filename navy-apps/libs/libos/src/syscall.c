@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <time.h>
 #include "syscall.h"
+#include <stdio.h>
 
 // helper macros
 #define _concat(x, y) x ## y
@@ -109,6 +110,7 @@ void *_sbrk(intptr_t increment) {
   // 之后就可以通过后续的sbrk()调用来动态调整用户程序program break的位置了. 
   // 当前program break和和其初始值之间的区间就可以作为用户程序的堆区, 由malloc()/free()进行管理.
   //  注意用户程序不应该直接使用sbrk(), 否则将会扰乱malloc()/free()对堆区的管理记录
+  printf("调用sbrk\n");
   static intptr_t program_break = (intptr_t)& end;
   intptr_t original_program_break=program_break;
   if (_syscall_(SYS_brk, increment, 0, 0) == 0) {//通过SYS_brk系统调用来让操作系统设置新program break
