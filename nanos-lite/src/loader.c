@@ -243,6 +243,7 @@ void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char 
 {
   
   int num = us_end - us_top;
+  us_end++;
   for(int i=0;i<num;i++)
   {
     if(i==0)
