@@ -134,7 +134,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   //计算对应的argc与argv的值
   int argc = 0; if(argv!=NULL){while (argv[argc] != NULL) argc++;}
   int envc = 0; if(envp!=NULL){while (envp[envc] != NULL) envc++;}
-  printf("envc的值为:%d\n",envc);
+  // printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
@@ -152,7 +152,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
   user_stack[0] = argc;
-        assert(0);
   // 设置 argv 指针
   for (int i = 0; i < argc; i++) {
     user_stack[i + 1] = (uintptr_t)heap.end - (argc - i - 1) * sizeof(uintptr_t);}
@@ -167,6 +166,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   user_stack[argc + 3 + envc] = 0;
   // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
+          assert(0);
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)user_stack;
