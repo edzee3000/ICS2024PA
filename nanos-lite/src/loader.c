@@ -159,6 +159,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
   // user_stack[0] = argc;
+  uintptr_t* us2=us1;
   *us1 = argc; us1++;
   printf("argc对应位置的值为:%d\targc位置为:%x\n",*(us1-1), us1-1);
   // 设置 argv 指针
@@ -166,7 +167,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = 0; i < argc; i++) {
     // user_stack[i + 1] = (uintptr_t)heap.end - (argc - i - 1) * sizeof(uintptr_t);
     user_stack-= (strlen(argv[i]) + 1);  *((char **)us1) =user_stack;  us1++;
-    printf("argv[%d]内容为:%s\targv[%d]指针值为:%x\targv[%d]指针存放的位置为:%x\n",i,argv[i], i,user_stack, i,(us1-1));
+    printf("argv[%d]内容为:%s\targv[%d]指针值为:%x\targv[%d]指针存放的位置为:%x\n",i,argv[i], i,user_stack, i, (us1-1));
   }
   // 设置 argv 的 NULL 终止符
   // us2[argc + 1] = 0; 
@@ -184,7 +185,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
-  pcb->cp->GPRx = (uintptr_t)user_stack;
+  pcb->cp->GPRx = (uintptr_t)us2;
   // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
