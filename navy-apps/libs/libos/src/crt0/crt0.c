@@ -7,19 +7,19 @@
 int main(int argc, char *argv[], char *envp[]);
 extern char **environ;
 void call_main(uintptr_t *args) {
-  char *empty[] =  {NULL };
-  environ = empty;
-  exit(main(0, empty, empty));
-  // int argc=*((int *)args);//将32位4字节的args指针的第一个进行解引用
-  // printf("arg is %p\n", args);
+  // char *empty[] =  {NULL };
+  // environ = empty;
+  // exit(main(0, empty, empty));
+  int argc=*((int *)args);//将32位4字节的args指针的第一个进行解引用
+  printf("arg is %p\n", args);
 
-  // char **argvs=(char **)(args+1);//注意这个时候我将args+1强制类型转换为了char**因为argv是一个指针数组
-  // //接下来循环就可以了根据下面那个示意图可以得出需要进行一个while循环知道遇到指针为char*是个NULL的时候
-  // char **temp=argvs;//注意这里之所以是二级指针是因为++的时候需要加的是sizeof(char *)的大小而不是加sizeof(char)。在C语言中对一个指针进行自增操作时，结果是该指针向前移动了它所指向的数据类型的尺寸
-  // while(*temp!=NULL) temp++;
-  // char **envp=(++temp);
-  // environ=envp;
-  // exit(main(argc, argvs, envp));
+  char **argvs=(char **)(args+1);//注意这个时候我将args+1强制类型转换为了char**因为argv是一个指针数组
+  //接下来循环就可以了根据下面那个示意图可以得出需要进行一个while循环知道遇到指针为char*是个NULL的时候
+  char **temp=argvs;//注意这里之所以是二级指针是因为++的时候需要加的是sizeof(char *)的大小而不是加sizeof(char)。在C语言中对一个指针进行自增操作时，结果是该指针向前移动了它所指向的数据类型的尺寸
+  while(*temp!=NULL) temp++;
+  char **envp=(++temp);
+  environ=envp;
+  exit(main(argc, argvs, envp));
   assert(0);
 }
 /*
