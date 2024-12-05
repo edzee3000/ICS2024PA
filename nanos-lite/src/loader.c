@@ -247,7 +247,7 @@ void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char 
   us_end--;
   for(int i=0;i<num;i++)
   {
-    if(i==0)
+    if(i==0 && i != num-argc-envc-3)
     {printf("| %x:| %x | \t<---- String Area\n",(us_end-i),*(us_end-i));}
     else if(i<num-1 && i>num-argc-2)
     {printf("| %x:| %x | \t<---- argv[%d]\n",(us_end-i),*(us_end-i), num-i-2 );}
