@@ -146,8 +146,7 @@ size_t system_read(int fd, intptr_t buf, size_t count)
 
 //############################这里我还不太确定是用increment还是用program_break去作为参数#################################
 intptr_t system_brk(intptr_t increment)
-{printf("调用sbrk\n");
-  return 0;//暂时先返回0
+{return 0;//暂时先返回0
 }
 
 int system_gettimeofday(struct timeval *tv, struct timezone *tz) 
