@@ -126,7 +126,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
   uintptr_t entry = loader(pcb, filename);
-  assert(0);
   //用户进程的上下文(mepc指针等)存储在PCB栈，而函数参数之类的数据存储在用户栈，PCB栈和用户栈是完全分开的，
   // 进程加载后只会把上下文放进PCB中，数据还是在自己的用户栈。这里要求要传参数给函数，
   // 就把这些数据放用户栈(heap)，然后在call_main中从用户栈中拿这些信息，之后调用main
@@ -138,6 +137,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
+    assert(0);
   for (int i = argc - 1; i >= 0; i--) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
