@@ -204,6 +204,12 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
   // argv和envp这两个参数可以暂时忽略.
 
   //你需要实现SYS_execve系统调用, 然后通过开机菜单来运行其它程序. 你已经实现过很多系统调用了, 需要注意哪些细节, 这里就不啰嗦了.
+
+
+  //让操作系统为每一个用户进程手动设定参数是一件不现实的事情, 因为用户进程的参数还是应该由用户来指定的. 
+  // 于是最好能有一个方法能把用户指定的参数告诉操作系统, 让操作系统来把指定的参数放到新进程的用户栈里面. 
+  // 这个方法当然就是系统调用SYS_execve啦, 如果你去看man, 你会发现它的原型是
+  //int execve(const char *filename, char *const argv[], char *const envp[]);
 }
 
 
