@@ -159,7 +159,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
   // user_stack[0] = argc;
-  *us1 = argc;
+  *us1 = argc; us1++;
   printf("arc位置为:%x\n",us1);
   // 设置 argv 指针
   user_stack = (char*)heap.end;
@@ -170,7 +170,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   }
   // 设置 argv 的 NULL 终止符
   // us2[argc + 1] = 0; 
-  *((char **)us1)=0;us1++;
+  *((char **)us1)=0; us1++;
   // // 设置 envc 的值
   // user_stack[argc + 2] = envc;
   // 设置 envp 指针
