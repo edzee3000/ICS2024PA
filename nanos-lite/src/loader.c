@@ -132,9 +132,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 定义用户栈的区域
   // Area stack;stack.start = pcb->stack;stack.end = pcb->stack + STACK_SIZE;
   //计算对应的argc与argv的值
-  int argc = 0; while (argv[argc] != NULL && envp !=NULL) argc++;
-  int envc = 0; while (envp[envc] != NULL && envp !=NULL) envc++;
-  Log("envc的值为:%d\n",envc);
+  int argc = 0; while (argv[argc] != NULL) argc++;
+  int envc = 0; if(envp!=NULL){while (envp[envc] != NULL) envc++;}
+  printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
