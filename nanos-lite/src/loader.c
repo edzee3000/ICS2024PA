@@ -143,13 +143,12 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
   user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 envp 字符串逆序拷贝到用户栈
-    assert(0);
   for (int i = envc - 1; i >= 0; i--) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
   // 对齐到 uintptr_t 边界
   user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 argv 和 envp 指针拷贝到用户栈
-
+      assert(0);
   user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
