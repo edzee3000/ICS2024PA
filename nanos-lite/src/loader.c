@@ -166,7 +166,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   user_stack[argc + 3 + envc] = 0;
   // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
-          assert(0);
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)user_stack;
