@@ -140,7 +140,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
-  for (int i = 0;i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
+  for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
   // // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
@@ -155,7 +155,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* us2 = (uintptr_t *)user_stack;
   uintptr_t* us1 = (uintptr_t *)user_stack;
   // user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
-  us1 -= (argc + envc + 2);//此时user_stack的位置是在string area以及envp的NULL之间的!!!  +2是因为有2个NULL需要处理
+  us1 -= (argc + envc + 3);//此时user_stack的位置是在string area以及envp的NULL之间的!!!  +2是因为有2个NULL需要处理
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
   // user_stack[0] = argc;
