@@ -132,7 +132,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 定义用户栈的区域
   // Area stack;stack.start = pcb->stack;stack.end = pcb->stack + STACK_SIZE;
   //计算对应的argc与argv的值
-  int argc = 0; while (argv[argc] != NULL) argc++;
+  int argc = 0; if(argv!=NULL){while (argv[argc] != NULL) argc++;}
   int envc = 0; if(envp!=NULL){while (envp[envc] != NULL) envc++;}
   printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
@@ -141,13 +141,13 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   for (int i = argc - 1; i >= 0; i--) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
   // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？                 会不会出现问题？？？？？？？？、
-  // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
+  user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 envp 字符串逆序拷贝到用户栈
     assert(0);
   for (int i = envc - 1; i >= 0; i--) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
   // 对齐到 uintptr_t 边界
-  // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
+  user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 argv 和 envp 指针拷贝到用户栈
 
   user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
