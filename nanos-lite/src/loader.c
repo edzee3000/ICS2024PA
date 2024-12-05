@@ -243,7 +243,7 @@ void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char 
 {
   
   int num = us_end - us_top;
-  printf("+-------------------+\n%x: \t\t<---- ustack.end\n",us_end);
+  printf("+----------------------------------+\n%x: \t\t<---- ustack.end\n",us_end);
   us_end--;
   for(int i=0;i<num;i++)
   {
@@ -260,5 +260,5 @@ void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char 
       printf("%x:|%x|\n",(us_end-i),*(us_end-i));
     }
   }
-  printf("+-------------------+\n");
+  printf("+----------------------------------+\n");
 }
