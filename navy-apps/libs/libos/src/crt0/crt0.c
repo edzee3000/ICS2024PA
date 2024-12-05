@@ -17,7 +17,7 @@ void call_main(uintptr_t *args) {
   //接下来循环就可以了根据下面那个示意图可以得出需要进行一个while循环知道遇到指针为char*是个NULL的时候
   char **temp=argv;//注意这里之所以是二级指针是因为++的时候需要加的是sizeof(char *)的大小而不是加sizeof(char)。在C语言中对一个指针进行自增操作时，结果是该指针向前移动了它所指向的数据类型的尺寸
   while(*temp!=NULL) temp++;
-  char **envp=(++temp);printf("envp指针数组值为: %p\n", args);
+  char **envp=(++temp);printf("envp指针数组值为: %p\n", envp);
   environ=envp;
   exit(main(argc, argv, envp));
   assert(0);//不应该到达这里
