@@ -160,7 +160,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 设置 argc 的值
   // user_stack[0] = argc;
   *us1 = argc; us1++;
-  printf("argc对应位置的值为:%x\targc位置为:%x\n",*us1, us1);
+  printf("argc对应位置的值为:%d\targc位置为:%x\n",*(us1-1), us1-1);
   // 设置 argv 指针
   user_stack = (char*)heap.end;
   for (int i = 0; i < argc; i++) {
