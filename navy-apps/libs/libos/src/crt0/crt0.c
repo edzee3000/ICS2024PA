@@ -10,7 +10,7 @@ void call_main(uintptr_t *args) {
   // char *empty[] =  {NULL };
   // environ = empty;
   // exit(main(0, empty, empty));
-  int argc=*((int *)args);//将32位4字节的args指针的第一个进行解引用
+  int argc=  *((int *)args);//将32位4字节的args指针的第一个进行解引用
   printf("arg is %p\n", args);
 
   char **argvs=(char **)(args+1);//注意这个时候我将args+1强制类型转换为了char**因为argv是一个指针数组

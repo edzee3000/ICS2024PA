@@ -122,12 +122,53 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 你需要观察到仙剑奇侠传确实跳过了商标动画. 目前我们的测试程序中不会用到环境变量, 所以不必传递真实的环境变量字符串. 
 至于实参应该写什么, 这又是一个指针相关的问题, 就交给你来解决吧.
 */
-void context_uload(PCB *pcb, const char *filename)
-// void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
+// void context_uload(PCB *pcb, const char *filename)
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
   uintptr_t entry = loader(pcb, filename);
+  //用户进程的上下文(mepc指针等)存储在PCB栈，而函数参数之类的数据存储在用户栈，PCB栈和用户栈是完全分开的，
+  // 进程加载后只会把上下文放进PCB中，数据还是在自己的用户栈。这里要求要传参数给函数，
+  // 就把这些数据放用户栈(heap)，然后在call_main中从用户栈中拿这些信息，之后调用main
+  // 定义用户栈的区域
+  // Area stack;stack.start = pcb->stack;stack.end = pcb->stack + STACK_SIZE;
+  //计算对应的argc与argv的值
+  int argc = 0; while (argv[argc] != NULL) argc++;
+  int envc = 0; while (envp[envc] != NULL) envc++;
+  // 分配用户栈空间，用于存储 argv 和 envp 指针
+  uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
+  // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
+  for (int i = argc - 1; i >= 0; i--) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
+    user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
+  // 对齐到 uintptr_t 边界   ？？？？？？这行代码是什么意思？？？？
+  user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
+  // 将 envp 字符串逆序拷贝到用户栈
+  for (int i = envc - 1; i >= 0; i--) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
+    user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
+  // 对齐到 uintptr_t 边界
+  user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
+  // 将 argv 和 envp 指针拷贝到用户栈
+  user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
+  // uintptr_t* user_argv = user_stack;
+  // 设置 argc 的值
+  user_stack[0] = argc;
+  // 设置 argv 指针
+  for (int i = 0; i < argc; i++) {
+    user_stack[i + 1] = (uintptr_t)heap.end - (argc - i - 1) * sizeof(uintptr_t);}
+  // 设置 argv 的 NULL 终止符
+  user_stack[argc + 1] = 0;
+  // 设置 envc 的值
+  user_stack[argc + 2] = envc;
+  // 设置 envp 指针
+  for (int i = 0; i < envc; i++) {
+    user_stack[argc + 3 + i] = (uintptr_t)heap.end - (argc + 3 + envc - i - 1) * sizeof(uintptr_t);}
+  // 设置 envp 的 NULL 终止符
+  user_stack[argc + 3 + envc] = 0;
+  // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
+  // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
-  pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
+  // 将用户栈的顶部地址赋给 GPRx 寄存器
+  pcb->cp->GPRx = (uintptr_t)user_stack;
+  // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
 }
