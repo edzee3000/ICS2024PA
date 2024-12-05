@@ -243,22 +243,22 @@ void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char 
 {
   
   int num = us_end - us_top;
-  printf("+----------------------------------+\n%x: \t\t<---- ustack.end\n",us_end);
+  printf("+-----------------------------------------+\n%x: \t\t<---- ustack.end\n",us_end);
   us_end--;
   for(int i=0;i<num;i++)
   {
     if(i==0)
-    {printf("%x:|%x| \t<---- String Area\n",(us_end-i),*(us_end-i));}
+    {printf("| %x:|%x| \t<---- String Area\n",(us_end-i),*(us_end-i));}
     else if(i<num-1 && i>num-argc-2)
-    {printf("%x:|%x| \t<---- argv[%d]\n",(us_end-i),*(us_end-i), num-i-2 );}
+    {printf("| %x:|%x| \t<---- argv[%d]\n",(us_end-i),*(us_end-i), num-i-2 );}
     else if(i == num-argc-2)
-    {printf("%x:|%x| \t<---- NULL\n",(us_end-i),*(us_end-i));}
+    {printf("| %x:|%x| \t<---- NULL\n",(us_end-i),*(us_end-i));}
     else if (i == num-1)
-    {printf("%x:|%x| \t<---- argc & cp->GPRx\n",(us_end-i),*(us_end-i));}
+    {printf("| %x:|%x| \t<---- argc & cp->GPRx\n",(us_end-i),*(us_end-i));}
     else
     {
-      printf("%x:|%x|\n",(us_end-i),*(us_end-i));
+      printf("| %x:|%x|\n",(us_end-i),*(us_end-i));
     }
   }
-  printf("+----------------------------------+\n");
+  printf("+-----------------------------------------+\n");
 }
