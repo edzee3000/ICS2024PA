@@ -155,7 +155,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // uintptr_t* us2 = (uintptr_t *)user_stack;
   uintptr_t* us1 = (uintptr_t *)user_stack;
   // user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
-  us1 -= (argc + envc + 3);//此时user_stack的位置是在string area以及envp的NULL之间的!!!  +2是因为有2个NULL需要处理
+  us1 -= (argc + envc + 3);//此时user_stack的位置是在string area以及envp的NULL之间的!!!  +3是因为有2个NULL以及一个argc放置需要处理
   // uintptr_t* user_argv = user_stack;
   // 设置 argc 的值
   // user_stack[0] = argc;
