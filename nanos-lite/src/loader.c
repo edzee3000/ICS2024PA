@@ -37,7 +37,7 @@
 
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry);
-
+void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char *const argv[], char *const envp[]);
 
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
@@ -177,7 +177,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 设置 envp 指针
   for (int i = 0; i < envc; i++) {
     // user_stack[argc + 3 + i] = (uintptr_t)heap.end - (argc + 3 + envc - i - 1) * sizeof(uintptr_t);
-    user_stack-= (strlen(envp[i]) + 1);  *((char **)us1) =user_stack;  us1++; }
+    user_stack-= (strlen(envp[i]) + 1);  *((char **)us1) =user_stack;  us1++; 
+    printf("envp[%d]内容为:%s\tenvp[%d]指针值为:%x\tenvp[%d]指针存放的位置为:%x\n",i,envp[i], i,user_stack, i, (us1-1));  
+  }
   // 设置 envp 的 NULL 终止符
   // user_stack[argc + 3 + envc] = 0;
   *((char **)us1)=0;
@@ -189,6 +191,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
+  draw_ustack((uintptr_t*)us2, (uintptr_t*)heap.end, argc, envc, argv,envp);
 }
 //事实上, 用户栈的分配是ISA无关的, 所以用户栈相关的部分就交给Nanos-lite来进行, ucontext()无需处理. 
 // 目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
@@ -234,3 +237,26 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
           |               |
 
 */
+
+//尝试自己画一个类似于上面的栈图
+void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char *const argv[], char *const envp[])
+{
+  
+  int num = us_end - us_top;
+  for(int i=0;i<num;i++)
+  {
+    if(i==0)
+    {printf("%x:|%x|<---- ustack.end\n",(us_end+i),*(us_end+i));}
+    else if(i<num-1 && i>num-argc-2)
+    {printf("%x:|%x|<---- argv[%d]\n",(us_end+i),*(us_end+i),num-i-2);}
+    else if(i == num-argc-2)
+    {printf("%x:|%x|<---- NULL\n",(us_end+i),*(us_end+i),num-i-2);}
+    else if (i == num-1)
+    {printf("%x:|%x|<---- argc & cp->GPRx\n",(us_end+i),*(us_end+i));}
+    else
+    {
+      printf("%x:|%x|\n",(us_end+i),*(us_end+i));
+    }
+  }
+
+}
