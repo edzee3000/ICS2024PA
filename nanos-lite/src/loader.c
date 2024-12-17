@@ -150,13 +150,13 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 将 envp 字符串逆序拷贝到用户栈
   for (int i = 0; i <envc; i++) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
-  assert(0);
   // 对齐到 uintptr_t 边界   应该这个时候再对齐到uintptr_t边界  上面那个应该不用
   // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   user_stack = (char*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   // 将 argv 和 envp 指针拷贝到用户栈
   // uintptr_t* us2 = (uintptr_t *)user_stack;
   uintptr_t* us1 = (uintptr_t *)user_stack;
+    assert(0);
   // user_stack -= (argc + envc + 4);  // +4 为 NULL 结尾和 argc/envc 的值
   us1 -= (argc + envc + 3);//此时user_stack的位置是在string area以及envp的NULL之间的!!!  +3是因为有2个NULL以及一个argc放置需要处理
   // uintptr_t* user_argv = user_stack;
