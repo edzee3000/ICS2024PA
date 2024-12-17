@@ -207,7 +207,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
 
 /*
-          |               |     //高地址处  用户栈底？？？？
+          |               |     //高地址处  用户栈底？？？？  后来自己新创建了用户栈了
           +---------------+ <---- ustack.end     //但是这里有个问题为什么是ustack.end而不是heap.end？？？？？？而且栈的生长方向不是向下吗？？？
           |  Unspecified  |
           +---------------+
