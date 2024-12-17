@@ -73,7 +73,7 @@ void do_syscall(Context *c) {
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
     case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
-    case SYS_execve: printf("执行到了execve"); c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);break;
+    case SYS_execve: printf("执行到了execve"); c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);   while(1){printf("Shouldn't Reach Here按理来说不该执行到这里\n");}break;
     // case SYS_fb_write:c->GPRx = FB_write(a[1],  a[2] , a[3]);break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
@@ -175,6 +175,8 @@ int system_gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 
+
+//为了实现带参数的SYS_execve, 我们可以在sys_execve()中直接调用context_uload()
 int system_execve(const char *pathname,char *const argv[], char *const envp[])
 {
   //  execve() executes the program referred to by pathname.  This causes the program
@@ -186,15 +188,19 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
       //  ized data (bss), and stack of the calling process are overwritten according  to
       //  the contents of the newly loaded program.
   
-  int fd = fs_open(pathname, 0, 0);
-  if (fd == -1)  return -1;
-  else  fs_close(fd);
-  printf("准备运行程序:%s\n",pathname);
-  naive_uload(NULL,pathname);
+  // int fd = fs_open(pathname, 0, 0);
+  // if (fd == -1)  return -1;
+  // else  fs_close(fd);
+  // printf("准备运行程序:%s\n",pathname);
+  // naive_uload(NULL,pathname);
+  // yield();
+  context_uload(current, pathname, argv, envp);//current在nanos-lite/src/proc.c当中
+  switch_boot_pcb();
   yield();
 
-  return 0;
-  
+  // return 0;
+  printf("在system_execve当中不该到达这里的\n");
+  return -1;
   
   // 在PA3的最后, 你将会向Nanos-lite中添加一些简单的功能, 来展示你的批处理系统.
   // 你之前已经在Navy上执行了开机菜单和NTerm, 但它们都不支持执行其它程序. 这是因为"执行其它程序"需要一个新的系统调用来支持, 
@@ -214,6 +220,33 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
 
 
 
+//为了实现带参数的SYS_execve, 我们可以在sys_execve()中直接调用context_uload(). 但我们还需要考虑如下的一些细节, 为了方便描述, 
+// 我们假设用户进程A将要通过SYS_execve来执行另一个新程序B.
+
+// 如何在A的执行流中创建用户进程B?
+// 如何结束A的执行流?
+// 为了回答第一个问题, 我们需要回顾创建用户进程B需要进行哪些操作. 首先是在PCB的内核栈中创建B的上下文结构,
+//  这个过程是安全的, 因为当前进程的内核栈是空的. 接下来就是要在用户栈中放置用户进程B的参数. 
+// 但这会涉及到一个新的问题: 我们是否还能复用位于heap.end附近的同一个用户栈?
+
+// 为了探究这个问题, 我们需要了解当Nanos-lite尝试通过SYS_execve加载B时, A的用户栈里面已经有什么内容. 
+// 我们可以从栈底(heap.end)到栈顶(栈指针sp当前的位置)列出用户栈中的内容:
+
+// Nanos-lite之前为A传递的用户进程参数(argc/argv/envp)
+// A从_start开始进行函数调用的栈帧, 这个栈帧会一直生长, 直到调用了libos中的execve()
+// CTE保存的上下文结构, 这是由于A在execve()中执行了系统调用自陷指令导致的
+// Nanos-lite从__am_irq_handle()开始进行函数调用的栈帧, 这个栈帧会一直生长, 直到调用了SYS_execve的系统调用处理函数
+// 通过上述分析, 我们得出一个重要的结论: 在加载B时, Nanos-lite使用的是A的用户栈! 这意味着在A的执行流结束之前,
+//  A的用户栈是不能被破坏的. 因此heap.end附近的用户栈是不能被B复用的, 我们应该申请一段新的内存作为B的用户栈, 
+// 来让Nanos-lite把B的参数放置到这个新分配的用户栈里面.
+
+// 为了实现这一点, 我们可以让context_uload()统一通过调用new_page()函数来获得用户栈的内存空间.
+//  new_page()函数在nanos-lite/src/mm.c中定义, 它会通过一个pf指针来管理堆区, 用于分配一段大小为nr_page * 4KB的连续内存区域,
+//  并返回这段区域的首地址. 我们让context_uload()通过new_page()来分配32KB的内存作为用户栈, 这对PA中的用户程序来说已经足够使用了.
+//  此外为了简化, 我们在PA中无需实现free_page()
+
+// 最后, 为了结束A的执行流, 我们可以在创建B的上下文之后, 通过switch_boot_pcb()修改当前的current指针, 
+// 然后调用yield()来强制触发进程调度. 这样以后, A的执行流就不会再被调度, 等到下一次调度的时候, 就可以恢复并执行B了.
 
 
 

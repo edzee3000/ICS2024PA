@@ -20,5 +20,6 @@ extern PCB *current;
 
 void context_kload(PCB *pcb, void (*entry)(void *), void *arg) ;
 Context* schedule(Context *prev);
+void switch_boot_pcb() ;
 
 #endif

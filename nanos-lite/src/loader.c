@@ -138,7 +138,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   // printf("heap.end-1值为:%x\n",(uintptr_t*)heap.end-1);
   // uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
-  char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
+  // char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
+  char* user_stack=(char*)new_page(8);  //把之前的heap改成调用new_page()  因为这里需要创建一个新的用户栈而不能影响原来的用户栈
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
   for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
@@ -191,7 +192,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
-  draw_ustack((uintptr_t*)us2, (uintptr_t*)heap.end, argc, envc, argv,envp);
+  // draw_ustack((uintptr_t*)us2, (uintptr_t*)heap.end, argc, envc, argv,envp);  //这里暂时先不画了
 }
 //事实上, 用户栈的分配是ISA无关的, 所以用户栈相关的部分就交给Nanos-lite来进行, ucontext()无需处理. 
 // 目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
@@ -202,8 +203,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
 
 /*
-          |               |
-          +---------------+ <---- ustack.end   //但是这里有个问题为什么是ustack.end而不是heap.end？？？？？？而且栈的生长方向不是向下吗？？？
+          |               |     //高地址处  用户栈底？？？？
+          +---------------+ <---- ustack.end     //但是这里有个问题为什么是ustack.end而不是heap.end？？？？？？而且栈的生长方向不是向下吗？？？
           |  Unspecified  |
           +---------------+
           |               | <----------+
