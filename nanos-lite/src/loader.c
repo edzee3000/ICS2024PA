@@ -150,6 +150,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 将 envp 字符串逆序拷贝到用户栈
   for (int i = 0; i <envc; i++) {size_t len = strlen(envp[i]) + 1;  // 包括 null 终止符
     user_stack -= len; strncpy((char*)user_stack, envp[i], len);}
+  assert(0);
   // 对齐到 uintptr_t 边界   应该这个时候再对齐到uintptr_t边界  上面那个应该不用
   // user_stack = (uintptr_t*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
   user_stack = (char*)((uintptr_t)user_stack & ~(sizeof(uintptr_t) - 1));
