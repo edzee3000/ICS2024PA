@@ -138,9 +138,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   // printf("heap.end-1值为:%x\n",(uintptr_t*)heap.end-1);
   // uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
-  char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
-  printf("user_stack位置为: %x",user_stack);
-  // char* user_stack=(char*)new_page(8);  //把之前的heap改成调用new_page()  因为这里需要创建一个新的用户栈而不能影响原来的用户栈
+  // char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
+  char* user_stack=(char*)new_page(8);  //把之前的heap改成调用new_page()  因为这里需要创建一个新的用户栈而不能影响原来的用户栈
+  printf("user_stack位置为: %x\n",user_stack);
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
   for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
