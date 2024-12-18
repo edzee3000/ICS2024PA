@@ -157,8 +157,8 @@ int _execve(const char *fname, char * const argv[], char *const envp[]) {
   int execve_ret = _syscall_((intptr_t)SYS_execve, (intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
   if(execve_ret<0)
   {
-    errno = -execve_ret;
-    return -1;
+    errno = -execve_ret;  //此时需要将系统调用返回值取负, 作为失败原因设置到一个全局的外部变量errno中
+    return -1;          //然后返回-1.
   }
   // 另一方面, libos中的execve()还需要检查系统调用的返回值: 如果系统调用的返回值小于0, 则通常表示系统调用失败,
   //  此时需要将系统调用返回值取负, 作为失败原因设置到一个全局的外部变量errno中, 然后返回-1.
