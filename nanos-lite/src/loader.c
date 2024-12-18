@@ -125,7 +125,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 // void context_uload(PCB *pcb, const char *filename)
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
-  printf("envp的地址为:%x\n",&envp);
+  printf("envp[0]的值为:%s\n",envp[0]);
   uintptr_t entry = loader(pcb, filename);
   //实现NTerm的带参命令行时，发现context_uload在执行loader后会把char **argv、char **envp的值破坏，
   // ARCH=native运行时envp的地址是0x301a390, 而native会把客户程序加载到0x3000000附近(riscv32也是会被覆盖)
