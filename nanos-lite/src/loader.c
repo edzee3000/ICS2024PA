@@ -65,7 +65,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   if(elf->e_machine!=EXPECT_TYPE) panic("您可能因为疏忽, 让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy.");
  
   // Elf_Phdr ProgramHeaders[elf->e_phnum];
-  // Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//是不是这里有点问题？？？？感觉有点像啊  好像只有这里用到了堆区我去
+  // Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//是不是这里有点问题？？？？感觉有点像啊  额好像没啥用……
   Elf_Phdr programheader;
   // ramdisk_read(ProgramHeaders, elf->e_phoff, sizeof(Elf_Phdr)*elf->e_phnum);//读取程序头表（即段头表）一共要读取Elf_Phdr大小乘以程序头表个数
   for (int i = 0; i < elf->e_phnum; i++) {//遍历每一个程序头
@@ -78,12 +78,19 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     // }
      // 需要装载的段
     if (programheader.p_type == PT_LOAD) {
-      char * buf_malloc = (char *)malloc(programheader.p_filesz);
-      fs_lseek(fd, programheader.p_offset, 0);
-      assert(fs_read(fd, buf_malloc, programheader.p_filesz) == programheader.p_filesz);
-      memcpy((void*)programheader.p_vaddr, buf_malloc, programheader.p_filesz);
-      memset((void*)programheader.p_vaddr + programheader.p_filesz, 0, programheader.p_memsz - programheader.p_filesz);
-      free(buf_malloc);
+      // char * buf_malloc = (char *)malloc(programheader.p_filesz);//额是不是这里又有问题了？？？？
+      // fs_lseek(fd, programheader.p_offset, 0);
+      // assert(fs_read(fd, buf_malloc, programheader.p_filesz) == programheader.p_filesz);
+      // memcpy((void*)programheader.p_vaddr, buf_malloc, programheader.p_filesz);
+      // memset((void*)programheader.p_vaddr + programheader.p_filesz, 0, programheader.p_memsz - programheader.p_filesz);
+      // free(buf_malloc);
+      uint32_t offset = programheader.p_offset;
+      uint32_t file_size = programheader.p_filesz;
+      uint32_t p_vaddr = programheader.p_vaddr;
+      uint32_t p_memsz = programheader.p_memsz;
+      fs_lseek(fd, offset, SEEK_SET);
+      assert(fs_read(fd, (void *)p_vaddr, file_size) == file_size);
+      memset((void *)(p_vaddr + file_size), 0, p_memsz - file_size);
     }
     //我们现在关心的是如何加载程序, 因此我们重点关注segment的视角. ELF中采用program header table来管理segment,
     //  program header table的一个表项描述了一个segment的所有属性, 包括类型, 虚拟地址, 标志, 对齐方式, 以及文件内偏移量和segment大小. 
