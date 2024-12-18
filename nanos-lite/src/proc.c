@@ -100,6 +100,7 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
   // stack.start = pcb->stack;
   // stack.end = pcb->stack + STACK_SIZE;
   pcb->cp = kcontext((Area){pcb->stack, pcb->stack+STACK_SIZE}, entry, arg);
+  printf("此时pcb进程管理块的内核栈栈顶为:%x\n",pcb->stack);
   //仿照am-kernels/kernels/yield-os/yield-os.c的main函数里面的
   // pcb[0].cp = kcontext((Area) { pcb[0].stack, &pcb[0] + 1 }, f, (void *)1L);
   //这行代码去写，注意这里需要加一个STACK_SIZE因为后面有相关分页机制的实现！！！！！！而不是pcb + 1 ！！！！ 
