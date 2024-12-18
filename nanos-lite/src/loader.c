@@ -65,23 +65,24 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   if(elf->e_machine!=EXPECT_TYPE) panic("您可能因为疏忽, 让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy.");
  
   // Elf_Phdr ProgramHeaders[elf->e_phnum];
-  Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//
+  // Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//是不是这里有点问题？？？？感觉有点像啊  好像只有这里用到了堆区我去
+  Elf_Phdr programheader;
   // ramdisk_read(ProgramHeaders, elf->e_phoff, sizeof(Elf_Phdr)*elf->e_phnum);//读取程序头表（即段头表）一共要读取Elf_Phdr大小乘以程序头表个数
   for (int i = 0; i < elf->e_phnum; i++) {//遍历每一个程序头
     uint32_t base = elf->e_phoff + i * elf->e_phentsize;  //计算出程序头的起始位置（基址）
     fs_lseek(fd, base, 0);  //根据base基址去更新文件指针的位置
-    assert(fs_read(fd, programheader, elf->e_phentsize) == elf->e_phentsize);
+    assert(fs_read(fd, &programheader, elf->e_phentsize) == elf->e_phentsize);
     // if (ProgramHeaders[i].p_type == PT_LOAD) {//如果第i个程序头的种类是Load的话
     //   ramdisk_read((void*)ProgramHeaders[i].p_vaddr, ProgramHeaders[i].p_offset, ProgramHeaders[i].p_memsz);//读取内存大小为p_memsz的程序头内容给对应地址为p_vaddr的段里面
     //   memset((void*)(ProgramHeaders[i].p_vaddr+ProgramHeaders[i].p_filesz), 0, ProgramHeaders[i].p_memsz - ProgramHeaders[i].p_filesz);      // set .bss with zeros将.bss的section初始化为0
     // }
      // 需要装载的段
-    if (programheader->p_type == PT_LOAD) {
-      char * buf_malloc = (char *)malloc(programheader->p_filesz);
-      fs_lseek(fd, programheader->p_offset, 0);
-      assert(fs_read(fd, buf_malloc, programheader->p_filesz) == programheader->p_filesz);
-      memcpy((void*)programheader->p_vaddr, buf_malloc, programheader->p_filesz);
-      memset((void*)programheader->p_vaddr + programheader->p_filesz, 0, programheader->p_memsz - programheader->p_filesz);
+    if (programheader.p_type == PT_LOAD) {
+      char * buf_malloc = (char *)malloc(programheader.p_filesz);
+      fs_lseek(fd, programheader.p_offset, 0);
+      assert(fs_read(fd, buf_malloc, programheader.p_filesz) == programheader.p_filesz);
+      memcpy((void*)programheader.p_vaddr, buf_malloc, programheader.p_filesz);
+      memset((void*)programheader.p_vaddr + programheader.p_filesz, 0, programheader.p_memsz - programheader.p_filesz);
       free(buf_malloc);
     }
     //我们现在关心的是如何加载程序, 因此我们重点关注segment的视角. ELF中采用program header table来管理segment,
