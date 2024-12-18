@@ -105,7 +105,7 @@ int main(int argc, char *argv[], char *envp[]) {
       case SDLK_LEFT: prev(); break;
       case SDLK_RIGHT: next(); break;
     }
-    // printf("i:%d\n",i);
+    printf("i的值为:%d\n",i);
     if (i != -1 && i <= i_max) {
       i += page * 10;
       auto *item = &items[i];
@@ -115,7 +115,8 @@ int main(int argc, char *argv[], char *envp[]) {
       exec_argv[2] = NULL;
       clear_display();
       SDL_UpdateRect(screen, 0, 0, 0, 0);
-      execve(exec_argv[0], (char**)exec_argv, (char**)envp);assert(0);
+      execve(exec_argv[0], (char**)exec_argv, (char**)envp);
+      assert(0);
       fprintf(stderr, "\033[31m[ERROR]\033[0m Exec %s failed.\n\n", exec_argv[0]);
     } else {
       fprintf(stderr, "Choose a number between %d and %d\n\n", 0, i_max);
