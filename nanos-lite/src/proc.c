@@ -41,7 +41,7 @@ void hello_fun(void *arg) {
 // static char *args_pal[] = {"/bin/pal", "--skip", NULL};
 // static char *args_menu[] = {"/bin/menu", NULL, NULL};
 // static char *args_exec_test[] = {"/bin/exec-test", NULL, NULL};
-static char *args_nterm[] = {"/bin/nterm", NULL, NULL};
+static char *args_nterm[] = {"/bin/nterm", NULL};
 
 void init_proc() {
   context_kload(&pcb[0], hello_fun, &pcb[0]);

@@ -194,6 +194,7 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
   // printf("准备运行程序:%s\n",pathname);
   // naive_uload(NULL,pathname);
   // yield();
+  assert(0);
   context_uload(current, pathname, argv, envp);//current在nanos-lite/src/proc.c当中
   switch_boot_pcb();
   yield();
