@@ -129,7 +129,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // int envc1 = 0; if(envp!=NULL){while (envp[envc1] != NULL) envc1++;}
   // printf("argc的值为:%d\t envc的值为:%d\n",argc1,envc1);
   // if(envc1==1) printf("envp[0]的值为:%s\n",envp[0]);
-  uintptr_t entry = loader(pcb, filename);
+  // uintptr_t entry = loader(pcb, filename);
   //实现NTerm的带参命令行时，发现context_uload在执行loader后会把char **argv、char **envp的值破坏，
   // ARCH=native运行时envp的地址是0x301a390, 而native会把客户程序加载到0x3000000附近(riscv32也是会被覆盖)！！！！！！！！！！！！！！！！！
   //  因此必须先处理完argv以及envp之后（即将它们保存到用户栈上之后）然后再loader运行
@@ -197,7 +197,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   *((char **)us1)=0;
   // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
-  // uintptr_t entry = loader(pcb, filename);//必须在这里才调用loader函数否则会发生覆盖问题
+  uintptr_t entry = loader(pcb, filename);//必须在这里才调用loader函数否则会发生覆盖问题
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)us2;
