@@ -135,6 +135,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   //计算对应的argc与argv的值
   int argc = 0; if(argv!=NULL){while (argv[argc] != NULL) argc++;}
   int envc = 0; if(envp!=NULL){while (envp[envc] != NULL) envc++;}
+  printf("argc的值为:%d\t envc的值为:%d\n",argc,envc);
   // printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   // printf("heap.end-1值为:%x\n",(uintptr_t*)heap.end-1);
