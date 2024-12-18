@@ -78,7 +78,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     // }
      // 需要装载的段
     if (programheader.p_type == PT_LOAD) {
-      // char * buf_malloc = (char *)malloc(programheader.p_filesz);//额是不是这里又有问题了？？？？
+      // char * buf_malloc = (char *)malloc(programheader.p_filesz);//额是不是这里又有问题了？？？？我去还真是这里出了问题啊啊啊啊啊啊啊啊不要用malloc啊
       // fs_lseek(fd, programheader.p_offset, 0);
       // assert(fs_read(fd, buf_malloc, programheader.p_filesz) == programheader.p_filesz);
       // memcpy((void*)programheader.p_vaddr, buf_malloc, programheader.p_filesz);
@@ -205,10 +205,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   *((char **)us1)=0;
   // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
-  draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
-  printf("\n");
+  // draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
   uintptr_t entry = loader(pcb, filename);//必须在这里才调用loader函数否则会发生覆盖问题
-  
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)us2;
@@ -216,7 +214,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾
   // draw_ustack((uintptr_t*)us2, (uintptr_t*)heap.end, argc, envc, argv,envp);  //这里暂时先不画了
-  draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
+  // draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
 }
 //事实上, 用户栈的分配是ISA无关的, 所以用户栈相关的部分就交给Nanos-lite来进行, ucontext()无需处理. 
 // 目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
