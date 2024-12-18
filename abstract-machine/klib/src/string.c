@@ -5,7 +5,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
-  if(s==NULL){printf("传入了空指针，通常为UB未定义行为，此处仅作测试，返回0\n");return 0;}
+  if(s==NULL){printf("在strlen当中传入了空指针，通常为UB未定义行为，此处仅作测试，返回0\n");return 0;}
   size_t len=0;
   while(s[len]!='\0')len++;
   return len;
@@ -58,9 +58,9 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *s1, const char *s2) {
-  if(s1==NULL && s2==NULL){printf("注意此时你传进来了2个NULL空指针\n");return 0;}
-  else if(s1==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return -1;}
-  else if(s2==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return 1;}
+  if(s1==NULL && s2==NULL){printf("注意在strcmp当中你传进来了2个NULL空指针\n");return 0;}
+  else if(s1==NULL){printf("注意在strcmp当中你传进来的第一个参数是个NULL空指针\n");return -1;}
+  else if(s2==NULL){printf("注意在strcmp当中你传进来的第二个参数是个NULL空指针\n");return 1;}
   else if(strlen(s1)==1 && strlen(s2)==1){return 0;}
   //panic("Not implemented");
   size_t len_s1=strlen(s1)+1;//算上'\0'的长度
@@ -87,9 +87,9 @@ int strcmp(const char *s1, const char *s2) {
 
 int strncmp(const char *s1, const char *s2, size_t n) {
   //panic("Not implemented");
-  if(s1==NULL&&s2==NULL){printf("注意此时你传进来了2个NULL空指针\n");return 0;}
-  else if(s1==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return -1;}
-  else if(s2==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return 1;}
+  if(s1==NULL&&s2==NULL){printf("注意在strncmp当中你传进来了2个NULL空指针\n");return 0;}
+  else if(s1==NULL){printf("注意在strncmp当中你传进来的第一个参数是个NULL空指针\n");return -1;}
+  else if(s2==NULL){printf("注意在strncmp当中你传进来的第二个参数是个NULL空指针\n");return 1;}
   else if(n==0)return 0;
   size_t len_s1=strlen(s1);//不算上'\0'的长度
   size_t len_s2=strlen(s2);
@@ -165,9 +165,9 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  if(dst==NULL&&src==NULL){printf("注意此时你传进来了2个NULL空指针\n");return dst;}
-  else if(dst==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return dst;}
-  else if(src==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return dst;}
+  if(dst==NULL&&src==NULL){printf("注意在memmove当中你传进来了2个NULL空指针\n");return dst;}
+  else if(dst==NULL){printf("注意在memmove当中你传进来的第一个参数是个NULL空指针\n");return dst;}
+  else if(src==NULL){printf("注意在memmove当中你传进来的第二个参数是个NULL空指针\n");return dst;}
   else if(n==0){printf("拷贝长度为0\n");char* cp=(char*)dst;*cp='\0';return dst;}
   // //panic("Not implemented");
   // // uint8_t *temp=(uint8_t *)malloc(n);
@@ -244,9 +244,9 @@ void *memcpy(void *out, const void *in, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-  if(s1==NULL&&s2==NULL){printf("注意此时你传进来了2个NULL空指针\n");return 0;}
-  else if(s1==NULL){printf("注意此时你传进来的第一个参数是个NULL空指针\n");return -1;}
-  else if(s2==NULL){printf("注意此时你传进来的第二个参数是个NULL空指针\n");return 1;}
+  if(s1==NULL&&s2==NULL){printf("注意在memcmp当中你传进来了2个NULL空指针\n");return 0;}
+  else if(s1==NULL){printf("注意在memcmp当中你传进来的第一个参数是个NULL空指针\n");return -1;}
+  else if(s2==NULL){printf("注意在memcmp当中你传进来的第二个参数是个NULL空指针\n");return 1;}
   else if(n==0)return 0;
   unsigned char *ptr1=(unsigned char *)s1;
   unsigned char *ptr2=(unsigned char *)s2;
