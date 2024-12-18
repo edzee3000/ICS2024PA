@@ -19,6 +19,8 @@ static void get_argv(char *cmd, char **argv);
 #define STRCPY strcpy(cmd_cpy, cmd)
 
 
+
+
 //###################################################################################################
 static struct
 {
@@ -35,6 +37,7 @@ static size_t get_argc(char *str)
   if (strtok(str, " ") == NULL) return i;//特别要注意分割处理后原字符串 str 会变，变成第一个子字符串
   else i++;
   while (strtok(NULL, " ") != NULL) i++;
+  printf("在builtin-sh当中argc参数数量为:%d\n",i);
   return i;
 }
 
@@ -45,10 +48,9 @@ static void get_argv(char *cmd, char **argv)
   {argv[arg_num++] = strtok(NULL, " ");
   if (argv[arg_num - 1] == NULL) break;//因为到了最后没有办法分割的时候会返回NULL，因此可以用argnum-1的索引==NULL去判断是否已经分割完毕
   }
+  for(int i=0;i<arg_num-1;i++){printf("argv[%d]的内容为:%s\n",i,argv[i]);}
   return;
 }
-
-
 
 
 static void sh_printf(const char *format, ...) {
