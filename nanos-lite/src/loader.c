@@ -65,7 +65,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   if(elf->e_machine!=EXPECT_TYPE) panic("您可能因为疏忽, 让native的Nanos-lite来加载运行一个x86/mips32/riscv32的dummy.");
  
   // Elf_Phdr ProgramHeaders[elf->e_phnum];
-  // Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//是不是这里有点问题？？？？感觉有点像啊  额好像没啥用……
+  // Elf_Phdr* programheader=(Elf_Phdr*)malloc(sizeof(Elf_Phdr));//是不是这里有点问题？？？？感觉有点像啊  额好像没啥用……  嘶别说你还真别说还真是malloc出了问题
   Elf_Phdr programheader;
   // ramdisk_read(ProgramHeaders, elf->e_phoff, sizeof(Elf_Phdr)*elf->e_phnum);//读取程序头表（即段头表）一共要读取Elf_Phdr大小乘以程序头表个数
   for (int i = 0; i < elf->e_phnum; i++) {//遍历每一个程序头

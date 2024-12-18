@@ -195,11 +195,11 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
   // naive_uload(NULL,pathname);
   // yield();
   //############这里是来debug的##########
-  printf("pathname为:%s\n",pathname);
-  int i=0;while(argv[i]!=NULL){printf("argv[%d]的值为: %s\n",i,argv[i]);i++;}
+  // printf("pathname为:%s\n",pathname);
+  // int i=0;while(argv[i]!=NULL){printf("argv[%d]的值为: %s\n",i,argv[i]);i++;}
   //###################################
   context_uload(current, pathname, argv, envp);//current在nanos-lite/src/proc.c当中
-  assert(0);
+  // assert(0);
   switch_boot_pcb();
   yield();
 
