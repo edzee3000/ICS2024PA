@@ -126,7 +126,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
   uintptr_t entry = loader(pcb, filename);
-  assert(0);
+  
   //用户进程的上下文(mepc指针等)存储在PCB栈，而函数参数之类的数据存储在用户栈，PCB栈和用户栈是完全分开的，
   // 进程加载后只会把上下文放进PCB中，数据还是在自己的用户栈。这里要求要传参数给函数，
   // 就把这些数据放用户栈(heap)，然后在call_main中从用户栈中拿这些信息，之后调用main
@@ -135,6 +135,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   //计算对应的argc与argv的值
   int argc = 0; if(argv!=NULL){while (argv[argc] != NULL) argc++;}
   int envc = 0; if(envp!=NULL){while (envp[envc] != NULL) envc++;}
+  assert(0);
   // printf("envc的值为:%d\n",envc);
   // 分配用户栈空间，用于存储 argv 和 envp 指针
   // printf("heap.end-1值为:%x\n",(uintptr_t*)heap.end-1);
