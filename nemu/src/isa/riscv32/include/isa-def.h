@@ -27,6 +27,7 @@ typedef struct {
   word_t mstatus;
   word_t mcause;
   vaddr_t mtvec;//存储 异常入口地址
+  word_t satp;  //在 riscv32_CPU_state 结构体要添加 satp 寄存器!!!!!!!!!!!!!!!!!!!
 } riscv32_CSRs;
 
 
@@ -46,6 +47,25 @@ typedef struct {
   } inst;
 } MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
 
-#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+
+
+//你需要理解分页地址转换的过程, 然后实现isa_mmu_check()(在nemu/src/isa/$ISA/include/isa-def.h中定义) 
+// 和isa_mmu_translate()(在nemu/src/isa/$ISA/system/mmu.c中定义), 你可以查阅NEMU的ISA相关API说明文档来了解它们的行为.
+//  另外由于我们不打算实现保护机制, 在isa_mmu_translate()的实现中, 你务必使用assertion检查页目录项和页表项的present/valid位, 
+// 如果发现了一个无效的表项, 及时终止NEMU的运行, 否则调试将会非常困难. 这通常是由于你的实现错误引起的, 请检查实现的正确性.
+// #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)   
+//检查 satp 寄存器的 MODE 域即可  即最高位是否为1  如果是1的话就返回MMU_TRANSLATE需要进行地址转换  如果是0的话则表示该内存访问可以在物理内存上直接进行
+#define isa_mmu_check(vaddr, len, type) ((((cpu.satp & 0x80000000) >> 31) == 1) ? MMU_TRANSLATE : MMU_DIRECT)
+
+// 对于函数int isa_mmu_check(vaddr_t vaddr, int len, int type);而言：
+// 检查当前系统状态下对内存区间为[vaddr, vaddr + len), 类型为type的访问是否需要经过地址转换. 其中type可能为:
+// MEM_TYPE_IFETCH: 取指令
+// MEM_TYPE_READ: 读数据
+// MEM_TYPE_WRITE: 写数据
+// 函数返回值可能为:
+// MMU_DIRECT: 该内存访问可以在物理内存上直接进行
+// MMU_TRANSLATE: 该内存访问需要经过地址转换
+// MMU_FAIL: 该内存访问失败, 需要抛出异常(如RISC架构不支持非对齐的内存访问)
+
 
 #endif

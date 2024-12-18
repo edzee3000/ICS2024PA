@@ -71,6 +71,7 @@ word_t* CSRs(uint32_t index)
   case 0x342:return &(cpu.CSRs.mcause);
   case 0x300:return &(cpu.CSRs.mstatus);
   case 0x305:return &(cpu.CSRs.mtvec);
+  case 0x180:return &(cpu.CSRs.satp);  //根据index的值为0x180返回satp   RTFM可得
   default:panic("访问CSR控制状态寄存器索引出问题\n出问题的索引为%#x\n",index);return NULL;}
 }
 

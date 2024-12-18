@@ -2,6 +2,7 @@
 #define NEMU_H__
 
 #include <klib-macros.h>
+#include <stdint.h>//不知道这里include进来的头文件是不是正确的
 
 #include ISA_H // the macro `ISA_H` is defined in CFLAGS
                // it will be expanded as "x86/x86.h", "mips/mips32.h", ...

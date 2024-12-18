@@ -45,10 +45,12 @@ typedef struct {
 // A protected address space with user memory @area
 // and arch-dependent @ptr  一个受保护的地址空间，具有用户内存 @area 和架构依赖的 @ptr
 typedef struct {
-  int pgsize;
-  Area area;
-  void *ptr;
+  int pgsize;//其中pgsize用于指示页面的大小
+  Area area;//area表示虚拟地址空间中用户态的范围
+  void *ptr;//ptr是一个ISA相关的地址空间描述符指针, 用于指示具体的映射.
 } AddrSpace;
+//其中AddrSpace是一个结构体类型, 定义了地址空间描述符的结构(在abstract-machine/am/include/am.h中定义):
+
 
 #ifdef __cplusplus
 extern "C" {
