@@ -5,6 +5,7 @@
 #include <time.h>
 #include "syscall.h"
 #include <stdio.h>
+#include <errno.h>//errno是C标准定义的, 运行时环境中的一个全局变量, 用于存放最近一次失败的系统调用或库函数调用的错误码. 你可以通过运行errno -l命令(需要通过apt-get安装moreutils包) 来查看所有的错误码及其含义, 你应该能看到错误码2是你比较熟悉的一种错误. 关于errno全局变量的更多信息, 可以参考man 3 errno.
 
 // helper macros
 #define _concat(x, y) x ## y
@@ -153,9 +154,18 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
   //注意这里是需要有一个navy应用程序的系统调用execve的，否则无法与nanoslite操作系统进行交互
-  return  _syscall_((intptr_t)SYS_execve, (intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
+  int execve_ret = _syscall_((intptr_t)SYS_execve, (intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
+  if(execve_ret<0)
+  {
+    errno = -execve_ret;
+    return -1;
+  }
+  // 另一方面, libos中的execve()还需要检查系统调用的返回值: 如果系统调用的返回值小于0, 则通常表示系统调用失败,
+  //  此时需要将系统调用返回值取负, 作为失败原因设置到一个全局的外部变量errno中, 然后返回-1.
+  return execve_ret;
   _exit(SYS_execve);
   return 0;
+  
 }
 
 // Syscalls below are not used in Nanos-lite.

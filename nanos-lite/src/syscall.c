@@ -73,7 +73,10 @@ void do_syscall(Context *c) {
     case SYS_read:c->GPRx = system_read(a[1],  a[2] , a[3]);/*printf("调用SYS_read\n");*/break;
     case SYS_lseek:c->GPRx = system_lseek(a[1],  a[2] , a[3]);/*printf("调用SYS_lseek\n");*/break;
     case SYS_gettimeofday:c->GPRx = system_gettimeofday((struct timeval *)a[1],  (struct timezone *)a[2]);break;
-    case SYS_execve: printf("执行到了execve\n"); c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);   while(1){printf("Shouldn't Reach Here按理来说不该执行到这里\n");}break;
+    case SYS_execve:printf("执行到了execve\n");
+                    c->GPRx =system_execve((const char *)a[1],  (char *const *)a[2] ,  (char *const *)a[3]);   
+                    //while(1){printf("Shouldn't Reach Here按理来说不该执行到这里\n");}
+                    break;
     // case SYS_fb_write:c->GPRx = FB_write(a[1],  a[2] , a[3]);break;
     //好奇怪  为什么不回调用SYS_execve呢？？？？？？？？？？？、
     default: panic("Unhandled syscall ID = %d", a[0]);
@@ -188,6 +191,12 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
       //  ized data (bss), and stack of the calling process are overwritten according  to
       //  the contents of the newly loaded program.
   
+
+  //不过为了遍历PATH中的路径, execvp()可能会尝试执行一个不存在的用户程序, 例如/bin/wc. 
+  // 因此Nanos-lite在处理SYS_execve系统调用的时候就需要检查将要执行的程序是否存在, 如果不存在, 就需要返回一个错误码.
+  //  我们可以通过fs_open()来进行检查, 如果需要打开的文件不存在, 就返回一个错误的值, 此时SYS_execve返回-2
+  
+
   // int fd = fs_open(pathname, 0, 0);
   // if (fd == -1)  return -1;
   // else  fs_close(fd);
@@ -198,6 +207,8 @@ int system_execve(const char *pathname,char *const argv[], char *const envp[])
   // printf("pathname为:%s\n",pathname);
   // int i=0;while(argv[i]!=NULL){printf("argv[%d]的值为: %s\n",i,argv[i]);i++;}
   //###################################
+  if(fs_open(pathname,0,0)==-1) { printf("在system_execve检查中路径为 %s 的文件不存在",pathname); return -2;}
+
   context_uload(current, pathname, argv, envp);//current在nanos-lite/src/proc.c当中
   // assert(0);
   switch_boot_pcb();
