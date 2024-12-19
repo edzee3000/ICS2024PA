@@ -44,9 +44,10 @@ static char *args_pal[] = {"/bin/pal", "--skip", NULL};
 // static char *args_nterm[] = {"/bin/nterm", NULL};
 
 void init_proc() {
-  context_kload(&pcb[0], hello_fun, &pcb[0]);
+  // context_kload(&pcb[0], hello_fun, &pcb[0]);
   // context_kload(&pcb[1], hello_fun, &pcb[1]);
   // context_uload(&pcb[1], "/bin/hello", NULL ,NULL);
+  context_uload(&pcb[0], "/bin/hello", NULL ,NULL);
   // context_uload(&pcb[1], "/bin/pal");
   context_uload(&pcb[1], "/bin/pal", args_pal ,NULL);
   // context_uload(&pcb[1], "/bin/menu", args_menu ,NULL);
