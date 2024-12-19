@@ -55,7 +55,7 @@ typedef struct {
 // 如果发现了一个无效的表项, 及时终止NEMU的运行, 否则调试将会非常困难. 这通常是由于你的实现错误引起的, 请检查实现的正确性.
 // #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)   
 //检查 satp 寄存器的 MODE 域即可  即最高位是否为1  如果是1的话就返回MMU_TRANSLATE需要进行地址转换  如果是0的话则表示该内存访问可以在物理内存上直接进行
-#define isa_mmu_check(vaddr, len, type) ((((cpu.satp & 0x80000000) >> 31) == 1) ? MMU_TRANSLATE : MMU_DIRECT)
+#define isa_mmu_check(vaddr, len, type) ((((cpu.CSRs.satp & 0x80000000) >> 31) == 1) ? MMU_TRANSLATE : MMU_DIRECT)
 
 // 对于函数int isa_mmu_check(vaddr_t vaddr, int len, int type);而言：
 // 检查当前系统状态下对内存区间为[vaddr, vaddr + len), 类型为type的访问是否需要经过地址转换. 其中type可能为:

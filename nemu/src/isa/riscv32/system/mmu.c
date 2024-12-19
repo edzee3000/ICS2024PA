@@ -36,7 +36,7 @@ typedef uintptr_t PTE;//这里会不会有问题？？？？？？？？？？
 //  另外由于我们不打算实现保护机制, 在isa_mmu_translate()的实现中, 你务必使用assertion检查页目录项和页表项的present/valid位, 
 // 如果发现了一个无效的表项, 及时终止NEMU的运行, 否则调试将会非常困难. 这通常是由于你的实现错误引起的, 请检查实现的正确性.
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
-  uint32_t satp = cpu.csr.satp;// 从 satp 寄存器获取页表基址
+  uint32_t satp = cpu.CSRs.satp;// 从 satp 寄存器获取页表基址
   PTE page_dir_base = satp << 12;
   // 提取虚拟地址中的偏移、一级页号和二级页号
   uint32_t offset = VA_OFFSET(vaddr);//取低12位
@@ -62,6 +62,8 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t ppn = PTE_PPN(page_table_target_item) << 12;
   paddr_t paddr = ppn | offset;
   // 检查计算的物理地址是否与虚拟地址相等，否则断言失败
+  //由于此时Nanos-lite运行在内核的虚拟地址空间中, 而这些映射又是恒等映射, 因此NEMU的地址转换结果pa必定与va相同. 
+  // 你可以把这一条件作为assertion加入到NEMU的代码中, 从而帮助你捕捉实现上的bug.
   assert(paddr == vaddr);
   return paddr;
   // return MEM_RET_FAIL;

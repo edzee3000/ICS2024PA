@@ -1,7 +1,7 @@
 #include <am.h>
 #include <nemu.h>
 #include <klib.h>
-#include <riscv.h>
+// #include <riscv.h>
 
 static AddrSpace kas = {};//内核虚拟地址空间(kas)的定义
 static void* (*pgalloc_usr)(int) = NULL;
