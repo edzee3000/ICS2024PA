@@ -68,7 +68,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   // 检查计算的物理地址是否与虚拟地址相等，否则断言失败
   //由于此时Nanos-lite运行在内核的虚拟地址空间中, 而这些映射又是恒等映射, 因此NEMU的地址转换结果pa必定与va相同. 
   // 你可以把这一条件作为assertion加入到NEMU的代码中, 从而帮助你捕捉实现上的bug.
-  // if(paddr != vaddr)
+  if(paddr != vaddr)
   {printf("当二者不相等时type为:%d\t ppn为:%x\n",type,ppn);  printf("paddr值为: %x\t vaddr值为:%x\n",paddr,vaddr);}
   assert(paddr == vaddr);
   return paddr;
