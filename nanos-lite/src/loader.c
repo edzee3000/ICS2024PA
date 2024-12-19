@@ -126,7 +126,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
       }
       
-      // if(file_size==p_memsz) continue;  //如果刚好的话则不需要进行继续创建新的页面(????????????????)
+      if(file_size==p_memsz) continue;  //如果刚好的话则不需要进行继续创建新的页面(????????????????)
       //接下来处理清零的部分  即 p_vaddr + file_size 处开始往后 p_memsz - file_size 大小的部分   
       // 诶但是这里是不是有问题？？？？？？？？？？？？？？？？？？？？？？？？？？就是初始化和非初始化的部分是在两个不同的页当中了  会不会出问题？？？？？
       p_vaddr = NEXT_PAGE(p_vaddr);//获取下一个PAGE的起始地址
@@ -137,7 +137,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         void *pg_p = NEW_PAGE_ADDR(1);   memset(pg_p, 0, PGSIZE);
         map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
       }
-      //  assert(0);
+      assert(0);
 #else
       fs_lseek(fd, offset, SEEK_SET);
       assert(fs_read(fd, (void *)p_vaddr, file_size) == file_size);
