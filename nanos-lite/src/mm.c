@@ -5,7 +5,7 @@ static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
   pf += nr_page * PGSIZE;//来自于 nanos-lite/include/memory.h  #define PGSIZE 4096   4KB
-  return pf;  //它会通过一个pf指针来管理堆区, 用于分配一段大小为nr_page * 4KB的连续内存区域, 并返回这段区域的首地址
+  return pf;  //它会通过一个pf指针来管理堆区, 用于分配一段大小为nr_page * 4KB的连续内存区域, 并返回这段区域的首地址(????)
   // return NULL;
 }
 
