@@ -39,7 +39,7 @@
 Context *ucontext(AddrSpace *as, Area kstack, void *entry);
 void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char *const argv[], char *const envp[]);
 
-#define NEW_PAGE_ADDR(nr_page) (void*)(((char*)(new_page(nr_page)))-nr_page * PGSIZE)
+#define NEW_PAGE_ADDR(nr_page) (void*)(((new_page(nr_page)))-nr_page * PGSIZE)
 #define PG_MASK (~0xfff)  //页对齐 4KB大小
 #define ISALIGN(vaddr) ((vaddr) == ((vaddr)&PG_MASK))
 #define OFFSET(vaddr) ((vaddr) & (~PG_MASK))
