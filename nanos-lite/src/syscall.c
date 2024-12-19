@@ -25,7 +25,7 @@ config STRACE_COND
 void System_Trace(Context* c);
 
 size_t system_write(int fd, intptr_t buf, size_t count);
-intptr_t system_brk(intptr_t increment);  //这里先暂定参数###########
+intptr_t system_brk(intptr_t program_break);  //这里先暂定参数###########
 
 int system_open(const char *pathname, int flags, int mode);
 int system_close(int fd);
@@ -150,9 +150,11 @@ size_t system_read(int fd, intptr_t buf, size_t count)
 {return fs_read(fd,(void*)buf,count);}
 
 
-//############################这里我还不太确定是用increment还是用program_break去作为参数#################################
-intptr_t system_brk(intptr_t increment)
-{return 0;//暂时先返回0
+//############################这里我还不太确定是用increment还是用program_break去作为参数  现在知道了应当使用program_break作为参数#################################
+intptr_t system_brk(intptr_t program_break)
+{
+  return (int)mm_brk((uintptr_t)program_break);
+  return 0;//暂时先返回0
 }
 
 int system_gettimeofday(struct timeval *tv, struct timezone *tz) 

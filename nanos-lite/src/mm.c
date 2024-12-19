@@ -26,8 +26,30 @@ void free_page(void *p) {//page页回收策略
   panic("not implement yet");
 }
 
-/* The brk() system call handler. */
+#define NEW_PAGE_ADDR(nr_page) (new_page(nr_page) - nr_page * PGSIZE)
+#define PG_MASK (~0xfff)  //页对齐 4KB大小
+#define ISALIGN(vaddr) ((vaddr) == ((vaddr)&PG_MASK))
+#define OFFSET(vaddr) ((vaddr) & (~PG_MASK))
+#define NEXT_PAGE(vaddr) ((ISALIGN(vaddr)) ? (vaddr) : ((vaddr)&PG_MASK) + PGSIZE)
+/* The brk() system call handler. brk函数系统调用处理*/
 int mm_brk(uintptr_t brk) {
+  //根据上述内容, 实现nanos-lite/src/mm.c中的mm_brk()函数. 你需要注意map()参数是否需要按页对齐的问题(这取决于你的map()实现).  
+  //注意我的map函数里面是要求进行页对齐的因此这里需要小心
+  if (current->max_brk == 0)
+  {
+    current->max_brk = NEXT_PAGE(brk);//如果brk是页对齐的则返回brk  如果brk不是页对齐的则返回下一个页面的首地址
+    printf("首次分配current->max_brk的值为: %x\n", (void *)current->max_brk);
+    return 0;
+  }
+  for (; current->max_brk < brk; current->max_brk += PGSIZE)
+  {
+  #ifdef HAVE_PAGE
+    void* pa=pg_alloc(PGSIZE); 
+    void* va=(void *)current->max_brk;
+    va=(void*)(ISALIGN((uintptr_t)va));//注意这个时候是需要进行强制类型转换的！！！
+    map(&current->as, va, pa , PTE_R | PTE_W | PTE_X);
+  #endif
+  }
   return 0;
 }
 

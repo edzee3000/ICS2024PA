@@ -125,7 +125,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         left_size -= read_len;  assert(fs_read(fd, pg_p, read_len) >= 0);
         map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
       }
-      // if(file_size==p_memsz) continue;  //如果刚好的话则不需要进行继续创建新的页面(????????????????)
+      if(file_size==p_memsz) continue;  //如果刚好的话则不需要进行继续创建新的页面(????????????????)
       //接下来处理清零的部分  即 p_vaddr + file_size 处开始往后 p_memsz - file_size 大小的部分   
       // 诶但是这里是不是有问题？？？？？？？？？？？？？？？？？？？？？？？？？？就是初始化和非初始化的部分是在两个不同的页当中了  会不会出问题？？？？？
       p_vaddr = NEXT_PAGE(p_vaddr);//获取下一个PAGE的起始地址
@@ -276,7 +276,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)us2;
-  // pcb->max_brk = 0;
+  pcb->max_brk = 0;
   // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾

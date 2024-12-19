@@ -132,7 +132,7 @@ PA:
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   uintptr_t va_trans = (uintptr_t) va;
   uintptr_t pa_trans = (uintptr_t) pa;//需要进行强制类型转换
-  assert(PA_OFFSET(pa_trans) == 0);//判断是否刚好页对齐
+  assert(PA_OFFSET(pa_trans) == 0);//判断是否刚好页对齐   因此注意传进来的pa和va都是需要进行页对齐的
   assert(VA_OFFSET(va_trans) == 0);
   //提取虚拟地址的二级页号和一级页号，以及物理地址的物理页号
   uint32_t ppn = PA_PPN(pa_trans);
