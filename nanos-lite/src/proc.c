@@ -38,7 +38,7 @@ void hello_fun(void *arg) {
 
 
 
-// static char *args_pal[] = {"/bin/pal", "--skip", NULL};
+static char *args_pal[] = {"/bin/pal", "--skip", NULL};
 // static char *args_menu[] = {"/bin/menu", NULL, NULL};
 // static char *args_exec_test[] = {"/bin/exec-test", NULL, NULL};
 static char *args_nterm[] = {"/bin/nterm", NULL};
@@ -52,8 +52,9 @@ void init_proc() {
   // context_uload(&pcb[1], "/bin/menu", args_menu ,NULL);
   // context_uload(&pcb[1], "/bin/exec-test", args_exec_test ,NULL);
   // context_uload(&pcb[1], "/bin/pal", NULL ,NULL);
-  context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
-  // context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
+  // context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
+  context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
+  assert(0);
   context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
   switch_boot_pcb();
   
