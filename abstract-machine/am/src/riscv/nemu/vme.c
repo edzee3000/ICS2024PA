@@ -97,6 +97,7 @@ void __am_get_cur_as(Context *c) {
 }
 
 void __am_switch(Context *c) {
+  //因此我们只要在kcontext()中将上下文的地址空间描述符指针设置为NULL, 来进行特殊的标记, 等到将来在__am_irq_handle()中调用__am_switch()时, 如果发现地址空间描述符指针为NULL, 就不进行虚拟地址空间的切换.
   if (vme_enable && c->pdir != NULL) {
     set_satp(c->pdir);
   }

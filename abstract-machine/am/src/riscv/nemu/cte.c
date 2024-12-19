@@ -71,8 +71,15 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   cp->mstatus=0x1800;
   //注意这里跟手册上还是有一点点区别的  手册上面的cp直接是在ksatck的start那个位置的  但是这里我是直接在 (Context *)kstack.end - 1这个位置放了一个cp
   //注意我上面写的那一条注释是错误的！！！！！！！！！注意kcontext会将cp返回，然后将其地址的值赋值给pcb[0].cp也就是PCB的首地址存放的就是cp的地址，这恰恰好符合手册上面的图示
-  
-  
+  //为此, 我们需要思考内核线程的调度会对分页机制造成什么样的影响. 内核线程和用户进程最大的不同, 
+  // 就是它没有用户态的地址空间: 内核线程的代码, 数据和栈都是位于内核的地址空间. 那在启动分页机制之后, 
+  // 如果__am_irq_handle()要返回一个内核线程的现场, 我们是否需要考虑通过__am_switch()切换到内核线程的虚拟地址空间呢?
+  // 答案是, 不需要. 这是因为AM创建的所有虚拟地址空间都会包含内核映射, 无论在切换之前是位于哪一个虚拟地址空间,
+  //  内核线程都可以在这个虚拟地址空间上正确运行. 因此我们只要在kcontext()中将上下文的地址空间描述符指针设置为NULL, 
+  // 来进行特殊的标记, 等到将来在__am_irq_handle()中调用__am_switch()时, 如果发现地址空间描述符指针为NULL, 就不进行虚拟地址空间的切换.
+  cp->pdir = NULL;
+
+
   cp->GPR2 = (uintptr_t)arg;//注意在这里根据abstract-machine/am/include/arch/riscv.h中的内容  #define GPR2 gpr[10]  GPR2为a0即gpr[10]  通过a0进行传参（因为只有一个void*参数  根据ABI约定）
   return cp;        
   //在 RISC-V 架构中，指令是 32 位的，所以减去 4 实际上是将地址回退到调用 entry 函数之前的指令。
