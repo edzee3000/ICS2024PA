@@ -138,7 +138,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         void *pg_p = NEW_PAGE_ADDR(1);   memset(pg_p, 0, PGSIZE);
         map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
       }
-      assert(0);
+      // assert(0);
 #else
       fs_lseek(fd, offset, SEEK_SET);
       assert(fs_read(fd, (void *)p_vaddr, file_size) == file_size);
