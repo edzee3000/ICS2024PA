@@ -20,13 +20,17 @@
 
 
 
-#define VA_OFFSET(addr) (addr & 0x00000FFF)
-#define VA_VPN_0(addr)  ((addr >> 12) & 0x000003FF)
+#define VA_OFFSET(addr) (addr & 0x00000FFF)   //取出低12位用于页内地址偏移offset
+#define VA_VPN_0(addr)  ((addr >> 12) & 0x000003FF)  
 #define VA_VPN_1(addr)  ((addr >> 22) & 0x000003FF)
 #define PTE_V(item)   (item & 0x1)
 #define PTE_R(item)   ((item >> 1) & 0x1)
 #define PTE_W(item)   ((item >> 2) & 0x1)
 #define PTE_X(item)   ((item >> 3) & 0x1)
+#define PTE_U(item)   ((item >> 4) & 0x1)
+#define PTE_G(item)   ((item >> 5) & 0x1)
+#define PTE_A(item)   ((item >> 6) & 0x1)
+#define PTE_D(item)   ((item >> 7) & 0x1)
 #define PTE_PPN(item) ((item >> 12) & 0xFFFFF)
 
 typedef uintptr_t PTE;//这里会不会有问题？？？？？？？？？？
@@ -64,6 +68,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   // 检查计算的物理地址是否与虚拟地址相等，否则断言失败
   //由于此时Nanos-lite运行在内核的虚拟地址空间中, 而这些映射又是恒等映射, 因此NEMU的地址转换结果pa必定与va相同. 
   // 你可以把这一条件作为assertion加入到NEMU的代码中, 从而帮助你捕捉实现上的bug.
+  assert(0);
   assert(paddr == vaddr);
   return paddr;
   // return MEM_RET_FAIL;
