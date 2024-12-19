@@ -143,13 +143,13 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   PTE * page_dir_location = page_dir_base + vpn_1;//确定一级页表（页目录）目标的位置
   //如果一级页表中的页表项的地址(二级页表的基地址)为空，创建并填写页表项
   if (*page_dir_location == 0) { 
-    printf("创建并填写页表\n");
+    // printf("创建并填写页表\n");
     PTE * page_table_base = (PTE *) pgalloc_usr(PGSIZE);//通过 pgalloc_usr 分配一页物理内存，作为二级页表的基地址
     *page_dir_location = ((PTE) page_table_base) | PTE_V;//将这个基地址填写到一级页表的页表项中，同时设置 PTE_V 表示这个页表项是有效的。
     PTE * page_table_target = page_table_base + vpn_0; //计算在二级页表中的页表项的地址
     *page_table_target = (ppn << 12) | PTE_V | PTE_R | PTE_W | PTE_X;//将物理页号 ppn 左移 12 位，即去掉低 12 位的偏移，与权限标志 PTE_V | PTE_R | PTE_W | PTE_X 组合，填写到二级页表的页表项中。
   } else {
-    printf("使用已有页表\n");
+    // printf("使用已有页表\n");
     PTE * page_table_base = (PTE *) ((*page_dir_location) & PTE_PPN);//取得一级页表项的内容，然后 & PTE_PPN 通过按位与操作提取出页表的基地址，提取高20位，低 12 位为零  页表对齐  因为VPN[0]是10位的再乘以每个表项4B一共12位
     PTE * page_table_target = page_table_base + vpn_0;//通过加上 vpn_0 计算得到在二级页表中的目标项的地址
     *page_table_target = (ppn << 12) | PTE_V | PTE_R | PTE_W | PTE_X;//将物理页号 ppn 左移 12 位，即去掉低 12 位的偏移，与权限标志 PTE_V | PTE_R | PTE_W | PTE_X 组合，填写到二级页表的目标项中。
