@@ -92,7 +92,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       uint32_t file_size = programheader.p_filesz;
       uint32_t p_vaddr = programheader.p_vaddr;
       uint32_t p_memsz = programheader.p_memsz;
-            assert(0);
+      
       printf("加载装载段 offset偏移量为: %x\t 文件大小file_size为: %x\t 物理地址为: %x\t 内存大小memsize为: %x\n", offset, file_size, p_vaddr, p_memsz);
 #ifdef HAVE_PAGE
       // 不过, 此时loader()不能直接把用户进程加载到内存位置0x40000000附近了, 因为这个地址并不在内核的虚拟地址空间中, 内核不能直接访问它. 
@@ -151,7 +151,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   // printf("filename:%s\tfd:%d\n",filename,fd);
   // printf("elf->e_entry:%x\n",elf->e_entry);
 
-
+      assert(0);
   assert(fs_close(fd) == 0);//关闭文件
   return elf->e_entry;//返回程序的入口地址
   // 在 ELF 文件中，e_entry 是一个非常重要的字段，它表示程序的入口地址。
