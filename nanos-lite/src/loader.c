@@ -130,6 +130,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       //接下来处理清零的部分  即 p_vaddr + file_size 处开始往后 p_memsz - file_size 大小的部分   
       // 诶但是这里是不是有问题？？？？？？？？？？？？？？？？？？？？？？？？？？就是初始化和非初始化的部分是在两个不同的页当中了  会不会出问题？？？？？
       p_vaddr = NEXT_PAGE(p_vaddr);//获取下一个PAGE的起始地址
+       assert(0);
       printf("如果file_size<p_memsz,装载段中分页起始 p_vaddr 为: %x\t 结束位置为: %x\n", (void *)p_vaddr, (void *)(programheader.p_vaddr + p_memsz));
       for (; p_vaddr < programheader.p_vaddr + p_memsz; p_vaddr += PGSIZE)
       {
