@@ -9,6 +9,8 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 
 
 Context* __am_irq_handle(Context *c) {
+  //在__am_irq_handle()的开头调用__am_get_cur_as() (在abstract-machine/am/src/$ISA/nemu/vme.c中定义), 来将当前的地址空间描述符指针保存到上下文中
+  __am_get_cur_as(c);
   // 可以在__am_irq_handle()中通过printf输出上下文c的内容, 然后通过简易调试器观察触发自陷时的寄存器状态, 从而检查你的Context实现是否正确
   if (user_handler) {
     Event ev = {0};
@@ -32,6 +34,10 @@ Context* __am_irq_handle(Context *c) {
     assert(c != NULL);
   }
 
+  assert(c->mepc >= 0x40000000 && c->mepc <= 0x88000000);
+  // 在__am_irq_handle()返回前调用__am_switch() (在abstract-machine/am/src/$ISA/nemu/vme.c中定义)
+  // 来切换地址空间, 将被调度进程的地址空间落实到MMU中
+  __am_switch(c);
   return c;
 }
 

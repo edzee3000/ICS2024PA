@@ -7,6 +7,9 @@
 //#define MULTIPROGRAM
 //#define TIME_SHARING
 
+#define HAVE_PAGE
+
+
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
@@ -17,6 +20,9 @@
 // 初始化时调用init_irq()函数, 它将通过cte_init()函数初始化CTE
 // 在panic()前调用yield()来触发自陷操作
 
+#define PTE_R 0x002 /* Read */
+#define PTE_W 0x004 /* Write */
+#define PTE_X 0x008 /* Execute */
 
 
 #endif

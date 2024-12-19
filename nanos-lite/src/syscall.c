@@ -58,9 +58,12 @@ void do_syscall(Context *c) {
     case SYS_exit: //c->GPRx=0;/*printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx);*/ 
                   // halt(c->GPRx);break;//注意c->GPRx与c->GPR2使用的都是gpr[10]寄存器，因此这里可能不应该对c->GPRx=0;赋值为0……之后可能需要进行一些修改……##############
                   //#######################################下面可能需要进行修改
-                  if(c->GPRx==0){c->GPRx = system_execve("/bin/nterm",NULL,NULL);}//有了开机菜单程序之后, 就可以很容易地实现一个有点样子的批处理系统了. 你只需要修改SYS_exit的实现, 让它调用SYS_execve来再次运行/bin/menu, 而不是直接调用halt()来结束整个系统的运行. 这样以后, 在一个用户程序结束的时候, 操作系统就会自动再次运行开机菜单程序, 让用户选择一个新的程序来运行.
-                  else{halt(c->GPRx);}//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
-                  break;
+                  // if(c->GPRx==0){c->GPRx = system_execve("/bin/nterm",NULL,NULL);}//有了开机菜单程序之后, 就可以很容易地实现一个有点样子的批处理系统了. 你只需要修改SYS_exit的实现, 让它调用SYS_execve来再次运行/bin/menu, 而不是直接调用halt()来结束整个系统的运行. 这样以后, 在一个用户程序结束的时候, 操作系统就会自动再次运行开机菜单程序, 让用户选择一个新的程序来运行.
+                  // else{halt(c->GPRx);}//对于c->mcause=1的情况，查看navy-apps/libs/libos/src/syscall.h对应为SYS_exit系统退出
+                  // break;
+                  //在分页机制上运行用户进程部分
+                  //为了测试实现的正确性, 我们先单独运行dummy(别忘记修改调度代码), 并先在exit的实现中调用halt()结束系统的运行, 这是因为让其它程序成功运行还需要进行一些额外的改动. 如果你的实现正确, 你会看到dummy程序最后输出GOOD TRAP的信息, 说明它确实在分页机制上成功运行了
+                  c->GPRx=0;printf("do_syscall(0)\tSYS_exit\t返回值c->GPRx=%d\n",c->GPRx);halt(c->GPRx);break;
     case SYS_yield:/*printf("do_syscall(1)\tSYS_yield\t返回值c->GPRx=%d\n",c->GPRx);*/
                   // schedule(current->cp);//这里姑且先不创建一个新的sys_yield函数 因为我自己不太确定返回值填什么  嘶……但是后来发现好像不用这个而是在irq里面调用schedule函数  无语了……
                   yield(); break;  //c->mcause为系统调用SYS_yield的情况

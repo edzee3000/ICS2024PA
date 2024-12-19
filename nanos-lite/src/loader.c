@@ -39,7 +39,11 @@
 Context *ucontext(AddrSpace *as, Area kstack, void *entry);
 void draw_ustack(uintptr_t* us_top, uintptr_t* us_end, int argc, int envc ,char *const argv[], char *const envp[]);
 
-
+#define NEW_PAGE_ADDR(nr_page) (void*)(((char*)(new_page(nr_page)))-nr_page * PGSIZE)
+#define PG_MASK (~0xfff)  //页对齐 4KB大小
+#define ISALIGN(vaddr) ((vaddr) == ((vaddr)&PG_MASK))
+#define OFFSET(vaddr) ((vaddr) & (~PG_MASK))
+#define NEXT_PAGE(vaddr) ((ISALIGN(vaddr)) ? (vaddr) : ((vaddr)&PG_MASK) + PGSIZE)
 static uintptr_t loader(PCB *pcb, const char *filename) {
   // TODO();
   // 你需要在Nanos-lite中实现loader的功能, 来把用户程序加载到正确的内存位置, 然后执行用户程序.
@@ -88,9 +92,54 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       uint32_t file_size = programheader.p_filesz;
       uint32_t p_vaddr = programheader.p_vaddr;
       uint32_t p_memsz = programheader.p_memsz;
+
+      printf("加载装载段 offset偏移量为: %x\t 文件大小file_size为: %x\t 物理地址为: %x\t 内存大小memsize为: %x\n", offset, file_size, p_vaddr, p_memsz);
+#ifdef HAVE_PAGE
+      // 不过, 此时loader()不能直接把用户进程加载到内存位置0x40000000附近了, 因为这个地址并不在内核的虚拟地址空间中, 内核不能直接访问它. 
+      // loader()要做的事情是, 获取程序的大小之后, 以页为单位进行加载:
+      // 申请一页空闲的物理页
+      // 通过map()把这一物理页映射到用户进程的虚拟地址空间中. 由于AM native实现了权限检查, 为了让程序可以在AM native上正确运行, 
+      // 你调用map()的时候需要将prot设置成可读可写可执行
+      // 从文件中读入一页的内容到这一物理页中
+      // 这一切都是为了让用户进程在将来可以正确地运行: 用户进程在将来使用虚拟地址访问内存, 在loader为用户进程维护的映射下, 
+      // 虚拟地址被转换成物理地址, 通过这一物理地址访问到的物理内存, 恰好就是用户进程想要访问的数据.
+      fs_lseek(fd, offset, SEEK_SET);//将文件描述符 fd 的读取位置移动到 offset
+      int left_size = file_size;//初始化剩余要读取的文件大小为整个文件的大小
+      if (!ISALIGN(p_vaddr))//如果 p_vaddr（当前的虚拟地址）不是页对齐的
+      {
+        void *pg_p = NEW_PAGE_ADDR(1);  //注意这里的pg_p应当要减去PGSIZE大小才是对应的起始地址
+        int temp = PGSIZE - OFFSET(p_vaddr); 
+        int read_len = temp < left_size ? temp : left_size ;//计算可以读取的最大长度 read_len，使其不超过页大小减去 p_vaddr 的偏移量，并且不超过剩余文件大小。
+        left_size -= read_len;
+        assert(fs_read(fd, pg_p + OFFSET(p_vaddr), read_len) >= 0);
+        map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);//通过map()把这一物理页映射到用户进程的虚拟地址空间中. 由于AM native实现了权限检查, 为了让程序可以在AM native上正确运行, 你调用map()的时候需要将prot设置成可读可写可执行
+        p_vaddr += read_len;
+      }
+      for (; p_vaddr < programheader.p_vaddr + file_size; p_vaddr += PGSIZE)//获取程序的大小之后, 以页为单位进行加载:
+      {
+        assert(ISALIGN(p_vaddr));//此时的p_vaddr一定是页对齐的否则就assert(0)
+        void *pg_p = NEW_PAGE_ADDR(1);
+        memset(pg_p, 0, PGSIZE);   //为什么这里要清零？？？？？？？？之后不是有read操作吗？？？  应该是为了防止有剩余的长度
+        // int len = min(PGSIZE, file_size - fs_lseek(fd, 0, SEEK_CUR));
+        int read_len = PGSIZE < left_size ? PGSIZE : left_size;
+        left_size -= read_len;  assert(fs_read(fd, pg_p, read_len) >= 0);
+        map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
+      }
+      //接下来处理清零的部分  即 p_vaddr + file_size 处开始往后 p_memsz - file_size 大小的部分   
+      // 诶但是这里是不是有问题？？？？？？？？？？？？？？？？？？？？？？？？？？就是初始化和非初始化的部分是在两个不同的页当中了  会不会出问题？？？？？
+      p_vaddr = NEXT_PAGE(p_vaddr);//获取下一个PAGE的起始地址
+      printf("BSS段当中由于分页起始 p_vaddr 为: %x\t 结束位置为: %x\n", (void *)p_vaddr, (void *)(programheader.p_vaddr + p_memsz));
+      for (; p_vaddr < programheader.p_vaddr + p_memsz; p_vaddr += PGSIZE)
+      {
+        assert(ISALIGN(p_vaddr));
+        void *pg_p = NEW_PAGE_ADDR(1);   memset(pg_p, 0, PGSIZE);
+        map(&pcb->as, (void *)p_vaddr, pg_p, PTE_R | PTE_W | PTE_X);
+      }
+#else
       fs_lseek(fd, offset, SEEK_SET);
       assert(fs_read(fd, (void *)p_vaddr, file_size) == file_size);
       memset((void *)(p_vaddr + file_size), 0, p_memsz - file_size);
+#endif
     }
     //我们现在关心的是如何加载程序, 因此我们重点关注segment的视角. ELF中采用program header table来管理segment,
     //  program header table的一个表项描述了一个segment的所有属性, 包括类型, 虚拟地址, 标志, 对齐方式, 以及文件内偏移量和segment大小. 
@@ -133,6 +182,10 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 // void context_uload(PCB *pcb, const char *filename)
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
 {
+  //此外, 我们还需要对创建用户进程的过程进行较多的改动. 我们首先需要在加载用户进程之前为其创建地址空间. 
+  // 由于地址空间是进程相关的, 我们将AddrSpace结构体作为PCB的一部分. 这样以后, 
+  // 我们只需要在context_uload()的开头调用protect(), 就可以实现地址空间的创建.
+  protect(&pcb->as);
   // int argc1 = 0; if(argv!=NULL){while (argv[argc1] != NULL) argc1++;}
   // int envc1 = 0; if(envp!=NULL){while (envp[envc1] != NULL) envc1++;}
   // printf("argc的值为:%d\t envc的值为:%d\n",argc1,envc1);
@@ -155,9 +208,18 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // printf("heap.end-1值为:%x\n",(uintptr_t*)heap.end-1);
   // uintptr_t* user_stack = (uintptr_t*)heap.end;//注意这里的user_stack是在不断变化的向低地址处增长使得栈顶的位置不断增长
   // char* user_stack = (char*)heap.end;//注意这里是因为要存储string area因此是char*类型!!!!
-  char* new_user_stack=(char*)new_page(8);  //把之前的heap改成调用new_page()  因为这里需要创建一个新的用户栈而不能影响原来的用户栈
+  // char* new_user_stack=(char*)new_page(8);  //把之前的heap改成调用new_page()  因为这里需要创建一个新的用户栈而不能影响原来的用户栈
+  char* new_user_stack=(char*)new_page(STACK_PAGE_NUM); //STACK_SIZE = STACK_PAGE_NUM * PGSIZE  返回的刚好就是栈底！！！！！  不用再加东西了！！！
   char* user_stack = new_user_stack;
   printf("user_stack位置为: %x\n",user_stack);
+#ifdef HAVE_PAGE
+  //另一个需要考虑的问题是用户栈, 和loader()类似, 我们需要把new_page()申请得到的物理页通过map()映射到用户进程的虚拟地址空间中. 
+  // 我们把用户栈的虚拟地址安排在用户进程虚拟地址空间的末尾, 你可以通过as.area.end来得到末尾的位置, 
+  // 然后把用户栈的物理页映射到[as.area.end - 32KB, as.area.end)这段虚拟地址空间.
+  for (size_t i = STACK_PAGE_NUM; i > 0; i--)
+    map(&pcb->as, (void *)(pcb->as.area.end - i * PGSIZE), user_stack - i * PGSIZE, PTE_R | PTE_W | PTE_X);
+  // uint32_t map_offset = user_stack - (char *)(pcb->as.area.end);
+#endif
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
   for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
@@ -207,6 +269,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
   // draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
   uintptr_t entry = loader(pcb, filename);//必须在这里才调用loader函数否则会发生覆盖问题
+  //最后, 为了让这一地址空间生效, 我们还需要将它落实到MMU中. 具体地, 我们希望在CTE恢复进程上下文的时候来切换地址空间. 
+  // 为此, 我们需要将进程的地址空间描述符指针as->ptr加入到上下文中, 框架代码已经实现了这一功能
+  // (见abstract-machine/am/include/arch/$ISA-nemu.h), 在x86中这一成员为cr3, 而在mips32/riscv32中则为pdir
   pcb->cp=ucontext(&pcb->as,  (Area){pcb->stack, pcb->stack+STACK_SIZE}, (void*)entry );//参数as用于限制用户进程可以访问的内存, 我们在下一阶段才会使用, 目前可以忽略它
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)us2;

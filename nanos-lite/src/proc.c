@@ -44,7 +44,7 @@ void hello_fun(void *arg) {
 static char *args_nterm[] = {"/bin/nterm", NULL};
 
 void init_proc() {
-  context_kload(&pcb[0], hello_fun, &pcb[0]);
+  // context_kload(&pcb[0], hello_fun, &pcb[0]);
   // context_kload(&pcb[1], hello_fun, &pcb[1]);
   // context_uload(&pcb[1], "/bin/hello", NULL ,NULL);
   // context_uload(&pcb[1], "/bin/pal");
@@ -52,6 +52,7 @@ void init_proc() {
   // context_uload(&pcb[1], "/bin/menu", args_menu ,NULL);
   // context_uload(&pcb[1], "/bin/exec-test", args_exec_test ,NULL);
   // context_uload(&pcb[1], "/bin/pal", NULL ,NULL);
+  context_uload(&pcb[0], "/bin/dummy", args_nterm, NULL);
   context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
   switch_boot_pcb();
   
@@ -83,10 +84,12 @@ void init_proc() {
 //Nanos-lite的schedule()函数
 Context* schedule(Context *prev) {
   current->cp = prev;//保存上下文的指针  save the context pointer
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
+  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
   // printf("执行了schedule\n");  //初始化的时候注意*current = &pcb_boot因而是先进行线程切换  切换到pcb[0]了之后从回调函数schedule返回到trap.S当中的__am_asm_trap  然后执行下一个进程
   // assert(0);
+  //为了测试实现的正确性, 我们先单独运行dummy(别忘记修改调度代码), 并先在exit的实现中调用halt()结束系统的运行, 这是因为让其它程序成功运行还需要进行一些额外的改动. 如果你的实现正确, 你会看到dummy程序最后输出GOOD TRAP的信息, 说明它确实在分页机制上成功运行了.
+  current = &pcb[0];
   return current->cp; 
 }
 

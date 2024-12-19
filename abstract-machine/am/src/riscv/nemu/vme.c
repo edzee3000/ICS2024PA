@@ -89,6 +89,9 @@ void unprotect(AddrSpace *as) {
 }
 
 void __am_get_cur_as(Context *c) {
+  // 在__am_irq_handle()的开头调用__am_get_cur_as() (在abstract-machine/am/src/$ISA/nemu/vme.c中定义), 
+  // 来将当前的地址空间描述符指针保存到上下文中
+  //但是为什么这里可能要加上一个条件判断是否为NULL
   c->pdir = (vme_enable ? (void *)get_satp() : NULL);
 }
 
@@ -172,6 +175,13 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   //  目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   Context *cp = (Context *)kstack.end - 1;
   cp->mepc = (uintptr_t)entry; 
+  assert(cp->mepc >= 0x40000000 && cp->mepc <= 0x88000000);//cp->mepc是有一定的范围限制的
+  
+  cp->mstatus = 0x1800 | MSTATUS_MPIE;//这一步好像是为了迎合difftest？？？？不管了
+  
+  // cp->gpr[0] = 0; //等等这一步是在干嘛？？？？  为什么要把gpr[0]设置为0？？？？？？？
+
+  cp->pdir = as->ptr;   //修改ucontext()的实现, 在创建的用户进程上下文中设置地址空间描述符指针
   // return NULL;
   return cp;
   // 栈指针寄存器可是ISA相关的, 在Nanos-lite里面不方便处理. 别着急, 还记得用户进程的那个_start吗? 
