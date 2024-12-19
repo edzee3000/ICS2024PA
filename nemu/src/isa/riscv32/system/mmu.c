@@ -31,7 +31,7 @@
 #define PTE_G(item)   ((item >> 5) & 0x1)
 #define PTE_A(item)   ((item >> 6) & 0x1)
 #define PTE_D(item)   ((item >> 7) & 0x1)
-#define PTE_PPN(item) ((item >> 12) & 0xFFFFF)
+#define PTE_PPN(item) ((item  & 0x3FFFFF) >> 12)
 
 typedef uintptr_t PTE;//这里会不会有问题？？？？？？？？？？
 // typedef uint32_t rtlreg_t;
