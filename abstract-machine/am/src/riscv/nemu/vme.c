@@ -82,7 +82,7 @@ void protect(AddrSpace *as) {// 话说as是啥来着？？？？？全称是啥 
   as->area = USER_SPACE;//虚拟内存0x40000000 ~ 0x80000000,虚拟地址空间中用户态的范围，每个进程都会访问这一范围虚拟地址
   as->pgsize = PGSIZE;//页面的大小4kb
   // map kernel space  映射内核空间
-  memcpy(updir, kas.ptr, PGSIZE);//将内核地址空间的内容复制到新分配的用户页目录
+  // memcpy(updir, kas.ptr, PGSIZE);//将内核地址空间的内容复制到新分配的用户页目录
   
 }
 // 销毁指定的地址空间
