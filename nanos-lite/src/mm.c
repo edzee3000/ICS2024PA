@@ -47,7 +47,7 @@ int mm_brk(uintptr_t brk) {
     void* pa=pg_alloc(PGSIZE); 
     void* va=(void *)current->max_brk;
     va=(void*)(ISALIGN((uintptr_t)va));//注意这个时候是需要进行强制类型转换的！！！
-    printf("va的值为: %x\n",va);
+    // printf("va的值为: %x\n",va);
     map(&current->as, va, pa , PTE_R | PTE_W | PTE_X);
   #endif
   }
