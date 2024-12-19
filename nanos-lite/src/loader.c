@@ -92,7 +92,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       uint32_t file_size = programheader.p_filesz;
       uint32_t p_vaddr = programheader.p_vaddr;
       uint32_t p_memsz = programheader.p_memsz;
-
+            assert(0);
       printf("加载装载段 offset偏移量为: %x\t 文件大小file_size为: %x\t 物理地址为: %x\t 内存大小memsize为: %x\n", offset, file_size, p_vaddr, p_memsz);
 #ifdef HAVE_PAGE
       // 不过, 此时loader()不能直接把用户进程加载到内存位置0x40000000附近了, 因为这个地址并不在内核的虚拟地址空间中, 内核不能直接访问它. 
@@ -269,7 +269,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 调用 ucontext 函数创建用户上下文，传入入口地址和用户栈
   // pcb->cp = ucontext(&pcb->as, stack, (void*)entry);
   // draw_ustack((uintptr_t*)us2, (uintptr_t*)new_user_stack, argc, envc, argv,envp); 
-        assert(0);
   uintptr_t entry = loader(pcb, filename);//必须在这里才调用loader函数否则会发生覆盖问题
   //最后, 为了让这一地址空间生效, 我们还需要将它落实到MMU中. 具体地, 我们希望在CTE恢复进程上下文的时候来切换地址空间. 
   // 为此, 我们需要将进程的地址空间描述符指针as->ptr加入到上下文中, 框架代码已经实现了这一功能
