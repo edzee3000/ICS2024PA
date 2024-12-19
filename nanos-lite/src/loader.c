@@ -221,6 +221,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
     map(&pcb->as, (void *)(pcb->as.area.end - i * PGSIZE), user_stack - i * PGSIZE, PTE_R | PTE_W | PTE_X);
   // uint32_t map_offset = user_stack - (char *)(pcb->as.area.end);
 #endif
+    assert(0);
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
   for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
     user_stack -= len; strncpy((char*)user_stack, argv[i], len);}
