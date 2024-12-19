@@ -52,7 +52,7 @@ void init_proc() {
   // context_uload(&pcb[1], "/bin/menu", args_menu ,NULL);
   // context_uload(&pcb[1], "/bin/exec-test", args_exec_test ,NULL);
   // context_uload(&pcb[1], "/bin/pal", NULL ,NULL);
-  context_uload(&pcb[0], "/bin/dummy", args_nterm, NULL);
+  context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
   context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
   switch_boot_pcb();
   
