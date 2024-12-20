@@ -90,7 +90,7 @@ Context* schedule(Context *prev) {
   //我们可以修改schedule()的代码, 给仙剑奇侠传分配更多的时间片, 使得仙剑奇侠传调度若干次, 才让hello内核线程调度1次. 
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
   static size_t time_slice=0;
-  time_slice++; int slice1=500;
+  time_slice++; int slice1=50;
   if(time_slice % slice1!=0){ current=&pcb[1]; }
   else current=&pcb[0]; 
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
