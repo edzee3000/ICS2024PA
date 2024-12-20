@@ -186,7 +186,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   // 在riscv32中, 如果mstatus中的MIE位为0, 则CPU处于关中断状态
  
   // cp->gpr[0] = 0; //等等这一步是在干嘛？？？？  为什么要把gpr[0]设置为0？？？？？？？
-
+  cp->mscratch = (uintptr_t)kstack.end;  //为什么要将mscratch赋值为0？？？
   cp->pdir = as->ptr;   //修改ucontext()的实现, 在创建的用户进程上下文中设置地址空间描述符指针
   // return NULL;
   return cp;

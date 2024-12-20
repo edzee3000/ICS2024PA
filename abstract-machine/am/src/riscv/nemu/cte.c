@@ -87,7 +87,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   cp->pdir = NULL;
 
   
-
+  cp->mscratch = 0;//？？？？？？？？？？？？？？？？？？？？？？？？为什么要赋值为0？？？
   cp->GPR2 = (uintptr_t)arg;//注意在这里根据abstract-machine/am/include/arch/riscv.h中的内容  #define GPR2 gpr[10]  GPR2为a0即gpr[10]  通过a0进行传参（因为只有一个void*参数  根据ABI约定）
   return cp;        
   //在 RISC-V 架构中，指令是 32 位的，所以减去 4 实际上是将地址回退到调用 entry 函数之前的指令。
