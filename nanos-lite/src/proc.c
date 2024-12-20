@@ -71,13 +71,13 @@ Task Usr_Tasks[]=
 
 size_t Time_Slice[]=
 {
-  [TASK_BIRD]      = 25,
-  [TASK_EXEC_TEST] = 25,
+  [TASK_BIRD]      = 50,
+  [TASK_EXEC_TEST] = 50,
   [TASK_HELLO]     = 1,
-  [TASK_MENU]      = 25,
-  [TASK_NSLIDER]   = 25,
-  [TASK_NTERM]     = 25,
-  [TASK_PAL]       = 25,
+  [TASK_MENU]      = 50,
+  [TASK_NSLIDER]   = 50,
+  [TASK_NTERM]     = 50,
+  [TASK_PAL]       = 50,
 };
 
 
@@ -130,7 +130,7 @@ Context* schedule(Context *prev) {
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
   // 基于时间片的进程调度
   static size_t time_slice=0;
-  time_slice++; int slice1=25;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
+  time_slice++; int slice1=50;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
   if(time_slice % slice1!=0){ current=&pcb[1]; }
   else current=&pcb[0]; 
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
