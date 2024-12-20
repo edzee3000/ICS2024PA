@@ -132,6 +132,7 @@ static void execute(uint64_t n) {
 
     //在cpu_exec()中for循环的末尾添加轮询INTR引脚的代码, 每次执行完一条指令就查看是否有硬件中断到来:
     //当然了因为我的cpu_exec()函数关于调用n次execute执行的for循环是在execute里面的  因此就放到这里好了
+  #ifdef TIME_INTR  
     word_t intr = isa_query_intr();
     if (intr != INTR_EMPTY){
       cpu.pc = isa_raise_intr(intr, cpu.pc);
@@ -139,6 +140,7 @@ static void execute(uint64_t n) {
       // 但是中断操作和系统调用不同，中断操作执行完回到执行前的pc，系统调用执行完回到执行前的pc的下一条指令
       //但是后来想想这里可以不用-4 因为我可以在isa_raise_intr加一个case判断语句进行相应的调整
     }
+  #endif  //注意TIME_INTR是在nemu/src/isa/riscv32/include/isa-def.h当中定义的  用于时钟中断控制开关
   }
 
 

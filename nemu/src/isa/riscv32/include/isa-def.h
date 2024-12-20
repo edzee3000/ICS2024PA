@@ -39,7 +39,7 @@ typedef struct {
   bool INTR;//在cpu结构体中添加一个bool成员INTR.
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
-#define TIME_INTR
+// #define TIME_INTR
 
 // decode 解码
 typedef struct {
