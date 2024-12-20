@@ -14,7 +14,7 @@ struct Context {
   // uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;  这个是原本的顺序
   uintptr_t gpr[NR_REGS], mcause, mstatus, mepc, mscratch;
   void *pdir;
-  // uintptr_t np;//在Context结构体中添加一个新的成员np, 把概念上的c->np映射到它   np指的是next privilege下一个特权级
+  uintptr_t np;//在Context结构体中添加一个新的成员np, 把概念上的c->np映射到它   np指的是next privilege下一个特权级
 };
 
 #ifdef __riscv_e
