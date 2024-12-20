@@ -69,6 +69,16 @@ Task Usr_Tasks[]=
   [TASK_PAL]       = {"/bin/pal"      , args_pal      , NULL},
 };
 
+size_t Time_Slice[]=
+{
+  [TASK_BIRD]      = 25,
+  [TASK_EXEC_TEST] = 25,
+  [TASK_HELLO]     = 1,
+  [TASK_MENU]      = 25,
+  [TASK_NSLIDER]   = 25,
+  [TASK_NTERM]     = 25,
+  [TASK_PAL]       = 25,
+};
 
 
 void init_proc() {
@@ -115,14 +125,14 @@ void init_proc() {
 //Nanos-lite的schedule()函数
 Context* schedule(Context *prev) {
   current->cp = prev;//保存上下文的指针  save the context pointer
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
+  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
   //我们可以修改schedule()的代码, 给仙剑奇侠传分配更多的时间片, 使得仙剑奇侠传调度若干次, 才让hello内核线程调度1次. 
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
   // 基于时间片的进程调度
-  // static size_t time_slice=0;
-  // time_slice++; int slice1=25;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
-  // if(time_slice % slice1!=0){ current=&pcb[1]; }
-  // else current=&pcb[0]; 
+  static size_t time_slice=0;
+  time_slice++; int slice1=25;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
+  if(time_slice % slice1!=0){ current=&pcb[1]; }
+  else current=&pcb[0]; 
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
   // printf("执行了schedule\n");  //初始化的时候注意*current = &pcb_boot因而是先进行线程切换  切换到pcb[0]了之后从回调函数schedule返回到trap.S当中的__am_asm_trap  然后执行下一个进程
   // assert(0);
