@@ -28,6 +28,8 @@ typedef struct {
   word_t mcause;
   vaddr_t mtvec;//存储 异常入口地址
   word_t satp;  //在 riscv32_CPU_state 结构体要添加 satp 寄存器!!!!!!!!!!!!!!!!!!!
+  word_t mscratch;//riscv32提供了一个叫mscratch的CSR寄存器, 专门作为临时寄存器给系统软件使用, 它在硬件的行为上并没有什么特殊之处  
+  // 把概念上的ksp映射到mscratch寄存器
 } riscv32_CSRs;
 
 
@@ -39,7 +41,13 @@ typedef struct {
   bool INTR;//在cpu结构体中添加一个bool成员INTR.
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
-// #define TIME_INTR
+
+
+
+
+// #define TIME_INTR  //时钟中断开关（为了之后测试方便这里加了一个开关）
+
+
 
 // decode 解码
 typedef struct {
