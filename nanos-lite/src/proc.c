@@ -37,11 +37,39 @@ void hello_fun(void *arg) {
 }
 
 
+//取巧使用一下宏定义，避免过多的enum
+#define TASKS(_)  _(BIRD), _(EXEC_TEST), _(HELLO), _(MENU), _(NSLIDER) , _(NTERM), _(PAL)
+#define TASK_NAME(name) TASK_##name
+enum
+{
+  TASKS(TASK_NAME)
+};
+static char *args_pal       [] = {"/bin/pal"      , "--skip", NULL};
+static char *args_menu      [] = {"/bin/menu"     , NULL};
+static char *args_exec_test [] = {"/bin/exec-test", NULL};
+static char *args_nterm     [] = {"/bin/nterm"    , NULL};
+static char *args_bird      [] = {"/bin/bird"     , NULL};
+static char *args_hello     [] = {"/bin/hello"    , NULL};
+static char *args_nslider   [] = {"/bin/nslider"  , NULL};
+typedef struct Task
+{
+  char *name;
+  char **args;
+  char **envp;
+} Task;
 
-// static char *args_pal[] = {"/bin/pal", "--skip", NULL};
-// static char *args_menu[] = {"/bin/menu", NULL, NULL};
-// static char *args_exec_test[] = {"/bin/exec-test", NULL, NULL};
-static char *args_nterm[] = {"/bin/nterm", NULL};
+Task Usr_Tasks[]=
+{
+  [TASK_BIRD]      = {"/bin/bird"     , args_bird     , NULL},
+  [TASK_EXEC_TEST] = {"/bin/exec-test", args_exec_test, NULL},
+  [TASK_HELLO]     = {"/bin/hello"    , args_hello    , NULL},
+  [TASK_MENU]      = {"/bin/menu"     , args_menu     , NULL},
+  [TASK_NSLIDER]   = {"/bin/nslider"  , args_nslider  , NULL},
+  [TASK_NTERM]     = {"/bin/nterm"    , args_nterm    , NULL},
+  [TASK_PAL]       = {"/bin/pal"      , args_pal      , NULL},
+};
+
+
 
 void init_proc() {
   context_kload(&pcb[0], hello_fun, &pcb[0]);
@@ -55,7 +83,8 @@ void init_proc() {
   // context_uload(&pcb[1], "/bin/pal", NULL ,NULL);
   // context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
   // context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
-  context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
+  // context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
+  context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
   switch_boot_pcb();
   
   Log("Initializing processes...");
@@ -89,10 +118,11 @@ Context* schedule(Context *prev) {
   // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
   //我们可以修改schedule()的代码, 给仙剑奇侠传分配更多的时间片, 使得仙剑奇侠传调度若干次, 才让hello内核线程调度1次. 
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
-  static size_t time_slice=0;
-  time_slice++; int slice1=50;
-  if(time_slice % slice1!=0){ current=&pcb[1]; }
-  else current=&pcb[0]; 
+  // 基于时间片的进程调度
+  // static size_t time_slice=0;
+  // time_slice++; int slice1=25;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
+  // if(time_slice % slice1!=0){ current=&pcb[1]; }
+  // else current=&pcb[0]; 
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
   // printf("执行了schedule\n");  //初始化的时候注意*current = &pcb_boot因而是先进行线程切换  切换到pcb[0]了之后从回调函数schedule返回到trap.S当中的__am_asm_trap  然后执行下一个进程
   // assert(0);
