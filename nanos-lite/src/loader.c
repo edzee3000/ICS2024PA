@@ -219,7 +219,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 然后把用户栈的物理页映射到[as.area.end - 32KB, as.area.end)这段虚拟地址空间.
   for (size_t i = STACK_PAGE_NUM; i > 0; i--)
     map(&pcb->as, (void *)(pcb->as.area.end - i * PGSIZE), user_stack - i * PGSIZE, PTE_R | PTE_W | PTE_X);
-  // uint32_t map_offset = user_stack - (char *)(pcb->as.area.end);
+  uint32_t map_offset = user_stack - (char *)(pcb->as.area.end); //这里的map_offset是用于PA4.3当中栈切换用的
 #endif
   // 将 argv 字符串逆序拷贝到用户栈  逆向压栈
   for (int i = 0; i < argc; i++) {size_t len = strlen(argv[i]) + 1;  // 包括 null 终止符也要copy进来   但是这里是不是有问题？？？？？？？？没问题 因为传进去的是指针
@@ -277,6 +277,9 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // 将用户栈的顶部地址赋给 GPRx 寄存器
   pcb->cp->GPRx = (uintptr_t)us2;
   pcb->max_brk = 0;
+#ifdef HAVE_PAGE
+  pcb->cp->mscratch=(uintptr_t)((char *)us2 - map_offset);
+#endif
   // pcb->cp->GPRx = (uintptr_t) heap.end; //目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   // 将栈顶位置存到 GPRx 后，恢复上下文时就可以保证 GPRx 中就是栈顶位置  
   //这里用heap，表示用户栈   在abstract-machine/am/src/platform/nemu/trm.c文件当中定义 Area heap = RANGE(&_heap_start, PMEM_END); //Area heap结构用于指示堆区的起始和末尾

@@ -92,7 +92,7 @@ void unprotect(AddrSpace *as) {
 void __am_get_cur_as(Context *c) {
   // 在__am_irq_handle()的开头调用__am_get_cur_as() (在abstract-machine/am/src/$ISA/nemu/vme.c中定义), 
   // 来将当前的地址空间描述符指针保存到上下文中
-  //但是为什么这里可能要加上一个条件判断是否为NULL
+  //但是为什么这里可能要加上一个条件判断是否为NULL？？？？？？？？？？？？？？？？
   c->pdir = (vme_enable ? (void *)get_satp() : NULL);
 }
 
@@ -176,6 +176,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   //用户栈的分配是ISA无关的, 所以用户栈相关的部分就交给Nanos-lite来进行, ucontext()无需处理.
   //  目前我们让Nanos-lite把heap.end作为用户进程的栈顶, 然后把这个栈顶赋给用户进程的栈指针寄存器就可以了.
   Context *cp = (Context *)kstack.end - 1;
+  memset(cp, 0, sizeof(Context)); //同时, 根据不同概念变量的性质, 你可能还需要在cte_init()或者kcontext()/ucontext()中对它们进行初始化.
   cp->mepc = (uintptr_t)entry; 
   assert(cp->mepc >= 0x40000000 && cp->mepc <= 0x88000000);//cp->mepc是有一定的范围限制的
   

@@ -67,6 +67,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {  //举个例子比如说mai
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *cp = (Context *)kstack.end - 1;//先强制类型转换一下然后再-1  所谓的-1  其实是从内存角度来看是将地址的值-sizeof(Context)  使得cp对应的context紧挨着kstack的end
+  memset(cp, 0, sizeof(Context)); //同时, 根据不同概念变量的性质, 你可能还需要在cte_init()或者kcontext()/ucontext()中对它们进行初始化.
   // cp->mepc = (uintptr_t)entry - 4;        //kcontext()要求内核线程不能从entry返回, 否则其行为是未定义的. 你需要在kstack的底部创建一个以entry为入口的上下文结构
   cp->mepc = (uintptr_t)entry;  
 
