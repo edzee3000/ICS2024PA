@@ -44,6 +44,10 @@ static void rtc_io_handler(uint32_t offset, int len, bool is_write) {
 
 #ifndef CONFIG_TARGET_AM
 static void timer_intr() {//虚拟环境中唤醒时间指令    处理计时器中断的回调函数
+  //在NEMU中, 我们只需要添加时钟中断这一种中断就可以了. 由于只有一种中断, 我们也不需要通过中断控制器进行中断的管理, 
+  // 直接让时钟中断连接到CPU的INTR引脚即可. 而对于时钟中断的中断号, 不同的ISA有不同的约定. 
+  // 时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次. 触发后, 
+  // 会调用dev_raise_intr()函数(在nemu/src/device/intr.c中定义)
   if (nemu_state.state == NEMU_RUNNING) {//当模拟器处于运行状态时，它会触发一个设备中断
     extern void dev_raise_intr();
     dev_raise_intr();

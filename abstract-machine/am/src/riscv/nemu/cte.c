@@ -1,6 +1,7 @@
 #include <am.h>  //来自于abstract-machine/am/include/am.h
 #include <riscv/riscv.h>
 #include <klib.h>
+#include <nemu.h>
 
 static Context* (*user_handler)(Event, Context*) = NULL;
 
@@ -21,9 +22,11 @@ Context* __am_irq_handle(Context *c) {
       case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:
       case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19: 
       ev.event=EVENT_SYSCALL;break;
+      // 在CTE中添加时钟中断的支持, 将时钟中断打包成EVENT_IRQ_TIMER事件.
+      case IRQ_TIMER: ev.event = EVENT_IRQ_TIMER;break;  //#define IRQ_TIMER 0x80000007 for riscv32在abstract-machine/am/src/riscv/riscv.h当中
       default:  ev.event = EVENT_ERROR; break;//正是因为自己没有识别出自陷异常的操作，因此才会报错
     }
-
+    
 
 
     //然后执行user_handler函数   即cte_init中传入的handler函数
@@ -68,7 +71,10 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   cp->mepc = (uintptr_t)entry;  
 
   //配合DiffTest   为了保证DiffTest的正确运行, 根据你选择的ISA, 你还需要进行一些额外的设置  但是这里可能有一点点问题
-  cp->mstatus=0x1800;
+  //为了可以让处理器在运行用户进程的时候响应时钟中断, 你还需要修改kcontext()和ucontext()的代码, 
+  // 在构造上下文的时候, 设置正确中断状态, 使得将来恢复上下文之后CPU处于开中断状态.
+  cp->mstatus=0x1800 | MSTATUS_MPIE;  //只需要设置 MPIE 为 1 即可(mstatus = 1 << 7)，在切换到内核线程或用户进程时便会将 mstatus.MPIE 还原到 mstatus.MIE 中
+  // MSTATUS_MPIE是在abstract-machine/am/src/platform/nemu/include/nemu.h当中定义的表示将MPIE为设置为1
   //注意这里跟手册上还是有一点点区别的  手册上面的cp直接是在ksatck的start那个位置的  但是这里我是直接在 (Context *)kstack.end - 1这个位置放了一个cp
   //注意我上面写的那一条注释是错误的！！！！！！！！！注意kcontext会将cp返回，然后将其地址的值赋值给pcb[0].cp也就是PCB的首地址存放的就是cp的地址，这恰恰好符合手册上面的图示
   //为此, 我们需要思考内核线程的调度会对分页机制造成什么样的影响. 内核线程和用户进程最大的不同, 
@@ -79,6 +85,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   // 来进行特殊的标记, 等到将来在__am_irq_handle()中调用__am_switch()时, 如果发现地址空间描述符指针为NULL, 就不进行虚拟地址空间的切换.
   cp->pdir = NULL;
 
+  
 
   cp->GPR2 = (uintptr_t)arg;//注意在这里根据abstract-machine/am/include/arch/riscv.h中的内容  #define GPR2 gpr[10]  GPR2为a0即gpr[10]  通过a0进行传参（因为只有一个void*参数  根据ABI约定）
   return cp;        

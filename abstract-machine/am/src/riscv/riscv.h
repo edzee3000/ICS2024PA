@@ -39,4 +39,6 @@ enum { MODE_U, MODE_S, MODE_M = 3 };//枚举类型  代表了 RISCV 的不同特
 #define MSTATUS_UXL  0
 #endif
 
+#define IRQ_TIMER 0x80000007  // for riscv32
+
 #endif

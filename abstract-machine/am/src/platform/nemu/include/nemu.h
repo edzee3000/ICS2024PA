@@ -76,7 +76,7 @@ typedef uintptr_t PTE;
 
 #define PGSIZE    4096
 
-#define MSTATUS_MPIE 0x00000080   //这个好像是实现difftest用的
+#define MSTATUS_MPIE 0x00000080   //这个好像是实现difftest用的  不是的这个是用于设置正确中断状态, 使得将来恢复上下文之后CPU处于开中断状态
 #define MSTATUS_MIE 0x00000008
 
 #endif

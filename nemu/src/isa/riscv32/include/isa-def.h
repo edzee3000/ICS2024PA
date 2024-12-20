@@ -36,6 +36,7 @@ typedef struct {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;
   riscv32_CSRs CSRs;//如果是riscv64的话也是可以用的  但是这里因为自己默认选择的就是riscv32的因此名字可能取得不是很好
+  bool INTR;//在cpu结构体中添加一个bool成员INTR.
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 
@@ -47,7 +48,10 @@ typedef struct {
   } inst;
 } MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
 
-
+#define MIE_OFFSET 3
+#define MPIE_OFFSET 7 
+#define MIE_VALUE ((cpu.CSRs.mstatus>>MIE_OFFSET) & 1)
+#define MPIE_VALUE ((cpu.CSRs.mstatus>>MPIE_OFFSET) & 1 )
 
 //你需要理解分页地址转换的过程, 然后实现isa_mmu_check()(在nemu/src/isa/$ISA/include/isa-def.h中定义) 
 // 和isa_mmu_translate()(在nemu/src/isa/$ISA/system/mmu.c中定义), 你可以查阅NEMU的ISA相关API说明文档来了解它们的行为.

@@ -179,8 +179,10 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   cp->mepc = (uintptr_t)entry; 
   assert(cp->mepc >= 0x40000000 && cp->mepc <= 0x88000000);//cp->mepc是有一定的范围限制的
   
-  cp->mstatus = 0x1800 | MSTATUS_MPIE;//这一步好像是为了迎合difftest？？？？不管了
-  
+  cp->mstatus = 0x1800 | MSTATUS_MPIE;//这一步好像是为了迎合difftest？？？？不管了   
+  // 现在来填坑了  这一步是在PA4.3部分在构造上下文的时候, 设置正确中断状态, 使得将来恢复上下文之后CPU处于开中断状态.
+  // 只需要设置 MPIE 为 1 即可，在切换到内核线程或用户进程时便会将 mstatus.MPIE 还原到 mstatus.MIE 中
+
   // cp->gpr[0] = 0; //等等这一步是在干嘛？？？？  为什么要把gpr[0]设置为0？？？？？？？
 
   cp->pdir = as->ptr;   //修改ucontext()的实现, 在创建的用户进程上下文中设置地址空间描述符指针

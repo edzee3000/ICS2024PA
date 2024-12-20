@@ -128,6 +128,17 @@ static void execute(uint64_t n) {
     // 这个函数首先会检查距离上次设备更新是否已经超过一定时间, 
     // 若是, 则会尝试刷新屏幕, 并进一步检查是否有按键按下/释放, 以及是否点击了窗口的X按钮; 
     // 否则则直接返回, 避免检查过于频繁, 因为上述事件发生的频率是很低的.
+
+
+    //在cpu_exec()中for循环的末尾添加轮询INTR引脚的代码, 每次执行完一条指令就查看是否有硬件中断到来:
+    //当然了因为我的cpu_exec()函数关于调用n次execute执行的for循环是在execute里面的  因此就放到这里好了
+    word_t intr = isa_query_intr();
+    if (intr != INTR_EMPTY){
+      cpu.pc = isa_raise_intr(intr, cpu.pc);
+      //这里cpu.pc要减4，因为进入isa_raise_intr()函数我让pc加4了(PA3中实现)，
+      // 但是中断操作和系统调用不同，中断操作执行完回到执行前的pc，系统调用执行完回到执行前的pc的下一条指令
+      //但是后来想想这里可以不用-4 因为我可以在isa_raise_intr加一个case判断语句进行相应的调整
+    }
   }
 
 

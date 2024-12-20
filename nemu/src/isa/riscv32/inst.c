@@ -192,7 +192,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw ,I,{R(rd)=*(CSR(imm)); *(CSR(imm)) = src1; });
   //riscv32的自陷指令
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall ,N, ECALL;);//为了要更新pc并保存有问题的pc
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret  ,N, {s->dnpc=cpu.CSRs.mepc;});//机器模式异常返回    最后执行"异常返回指令"返回到程序触发异常之前的状态.
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret  ,N, {s->dnpc=cpu.CSRs.mepc; modify_mret(); /*你还需要修改mret指令的实现, 将mstatus.MPIE还原到mstatus.MIE中, 然后将mstatus.MPIE位置为1*/});
+  //机器模式异常返回    最后执行"异常返回指令"返回到程序触发异常之前的状态.   处理结束后，将MIE恢复为MPIE的值，以还原之前的中断使能状态
 
   //一些奇奇怪怪的置位指令
   //INSTPAT("??????? ????? ????? 011 ????? 00100 11", seqz  ,I,{if(src1==0)R(rd)=1;else R(rd)=0;});//###########################################
