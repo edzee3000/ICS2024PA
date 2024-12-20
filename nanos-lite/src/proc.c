@@ -82,7 +82,7 @@ size_t Time_Slice[]=
 
 
 void init_proc() {
-  context_kload(&pcb[0], hello_fun, &pcb[0]);
+  // context_kload(&pcb[0], hello_fun, &pcb[0]);
   // context_kload(&pcb[1], hello_fun, &pcb[1]);
   // context_uload(&pcb[1], "/bin/hello", NULL ,NULL);
   // context_uload(&pcb[0], "/bin/hello", NULL ,NULL);
@@ -94,6 +94,7 @@ void init_proc() {
   // context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
   // context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
   // context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
+  context_uload(&pcb[0], Usr_Tasks[TASK_HELLO].name, Usr_Tasks[TASK_HELLO].args, Usr_Tasks[TASK_HELLO].envp);
   context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
   switch_boot_pcb();
   
