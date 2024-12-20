@@ -37,37 +37,37 @@ void hello_fun(void *arg) {
 }
 
 
-// //取巧使用一下宏定义，避免过多的enum
-// #define TASKS(_)  _(BIRD), _(EXEC_TEST), _(HELLO), _(MENU), _(NSLIDER) , _(NTERM), _(PAL)
-// #define TASK_NAME(name) TASK_##name
-// enum
-// {
-//   TASKS(TASK_NAME)
-// };
-// static char *args_pal       [] = {"/bin/pal"      , "--skip", NULL};
-// static char *args_menu      [] = {"/bin/menu"     , NULL};
-// static char *args_exec_test [] = {"/bin/exec-test", NULL};
-static char *args_nterm     [] = {"/bin/nterm"  ,NULL  , NULL};
-// static char *args_bird      [] = {"/bin/bird"     , NULL};
-// static char *args_hello     [] = {"/bin/hello"    , NULL};
-// static char *args_nslider   [] = {"/bin/nslider"  , NULL};
-// typedef struct Task
-// {
-//   char *name;
-//   char **args;
-//   char **envp;
-// } Task;
+//取巧使用一下宏定义，避免过多的enum
+#define TASKS(_)  _(BIRD), _(EXEC_TEST), _(HELLO), _(MENU), _(NSLIDER) , _(NTERM), _(PAL)
+#define TASK_NAME(name) TASK_##name
+enum
+{
+  TASKS(TASK_NAME)
+};
+static char *args_pal       [] = {"/bin/pal"      , "--skip", NULL};
+static char *args_menu      [] = {"/bin/menu"     , NULL};
+static char *args_exec_test [] = {"/bin/exec-test", NULL};
+static char *args_nterm     [] = {"/bin/nterm"    , NULL};
+static char *args_bird      [] = {"/bin/bird"     , NULL};
+static char *args_hello     [] = {"/bin/hello"    , NULL};
+static char *args_nslider   [] = {"/bin/nslider"  , NULL};
+typedef struct Task
+{
+  char *name;
+  char **args;
+  char **envp;
+} Task;
 
-// Task Usr_Tasks[]=
-// {
-//   [TASK_BIRD]      = {"/bin/bird"     , args_bird     , NULL},
-//   [TASK_EXEC_TEST] = {"/bin/exec-test", args_exec_test, NULL},
-//   [TASK_HELLO]     = {"/bin/hello"    , args_hello    , NULL},
-//   [TASK_MENU]      = {"/bin/menu"     , args_menu     , NULL},
-//   [TASK_NSLIDER]   = {"/bin/nslider"  , args_nslider  , NULL},
-//   [TASK_NTERM]     = {"/bin/nterm"    , args_nterm    , NULL},
-//   [TASK_PAL]       = {"/bin/pal"      , args_pal      , NULL},
-// };
+Task Usr_Tasks[]=
+{
+  [TASK_BIRD]      = {"/bin/bird"     , args_bird     , NULL},
+  [TASK_EXEC_TEST] = {"/bin/exec-test", args_exec_test, NULL},
+  [TASK_HELLO]     = {"/bin/hello"    , args_hello    , NULL},
+  [TASK_MENU]      = {"/bin/menu"     , args_menu     , NULL},
+  [TASK_NSLIDER]   = {"/bin/nslider"  , args_nslider  , NULL},
+  [TASK_NTERM]     = {"/bin/nterm"    , args_nterm    , NULL},
+  [TASK_PAL]       = {"/bin/pal"      , args_pal      , NULL},
+};
 
 
 
@@ -83,8 +83,8 @@ void init_proc() {
   // context_uload(&pcb[1], "/bin/pal", NULL ,NULL);
   // context_uload(&pcb[0], "/bin/dummy", NULL, NULL);
   // context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
-  context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
-  // context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
+  // context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
+  context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
   switch_boot_pcb();
   
   Log("Initializing processes...");
@@ -115,7 +115,7 @@ void init_proc() {
 //Nanos-lite的schedule()函数
 Context* schedule(Context *prev) {
   current->cp = prev;//保存上下文的指针  save the context pointer
-  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
+  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
   //我们可以修改schedule()的代码, 给仙剑奇侠传分配更多的时间片, 使得仙剑奇侠传调度若干次, 才让hello内核线程调度1次. 
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
   // 基于时间片的进程调度
