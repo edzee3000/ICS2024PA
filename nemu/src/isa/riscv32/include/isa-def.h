@@ -45,7 +45,7 @@ typedef struct {
 
 
 
-// #define TIME_INTR  //时钟中断开关（为了之后测试方便这里加了一个开关）
+#define TIME_INTR  //时钟中断开关（为了之后测试方便这里加了一个开关）
 
 
 
