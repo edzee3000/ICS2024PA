@@ -1,5 +1,7 @@
 #include <common.h>
 #include <declaration.h>
+#include <proc.h>
+
 
 // #include "klib-macros.h"
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
@@ -41,6 +43,20 @@ size_t events_read(void *buf, size_t offset, size_t len) {//默认offset为0！�
   if (key.keycode == AM_KEY_NONE) {*(char*)buf = '\0';return 0;}
   int buflen=snprintf(buf, len, "%s %s\n", key.keydown ? "kd":"ku", keyname[key.keycode]);//按键名称与AM中的定义的按键名相同, 均为大写. 此外, 一个事件以换行符\n结束.
   printf("buf内容为:%s",buf);//这里就不用多加一个\n了因为上一条代码已经用\n分隔开来了
+  //目前Nanos-lite中最多可以运行4个进程, 我们可以把这4个进程全部用满. 
+  // 具体地, 我们可以加载仙剑奇侠传, Flappy Bird, NSlider和hello程序, 
+  // 然后通过一个变量fg_pcb来维护当前的前台程序, 让前台程序和hello程序分时运行. 
+  // 具体地, 我们可以在Nanos-lite的events_read()函数中让F1, F2, F3这3个按键来和3个前台程序绑定, 
+  // 例如, 一开始是仙剑奇侠传和hello程序分时运行, 按下F2之后, 就变成Flappy Bird和hello程序分时运行.
+  switch (key.keycode)
+  {
+  case AM_KEY_F1: set_fg_pcb(1); break;  //F1与pal进行映射
+  case AM_KEY_F2: set_fg_pcb(2); break;  //F2与bird进行映射
+  case AM_KEY_F3: set_fg_pcb(3); break;  //F3与NSlider进行映射
+  default: break;
+  }
+  
+  
   return buflen;
 }
 

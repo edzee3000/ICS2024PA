@@ -34,4 +34,5 @@ void switch_boot_pcb() ;
 
 int mm_brk(uintptr_t brk);
 
+void set_fg_pcb(uint32_t process_id);
 #endif

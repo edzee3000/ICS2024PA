@@ -7,6 +7,7 @@
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};
 static PCB pcb_boot = {};
 PCB *current = NULL;
+PCB *fg_pcb=NULL;//通过一个变量fg_pcb来维护当前的前台程序, 让前台程序和hello程序分时运行
 
 void naive_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
 // void context_uload(PCB *pcb, const char *filename);//在nanos-lite/src/loader.c里面定义的函数
@@ -95,7 +96,11 @@ void init_proc() {
   // context_uload(&pcb[0], "/bin/pal", args_pal ,NULL);
   // context_uload(&pcb[1], "/bin/nterm", args_nterm ,NULL);
   context_uload(&pcb[0], Usr_Tasks[TASK_HELLO].name, Usr_Tasks[TASK_HELLO].args, Usr_Tasks[TASK_HELLO].envp);
-  context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
+  // context_uload(&pcb[1], Usr_Tasks[TASK_NTERM].name, Usr_Tasks[TASK_NTERM].args, Usr_Tasks[TASK_NTERM].envp);
+  context_uload(&pcb[1], Usr_Tasks[TASK_PAL].name, Usr_Tasks[TASK_PAL].args, Usr_Tasks[TASK_PAL].envp);
+  context_uload(&pcb[2], Usr_Tasks[TASK_BIRD].name , Usr_Tasks[TASK_BIRD].args , Usr_Tasks[TASK_BIRD].envp );
+  context_uload(&pcb[3], Usr_Tasks[TASK_NSLIDER].name, Usr_Tasks[TASK_NSLIDER].args, Usr_Tasks[TASK_NSLIDER].envp);
+  fg_pcb = &pcb[1];
   switch_boot_pcb();
   
   Log("Initializing processes...");
@@ -122,18 +127,24 @@ void init_proc() {
   
 
 
-
+static uint32_t vttime[2] = {25, 1};
+static uint32_t duration[2] = {0};
+static uint32_t cur_pcb_id = 0;
+#define argmin(a, b) (((a) < (b)) ? 0 : 1)
 //Nanos-lite的schedule()函数
 Context* schedule(Context *prev) {
   current->cp = prev;//保存上下文的指针  save the context pointer
   // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);//判断当前current是pcb[0]还是pcb[1]  如果是pcb[0]的话就切换为pcb[1]  switch between pcb[0] and pcb[1]
   //我们可以修改schedule()的代码, 给仙剑奇侠传分配更多的时间片, 使得仙剑奇侠传调度若干次, 才让hello内核线程调度1次. 
   // 这是因为hello内核线程做的事情只是不断地输出字符串, 我们只需要让hello内核线程偶尔进行输出, 以确认它还在运行就可以了.
-  // 基于时间片的进程调度
-  static size_t time_slice=0;
-  time_slice++; int slice1=50;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
-  if(time_slice % slice1!=0){ current=&pcb[1]; }
-  else current=&pcb[0]; 
+  // // 基于时间片的进程调度
+  // static size_t time_slice=0;
+  // time_slice++; int slice1=50;  //时钟中断通过nemu/src/device/timer.c中的timer_intr()触发, 每10ms触发一次  差不多25:1的时间不过分吧
+  // if(time_slice % slice1!=0){ current=&pcb[1]; }
+  // else current=&pcb[0]; 
+  duration[cur_pcb_id] += vttime[cur_pcb_id];
+  cur_pcb_id = argmin(duration[0], duration[1]);
+  current = (cur_pcb_id == 0) ? &pcb[0] : fg_pcb;//如果duration[0]<duration[1]的话则选择用pcb[0] 否则使用前台程序
   //将当前的PCB的cp切换为先前的进程cp指针context pointer
   // printf("执行了schedule\n");  //初始化的时候注意*current = &pcb_boot因而是先进行线程切换  切换到pcb[0]了之后从回调函数schedule返回到trap.S当中的__am_asm_trap  然后执行下一个进程
   // assert(0);
@@ -156,4 +167,14 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg) {
   //仿照am-kernels/kernels/yield-os/yield-os.c的main函数里面的
   // pcb[0].cp = kcontext((Area) { pcb[0].stack, &pcb[0] + 1 }, f, (void *)1L);
   //这行代码去写，注意这里需要加一个STACK_SIZE因为后面有相关分页机制的实现！！！！！！而不是pcb + 1 ！！！！ 
+}
+
+
+
+//运行前台程序进行功能切换  在nanos-lite/src/device.c当中的events_read中有用
+void set_fg_pcb(uint32_t process_id)
+{
+  fg_pcb = &pcb[process_id];
+  if (duration[1] < duration[0])
+    duration[1] = duration[0];
 }
